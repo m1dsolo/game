@@ -1,0 +1,44 @@
+[
+    {
+        "name": "coin",
+        "type": "material"
+    },
+    {
+        "name": "usp",
+        "type": "weapon.gun",
+        "atk": 3,
+        "clip": 12,
+        "shoot_interval": 20,
+        "reload_interval": 90,
+        "angle": 3
+    },
+    {
+        "name": "m3",
+        "type": "weapon.gun",
+        "atk": 2,
+        "count": 5,
+        "clip": 8,
+        "shoot_interval": 30,
+        "reload_interval": 120,
+        "angle": 20
+    },
+    {
+        "name": "m4a1",
+        "type": "weapon.gun",
+        "atk": 1,
+        "clip": 30,
+        "shoot_interval": 5,
+        "reload_interval": 120,
+        "angle": 10
+    },
+    {
+        "name": "awp",
+        "type": "weapon.gun",
+        "atk": 5,
+        "penetration": 3,
+        "clip": 10,
+        "shoot_interval": 120,
+        "reload_interval": 90,
+        "angle": 2
+    }
+]

@@ -1,0 +1,11 @@
+{
+    "levelup_exps": [0, 1, 4, 6, 8, 10, 20, 50],
+    "fps": 60,
+    "w": 1920,
+    "h": 1080,
+    "online": false,
+    "card_w": 300,
+    "card_h": 500,
+    "hotbar_slot_w": 50,
+    "hotbar_slot_h": 50
+}

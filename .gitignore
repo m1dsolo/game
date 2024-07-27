@@ -1,0 +1,11 @@
+build
+lib
+bin
+.cache
+__pycache__
+bak
+test.cpp
+log.txt
+split_png.sh
+todo.md
+server

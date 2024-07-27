@@ -1,0 +1,30 @@
+[
+    {
+        "name": "skeleton",
+        "hp": 5,
+        "velocity": 50,
+        "collide": 1,
+        "exp": 1,
+        "reward": [
+            {
+            "name": "coin",
+            "count": [1, 3],
+            "chance": 1.0
+            }
+        ]
+    },
+    {
+        "name": "goblin",
+        "velocity": 30,
+        "hp": 10,
+        "collide": 2,
+        "exp": 2,
+        "reward": [
+            {
+            "name": "coin",
+            "count": [2, 4],
+            "chance": 1.0
+            }
+        ]
+    }
+]
