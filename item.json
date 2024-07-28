@@ -25,7 +25,7 @@
     {
         "name": "m4a1",
         "type": "weapon.gun",
-        "atk": 1,
+        "atk": 2,
         "clip": 30,
         "shoot_interval": 5,
         "reload_interval": 120,

@@ -56,28 +56,27 @@ void Gun::shoot() {
     if (reloading_) {
         return;
     }
-    if (ammo_ == 0) {
-        data().action_map["reload"]->start();
+    if (ammo_ <= 0) {
+        reload();
         return;
     }
     ammo_ -= 1;
 
+    auto& pos = ecs.get_component<PositionComponent>(entity_).vec;
+    auto& direction = ecs.get_component<DirectionComponent>(entity_).vec;
+    int a = data().angle;
+    if (ecs.has_components<PerkComponent>(entity_)) {
+        auto& perk = ecs.get_component<PerkComponent>(entity_);
+        a = (double)a / perk.accuracy_ratio;
+    }
     for (int i = 0; i < data().count; ++i) {
-        auto position = ecs.get_component<PositionComponent>(entity_);
-        auto direction = ecs.get_component<DirectionComponent>(entity_);
-        int a = data().angle;
-        if (ecs.has_components<PerkComponent>(entity_)) {
-            auto& perk = ecs.get_component<PerkComponent>(entity_);
-            a = (double)a / perk.accuracy_ratio;
-        }
-
         double angle = random.uniform(-a, a) * M_PI / 180;
-        direction.vec = {direction.vec.x * std::cos(angle) - direction.vec.y * std::sin(angle),
-                          direction.vec.x * std::sin(angle) + direction.vec.y * std::cos(angle)};
+        auto dir = Vector2D<double>{direction.x * std::cos(angle) - direction.y * std::sin(angle),
+                          direction.x * std::sin(angle) + direction.y * std::cos(angle)};
         EntityManager::instance().create_bullet(
             "bullet_shell",
-            position.vec,
-            direction.vec,
+            pos,
+            dir,
             data().atk,
             data().penetration,
             entity_
