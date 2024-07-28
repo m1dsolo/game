@@ -72,17 +72,15 @@ void HotBarLayer::on_render() {
 
             sdl.destroy(texture);
         }
-
-        // draw selection
-        if (i == selected_idx) {
-            float x = (float)(config_resource.w - this->w) / 2 + slot_padding + (i - 1) * (slot_w + slot_padding);
-            float y = (float)(config_resource.h - this->h) + slot_padding;
-            float w = slot_w;
-            float h = slot_h;
-            SDL_FRect dst = {x, y, w, h};
-            sdl.draw_boarder(&dst, 4, sdl.RED);
-        }
     }
+
+    // draw selection
+    float x = (float)(config_resource.w - this->w) / 2 + slot_padding + (inventory.selected_idx() - 1) * (slot_w + slot_padding);
+    float y = (float)(config_resource.h - this->h) + slot_padding;
+    float w = slot_w;
+    float h = slot_h;
+    SDL_FRect dst = {x, y, w, h};
+    sdl.draw_boarder(&dst, 4, sdl.RED);
 }
 
 bool HotBarLayer::on_event(const SDL_Event& event) {

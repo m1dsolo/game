@@ -10,11 +10,12 @@
 namespace wheel {
 
 class Slot {
+    friend class Inventory;
+
 public:
     Slot() : item_(null_item_) {}
-    Slot(std::shared_ptr<Item> item, int count = 1) : item_(item), count_(count) {}
 
-    bool empty() const { return !item_; }
+    bool empty() const { return item_->empty(); }
 
     Item& item() { return *item_; }
     const Item& item() const { return *item_; }
@@ -23,14 +24,18 @@ public:
 
     void set(std::shared_ptr<Item> item, int count = 1);
 
+    void reduce(int count = 1);
+
     void clear();
 
 private:
     std::shared_ptr<Item> item_;
     int count_ = 0;
 
-    static const inline std::shared_ptr<Item> null_item_;
+    static const std::shared_ptr<Item> null_item_;
 };
+
+inline const std::shared_ptr<Item> Slot::null_item_ = std::make_shared<Item>();
 
 class Inventory {
 public:
@@ -45,6 +50,8 @@ public:
     Slot& selected_slot();
 
     void select(int idx);
+    
+    void unselect(int idx);
 
     bool have(int idx);
 
@@ -54,7 +61,7 @@ private:
     static const inline int SIZE = 10;
 
     Entity entity_;
-    Slot slots_[SIZE + 1];  // 0 is not used
+    std::shared_ptr<Slot> slots_[SIZE + 1];  // 0 is not used
     int selected_idx_ = 0;
 };
 

@@ -18,11 +18,12 @@
 #include <game/component/animation.hpp>
 #include <game/component/position.hpp>
 #include <game/component/enemy.hpp>
-#include <game/component/text.hpp>
 #include <game/component/velocity.hpp>
 #include <game/component/health_bar.hpp>
 #include <game/component/size.hpp>
 #include <game/component/master.hpp>
+#include <game/component/buff.hpp>
+#include <game/component/texture.hpp>
 
 namespace wheel {
 
@@ -35,10 +36,13 @@ void CombatSystem::execute() {
     player_get_damage_add_invincible();
     get_damage_add_sketch();
     enemy_get_damage_show_text();
+    heal_buff();
+    heal_show_text();
     dead();
     add_exp();
     del_damage_components();
     del_exp_components();
+    del_heal_buff_components();
 
     del_useless_health_bar();
     update_health_bar_position();
@@ -91,17 +95,29 @@ void CombatSystem::get_damage_add_sketch() {
 void CombatSystem::enemy_get_damage_show_text() {
     for (auto [_, damage, position] : ecs.get_components<EnemyComponent, DamageComponent, PositionComponent>()) {
         for (auto& [d, _] : damage.damages) {
-            Entity entity = ecs.add_entity(
-                TextComponent{std::to_string(d)},
-                position,
-                VelocityComponent{10, 10}
-            );
-            timer_resource.add(10, 1, [entity]() {
+            Entity entity = EntityManager::instance().create_text(std::to_string(d), sdl.PINK, position.vec);
+            timer_resource.add(20, 1, [entity]() {
                 ecs.add_components<DelEntityTag>(entity, {});
             });
         }
     }
+}
 
+void CombatSystem::heal_buff() {
+    for (auto [heal_buff, hp] : ecs.get_components<HealBuffComponent, HPComponent>()) {
+        int heal = std::min(hp.max_hp - hp.hp, heal_buff.heal);
+        hp.hp += heal;
+        heal_buff.heal = heal;
+    }
+}
+
+void CombatSystem::heal_show_text() {
+    for (auto [heal_buff, position] : ecs.get_components<HealBuffComponent, PositionComponent>()) {
+        Entity entity = EntityManager::instance().create_text(std::to_string(heal_buff.heal), sdl.GREEN, position.vec);
+        timer_resource.add(20, 1, [entity]() {
+            ecs.add_components<DelEntityTag>(entity, {});
+        });
+    }
 }
 
 void CombatSystem::dead() {
@@ -131,7 +147,9 @@ void CombatSystem::dead() {
             for (auto& reward_item : reward.reward_items) {
                 if (random.uniform(0., 1.) < reward_item.chance) {
                     int count = random.uniform(reward_item.count.first, reward_item.count.second);
-                    EntityManager::instance().create_item(reward_item.name, position.vec, count);
+                    // position random offset
+                    auto pos = Vector2D<double>{position.vec.x + random.uniform(-5., 5.), position.vec.y + random.uniform(-5., 5.)};
+                    EntityManager::instance().create_item(reward_item.name, pos, count);
                 }
             }
         }
@@ -160,6 +178,10 @@ void CombatSystem::del_damage_components() {
 
 void CombatSystem::del_exp_components() {
     ecs.del_components<ExpComponent>();
+}
+
+void CombatSystem::del_heal_buff_components() {
+    ecs.del_components<HealBuffComponent>();
 }
 
 void CombatSystem::del_useless_health_bar() {

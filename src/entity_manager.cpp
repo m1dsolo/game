@@ -82,6 +82,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     inventory.pick("m3");
     inventory.pick("m4a1");
     inventory.pick("awp");
+    inventory.pick("hp_potion", 1);
     inventory.pick("coin", 10);
     inventory.select(1);
 
@@ -146,6 +147,17 @@ Entity EntityManager::create_health_bar(Entity master) {
         HealthBarComponent{master},
         PositionComponent{},
         size
+    );
+}
+
+Entity EntityManager::create_text(const std::string& text, SDL_Color color, const Vector2D<double>& pos) {
+    auto texture = sdl.create_texture(text, color);
+    auto [w, h] = sdl.get_texture_size(texture);
+    return ecs.add_entity(
+        TextureComponent{texture},
+        PositionComponent{pos},
+        SizeComponent{(int)w, (int)h},
+        VelocityComponent{10, 10}
     );
 }
 

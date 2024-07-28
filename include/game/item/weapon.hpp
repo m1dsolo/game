@@ -22,12 +22,8 @@ public:
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }
 
-    Entity entity() const { return entity_; }
-
 protected:
-    Weapon(Data* data, Entity entity) : Item(data), entity_(entity) {}
-
-    Entity entity_;
+    Weapon(Data* data, Entity entity) : Item(data, entity) {}
 };
 
 }  // namespace wheel

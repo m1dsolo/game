@@ -1,11 +1,9 @@
 #pragma once
 
-#include <game/item/item.hpp>
-#include <game/item/material.hpp>
-#include <game/item/gun.hpp>
-#include <game/inventory.hpp>
-
 #include <wheel/singleton.hpp>
+
+#include <game/item/item.hpp>
+#include <game/inventory.hpp>
 
 namespace wheel {
 
@@ -20,7 +18,8 @@ public:
 
     const Item::Data* get_data(const std::string& name) const { return item_data_map.at(name).get(); }
 
-    std::shared_ptr<Item> create_item(const std::string& name, Entity entity = EntityNone);
+    // entity for weapon, count for consumable
+    std::shared_ptr<Item> create_item(const std::string& name, Entity entity = EntityNone, Slot* slot = nullptr);
 
     void parse_item_json();
 

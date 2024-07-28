@@ -39,7 +39,9 @@ void StatusLayer::on_render() {
 
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
     auto& item = inventory.selected_slot().item();
-    s += " " + item.info();
+    if (!item.empty()) {
+        s += " " + item.info();
+    }
 
     SDL_FRect dst_ui = {20, 20, 20 + (float)width, (float)height};
     sdl.draw_text(s, &dst_ui, sdl.WHITE);

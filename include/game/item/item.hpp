@@ -14,7 +14,8 @@ public:
     enum class Type {
         NONE,
         MATERIAL,
-        WEAPON
+        WEAPON,
+        CONSUMABLE,
     };
 
     struct Data {
@@ -28,18 +29,22 @@ public:
         std::unordered_map<std::string, std::shared_ptr<Action>> action_map;
     };
 
-    Item(Data* data) : data_(data) {}
+    Item(Data* data = nullptr, Entity entity = EntityNone) : data_(data), entity_(entity) {}
     virtual ~Item() = default;
+
+    void select();
+    void unselect();
 
     virtual Data& data() { return *data_; }
     virtual const Data& data() const { return *data_; }
-
+    Entity entity() const { return entity_; }
     virtual std::string info() const { return data_->name; }
 
     bool empty() const { return !data_; }
 
 protected:
     Data* data_;
+    Entity entity_;
 };
 
 }  // namespace wheel

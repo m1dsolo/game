@@ -4,8 +4,9 @@
 #include <unordered_map>
 
 #include <wheel/singleton.hpp>
-#include <wheel/ecs.hpp>
 #include <wheel/geometry.hpp>
+
+#include <game/global.hpp>
 
 namespace wheel {
 
@@ -24,6 +25,8 @@ public:
     void create_item(const std::string& name, Vector2D<double> position, int count = 1);
 
     Entity create_health_bar(Entity master);
+
+    Entity create_text(const std::string& text, SDL_Color color, const Vector2D<double>& pos);
 
 private:
     void parse_enemy_json();

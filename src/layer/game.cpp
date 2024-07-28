@@ -11,7 +11,6 @@
 #include <game/component/position.hpp>
 #include <game/component/size.hpp>
 #include <game/component/texture.hpp>
-#include <game/component/text.hpp>
 #include <game/component/health_bar.hpp>
 #include <game/component/hp.hpp>
 #include <game/component/tag.hpp>
@@ -30,7 +29,6 @@ void GameLayer::on_update() {
 void GameLayer::on_render() {
     render_map();
     render_texture();
-    render_text();
     render_health_bar();
 }
 
@@ -98,13 +96,6 @@ void GameLayer::render_texture() {
         auto left_top = position.vec - Vector2D<double>{size.w / 2., size.h / 2.};
         SDL_FRect dst_frect = {(float)left_top.x, (float)left_top.y, (float)size.w, (float)size.h};
         sdl.render(texture.texture, nullptr, &dst_frect);
-    }
-}
-
-void GameLayer::render_text() {
-    for (auto [text, position] : ecs.get_components<TextComponent, PositionComponent>()) {
-        SDL_FRect dst = {(float)position.vec.x, (float)position.vec.y, 0, 0};
-        sdl.draw_text(text.text, &dst, {255, 153, 153, 255});
     }
 }
 

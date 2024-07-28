@@ -12,10 +12,13 @@ namespace wheel {
 void OneShotAction::start() {
     if (ready_ && start_func_) {
         if (get_cooldown_) {
-            ready_ = false;
-            timer_resource.add(get_cooldown_(), 1, [&]() {
-                ready_ = true;
-            });
+            int cooldown = get_cooldown_();
+            if (cooldown) {
+                ready_ = false;
+                timer_resource.add(get_cooldown_(), 1, [&]() {
+                    ready_ = true;
+                });
+            }
         }
         start_ = true;
         start_func_();
@@ -34,16 +37,20 @@ void MultiShotAction::start() {
         func_();
         ready_ = false;
         start_ = true;
-        int cooldown = get_cooldown_ ? get_cooldown_() : 1;
-        timer_func_ = [&, cooldown]() {
-            if (start_) {
-                func_();
+        if (get_cooldown_) {
+            int cooldown = get_cooldown_();
+            if (cooldown) {
+                timer_func_ = [&, cooldown]() {
+                    if (start_) {
+                        func_();
+                        timer_resource.add(cooldown, 1, timer_func_);
+                    } else {
+                        ready_ = true;
+                    }
+                };
                 timer_resource.add(cooldown, 1, timer_func_);
-            } else {
-                ready_ = true;
             }
-        };
-        timer_resource.add(cooldown, 1, timer_func_);
+        }
     }
 }
 
@@ -135,7 +142,8 @@ FlashAction::FlashAction(Entity entity) : OneShotAction("flash", 'f') {
     };
 }
 
-SwitchSelectedItemAction::SwitchSelectedItemAction(Entity entity, int idx) : OneShotAction(std::format("switch_item_{}", idx), '0' + idx) {
+SwitchSelectedItemAction::SwitchSelectedItemAction(Entity entity, int idx)
+    : OneShotAction(std::format("switch_item_{}", idx), '0' + (idx % 10)) {
     start_func_ = [entity, idx]() {
         auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
         inventory.select(idx);

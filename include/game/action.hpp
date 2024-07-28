@@ -28,7 +28,7 @@ public:
     void finish() override;
 
 protected:
-    std::function<int()> get_cooldown_;
+    std::function<int()> get_cooldown_;  // nullptr means no cooldown
     std::function<void()> start_func_;
     std::function<void()> finish_func_;
 
@@ -46,7 +46,7 @@ public:
     void finish() override;
 
 protected:
-    std::function<int()> get_cooldown_;
+    std::function<int()> get_cooldown_;  // nullptr means no cooldown
     std::function<void()> func_;
     std::function<void()> timer_func_;
 

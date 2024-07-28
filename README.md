@@ -25,6 +25,9 @@ For example:
 4. Multiplayer system
 5. etc...
 
+Update:
+1. consumable potion
+
 ## Features
 
 - Entity-Component-System (ECS) architecture
@@ -67,6 +70,7 @@ cmake --build build -j4
 4. Press `ESC` to show the exit menu (then press `1` to quit, `2` to resume)
 5. Use the number keys `1`, `2`, `3`, etc. to select items
 6. Use the number keys `1`, `2`, `3` to select the levelup reward cards
+7. Use `Space` to use consumables if you have one selected
 
 ## License
 

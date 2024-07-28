@@ -23,7 +23,6 @@ private:
 
     void render_map();
     void render_texture();
-    void render_text();
     void render_health_bar();
 };
 

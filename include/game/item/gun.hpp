@@ -35,7 +35,7 @@ public:
     int clip() const { return data().clip; }
 
     virtual std::string info() const override {
-        auto d = data();
+        auto& d = data();
         return std::format("{}: {}/{}", d.name, ammo_, d.clip);
     }
 

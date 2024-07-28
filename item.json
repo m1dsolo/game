@@ -40,5 +40,16 @@
         "shoot_interval": 120,
         "reload_interval": 90,
         "angle": 2
+    },
+    {
+        "name": "hp_potion",
+        "type": "consumable.potion",
+        "max_uses": 3,
+        "buffs": [
+            {
+                "name": "hp",
+                "value": 2
+            }
+        ]
     }
 ]

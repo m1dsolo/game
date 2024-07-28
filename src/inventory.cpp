@@ -2,7 +2,6 @@
 
 #include <game/utils.hpp>
 #include <game/item_manager.hpp>
-#include <game/audio_manager.hpp>
 
 namespace wheel {
 
@@ -11,12 +10,25 @@ void Slot::set(std::shared_ptr<Item> item, int count) {
     count_ = count;
 }
 
+void Slot::reduce(int count) {
+    count_ -= count;
+    if (count_ <= 0) {
+        clear();
+    }
+}
+
 void Slot::clear() {
+    if (!item_->empty()) {
+        item_->unselect();
+    }
     item_ = null_item_;
     count_ = 0;
 }
 
 Inventory::Inventory(Entity entity) : entity_(entity) {
+    for (int i = 0; i <= SIZE; i++) {
+        slots_[i] = std::make_shared<Slot>();
+    }
 }
 
 bool Inventory::pick(const std::string& name, int count) {
@@ -24,8 +36,8 @@ bool Inventory::pick(const std::string& name, int count) {
     // stack
     if (data->stackable) {
         for (int i = 1; i <= SIZE; i++) {
-            if (!slots_[i].empty() && slots_[i].item().data().name == name) {
-                slots_[i].count() += count;
+            if (!slots_[i]->empty() && slots_[i]->item().data().name == name) {
+                slots_[i]->count() += count;
                 return true;
             }
         }
@@ -33,8 +45,8 @@ bool Inventory::pick(const std::string& name, int count) {
 
     // find empty slot
     for (int i = 1; i <= SIZE; i++) {
-        if (slots_[i].empty()) {
-            slots_[i].set(ItemManager::instance().create_item(name, entity_), count);
+        if (slots_[i]->empty()) {
+            slots_[i]->set(ItemManager::instance().create_item(name, entity_, slots_[i].get()), count);
             return true;
         }
     }
@@ -43,15 +55,15 @@ bool Inventory::pick(const std::string& name, int count) {
 }
 
 void Inventory::drop(int idx) {
-    slots_[idx].clear();
+    slots_[idx]->clear();
 }
 
 Slot& Inventory::slot(int idx) {
-    return slots_[idx];
+    return *slots_[idx];
 }
 
 Slot& Inventory::selected_slot() {
-    return slots_[selected_idx_];
+    return *slots_[selected_idx_];
 }
 
 void Inventory::select(int idx) {
@@ -59,43 +71,21 @@ void Inventory::select(int idx) {
         return;
     }
 
-    selected_idx_ = idx;
     // unselect
-    auto item = slots_[selected_idx_].item();
-    if (!item.empty()) {
-        if (ecs.has_components<ActionsComponent>(entity_)) {
-            auto& actions = ecs.get_component<ActionsComponent>(entity_);
-            for (auto& [name, action] : item.data().action_map) {
-                actions.action_map.erase(name);
-            }
-        }
-        if (ecs.has_components<InputComponent>(entity_)) {
-            auto& input = ecs.get_component<InputComponent>(entity_);
-            for (auto& [name, action] : item.data().action_map) {
-                input.key_bindings.erase(action->keycode());
-            }
-        }
+    if (have(selected_idx_)) {
+        slots_[selected_idx_]->item().unselect();
     }
 
-    item = slots_[idx].item();
-    if (ecs.has_components<ActionsComponent>(entity_)) {
-        auto& actions = ecs.get_component<ActionsComponent>(entity_);
-        for (auto& [name, action] : item.data().action_map) {
-            actions.action_map[name] = action;
-        }
-    }
-    if (ecs.has_components<InputComponent>(entity_)) {
-        auto& input = ecs.get_component<InputComponent>(entity_);
-        for (auto& [name, action] : item.data().action_map) {
-            input.key_bindings[action->keycode()] = action->name();
-        }
+    // select
+    if (have(idx)) {
+        slots_[idx]->item().select();
     }
 
-    AudioManager::instance().play(item.data().name + "_select");
+    selected_idx_ = idx;
 }
 
 bool Inventory::have(int idx) {
-    return !slots_[idx].empty();
+    return !slots_[idx]->empty();
 }
 
 }  // namespace wheel
