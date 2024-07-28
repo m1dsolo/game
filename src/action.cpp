@@ -1,5 +1,7 @@
 #include <game/action.hpp>
 
+#include <game/audio_manager.hpp>
+
 #include <game/component/move.hpp>
 #include <game/component/position.hpp>
 #include <game/component/direction.hpp>
@@ -139,6 +141,8 @@ FlashAction::FlashAction(Entity entity) : OneShotAction("flash", 'f') {
                 }
             }
         });
+
+        AudioManager::instance().play("flash");
     };
 }
 

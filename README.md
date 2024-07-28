@@ -71,6 +71,7 @@ cmake --build build -j4
 5. Use the number keys `1`, `2`, `3`, etc. to select items
 6. Use the number keys `1`, `2`, `3` to select the levelup reward cards
 7. Use `Space` to use consumables if you have one selected
+8. Use 'F' to flash
 
 ## License
 
