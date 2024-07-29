@@ -18,9 +18,6 @@ struct ConfigResource {
     int map_h = 18;
 
     bool online = false;
-
-    int card_w = 300;
-    int card_h = 500;
 };
 
 }  // namespace wheel

@@ -7,6 +7,7 @@
 #include <game/client.hpp>
 #include <game/ui.hpp>
 
+#include <game/layer/map.hpp>
 #include <game/layer/game.hpp>
 #include <game/layer/status.hpp>
 #include <game/layer/card.hpp>
@@ -26,6 +27,7 @@ namespace wheel {
 
 GameManager::GameManager() {
     auto& ui = UI::instance();
+    ui.push_back<MapLayer>();
     ui.push_back<GameLayer>();
     ui.push_back<StatusLayer>();
     ui.push_back<HotBarLayer>();

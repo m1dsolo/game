@@ -27,7 +27,6 @@ void GameLayer::on_update() {
 }
 
 void GameLayer::on_render() {
-    render_map();
     render_texture();
     render_health_bar();
 }
@@ -49,7 +48,7 @@ bool GameLayer::on_event(const SDL_Event& event) {
                 Entity entity = ecs.get_entities<SelfComponent>()[0];
                 Client::instance().send(std::format(R"({{"entity": {}, "type": "{}", "code": {}}})", entity, "down", key));
             }
-            break;
+            return true;
         }
         case SDL_EVENT_KEY_UP: {
             auto key = event.key.key;
@@ -57,34 +56,11 @@ bool GameLayer::on_event(const SDL_Event& event) {
                 Entity entity = ecs.get_entities<SelfComponent>()[0];
                 Client::instance().send(std::format(R"({{"entity": {}, "type": "{}", "code": {}}})", entity, "up", key));
             }
-            break;
+            return true;
         }
-        // case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-        //     if (config_resource.online) {
-        //         // Client::instance().send("down" + keycode2str_[event.button.button]);
-        //     } else {
-        //         float mouse_x, mouse_y;
-        //         SDL_GetMouseState(&mouse_x, &mouse_y);
-        //         // ecs.add_event<MouseButtonDownEvent>(
-        //         //     MouseButtonDownEvent({mouse_x, mouse_y})
-        //         // );
-        //         // Client::instance().get_queue().push(name + ": mouse_down" + std::to_string(mouse_x) + " " + std::to_string(mouse_y) + '\n');
-        //     }
-        //     break;
-        // }
     }
 
-    return true;
-}
-
-void GameLayer::render_map() {
-    // map
-    float w = map_resource.tilemap[0].size() * 48;
-    float h = map_resource.tilemap.size() * 48;
-    float x = (config_resource.w - w) / 2;
-    float y = (config_resource.h - h) / 2;
-    SDL_FRect dst_frect = {x, y, w, h};
-    sdl.render(map_resource.texture, nullptr, &dst_frect);
+    return false;
 }
 
 void GameLayer::render_texture() {

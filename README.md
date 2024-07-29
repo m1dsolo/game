@@ -29,6 +29,7 @@ Update:
 1. consumable potion
 2. slot progress bar
 3. tower as a consumable
+4. mouse select tile and card
 
 ## Features
 

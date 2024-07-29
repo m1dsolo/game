@@ -9,22 +9,21 @@
 namespace wheel {
 
 CardLayer::CardLayer() {
-    int card_w = config_resource.card_w, card_h = config_resource.card_h;
     bg_texture_ = sdl.create_texture(config_resource.w, config_resource.h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET, SDL_PIXELFORMAT_RGBA8888);
     sdl.set_blend_mode(bg_texture_, SDL_BLENDMODE_BLEND);
     sdl.set_alpha_mod(bg_texture_, 0);
 
-    SDL_Texture* card_bg_texture = sdl.create_texture(card_w, card_h, sdl.PINK);
+    SDL_Texture* card_bg_texture = sdl.create_texture(card_w_, card_h_, sdl.PINK);
 
     positions[1] = {(config_resource.w) / 2., (config_resource.h) / 2.};
-    positions[0] = {positions[1].x - card_w - 200, positions[1].y};
-    positions[2] = {positions[1].x + card_w + 200, positions[1].y};
+    positions[0] = {positions[1].x - card_w_ - 200, positions[1].y};
+    positions[2] = {positions[1].x + card_w_ + 200, positions[1].y};
 
     sdl.set_target(bg_texture_);
     sdl.set_alpha_mod(bg_texture_, 255);
     for (int i = 0; i < 3; i++) {
-        SDL_FRect dst = {static_cast<float>(positions[i].x - card_w / 2.), static_cast<float>(positions[i].y - card_h / 2.), static_cast<float>(card_w), static_cast<float>(card_h)};
-        sdl.render(card_bg_texture, nullptr, &dst);
+        card_dsts[i] = {(float)(positions[i].x - card_w_ / 2.), (float)(positions[i].y - card_h_ / 2.), (float)card_w_, (float)card_h_};
+        sdl.render(card_bg_texture, nullptr, &card_dsts[i]);
     }
     sdl.set_target(nullptr);
 
@@ -84,6 +83,11 @@ void CardLayer::on_update() {
 void CardLayer::on_render() {
     sdl.render(bg_texture_, nullptr, nullptr);
     sdl.render(text_texture_, nullptr, nullptr);
+
+    // render selection
+    if (selection_ != -1) {
+        sdl.draw_boarder(&card_dsts[selection_], 4, sdl.RED);
+    }
 }
 
 bool CardLayer::on_event(const SDL_Event& event) {
@@ -91,31 +95,51 @@ bool CardLayer::on_event(const SDL_Event& event) {
         case SDL_EVENT_KEY_DOWN: {
             switch (event.key.key) {
                 case SDLK_1: {
-                    CardFactory::instance().get(card_idxs[0])->execute();
-                    ecs.emplace_event<PopLayerEvent>();
-                    game_resource.paused = false;
-                    timer.resume();
-                    return true;
+                    choose(card_idxs[0]);
+                    break;
                 }
                 case SDLK_2: {
-                    CardFactory::instance().get(card_idxs[1])->execute();
-                    ecs.emplace_event<PopLayerEvent>();
-                    game_resource.paused = false;
-                    timer.resume();
-                    return true;
+                    choose(card_idxs[1]);
+                    break;
                 }
                 case SDLK_3: {
-                    CardFactory::instance().get(card_idxs[2])->execute();
-                    ecs.emplace_event<PopLayerEvent>();
-                    game_resource.paused = false;
-                    timer.resume();
-                    return true;
+                    choose(card_idxs[2]);
+                    break;
+                }
+            }
+            return true;
+        }
+        case SDL_EVENT_MOUSE_MOTION: {
+            float x = event.motion.x, y = event.motion.y;
+            selection_ = -1;
+            for (int i = 0; i < 3; i++) {
+                if (x >= card_dsts[i].x && x <= card_dsts[i].x + card_dsts[i].w && y >= card_dsts[i].y && y <= card_dsts[i].y + card_dsts[i].h) {
+                    selection_ = i;
+                    break;
+                }
+            }
+            return true;
+        }
+        case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+            switch (event.button.button) {
+                case SDL_BUTTON_LEFT: {
+                    if (selection_ != -1) {
+                        choose(card_idxs[selection_]);
+                    }
+                    break;
                 }
             }
             return true;
         }
     }
     return false;
+}
+
+void CardLayer::choose(int idx) {
+    CardFactory::instance().get(idx)->execute();
+    ecs.emplace_event<PopLayerEvent>();
+    game_resource.paused = false;
+    timer.resume();
 }
 
 }  // namespace wheel
