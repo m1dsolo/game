@@ -125,6 +125,7 @@ void SDL::draw_boarder(const SDL_FRect* dst, float border_w, SDL_Color color) {
 }
 
 void SDL::draw_rect(const SDL_FRect* dst, SDL_Color color) {
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(renderer, dst);
 }

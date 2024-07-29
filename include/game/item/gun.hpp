@@ -34,10 +34,12 @@ public:
     int ammo() const { return ammo_; }
     int clip() const { return data().clip; }
 
-    virtual std::string info() const override {
+    std::string info() const override {
         auto& d = data();
         return std::format("{}: {}/{}", d.name, ammo_, d.clip);
     }
+
+    int progress() override { return ammo_ * 100 / data().clip; }
 
 private:
     int ammo_ = 0;

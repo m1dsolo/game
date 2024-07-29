@@ -23,10 +23,12 @@ public:
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }
 
-    virtual std::string info() const override {
+    std::string info() const override {
         auto& d = data();
         return std::format("{}: {}/{}", d.name, uses_, data().max_uses);
     }
+
+    int progress() override { return uses_ * 100 / data().max_uses; }
 
 private:
     void on_effect();

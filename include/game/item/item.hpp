@@ -40,6 +40,8 @@ public:
     Entity entity() const { return entity_; }
     virtual std::string info() const { return data_->name; }
 
+    virtual int progress() { return 100; }  // 0~100, 100 means completed
+
     bool empty() const { return !data_; }
 
 protected:

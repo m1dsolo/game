@@ -69,8 +69,17 @@ void HotBarLayer::on_render() {
             SDL_FRect src_rect = {0, 0, w, h};
             SDL_FRect dst_rect = {(float)(config_resource.w - this->w) / 2 + slot_padding + (i - 1) * (slot_w + slot_padding) + slot_w - w, (float)(config_resource.h - this->h) + slot_padding + slot_h - h, w, h};
             sdl.render(texture, &src_rect, &dst_rect);
-
             sdl.destroy(texture);
+        }
+
+        // draw progess
+        int progress = slot.item().progress();
+        if (progress != 100) {
+            auto color = sdl.RED;
+            color.a = 128;
+            float h = (float)slot_h * progress / 100;
+            SDL_FRect dst = {tgt_x, tgt_y + slot_h - h, (float)slot_w, h};
+            sdl.draw_rect(&dst, color);
         }
     }
 
