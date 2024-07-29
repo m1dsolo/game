@@ -9,13 +9,14 @@ class Consumable : public Item {
 public:
     enum class Type {
         POTION,
+        TOWER
     };
 
     virtual ~Consumable() = default;
 
     struct Data : Item::Data {
-        Data(const std::string& name, const std::string& description, int max_uses = 1)
-            : Item::Data(name, description, Item::Type::CONSUMABLE, true), max_uses(max_uses) {}
+        Data(const std::string& name, const std::string& description, Type type, int max_uses = 1)
+            : Item::Data(name, description, Item::Type::CONSUMABLE, true), type(type), max_uses(max_uses) {}
 
         Type type;
         int max_uses;
@@ -27,8 +28,24 @@ public:
     Slot& slot() { return slot_; }
     int& uses() { return uses_; }
 
+    std::string info() const override {
+        auto& d = data();
+        return std::format("{}: {}/{}", d.name, uses_, data().max_uses);
+    }
+
+    int progress() override { return uses_ * 100 / data().max_uses; }
+
+    virtual void use() = 0;
+
 protected:
-    Consumable(Data* data, Entity entity, Slot& slot) : Item(data, entity), slot_(slot), uses_(data->max_uses) {}
+    Consumable(
+        Data* data,
+        Entity entity,
+        Slot& slot,
+        const std::string& action_name,
+        std::function<int()> get_cooldown = [] { return 0; },
+        SDL_Keycode keycode = ' '
+    );
 
     Slot& slot_;
     int uses_;

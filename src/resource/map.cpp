@@ -8,6 +8,9 @@
 
 #include <game/global.hpp>
 #include <game/texture_manager.hpp>
+#include <game/entity_manager.hpp>
+
+#include <game/component/self.hpp>
 
 namespace wheel {
 
@@ -20,6 +23,7 @@ MapResource::MapResource() {
     texture = sdl.create_texture(map_w * 48, map_h * 48, sdl.BLACK, SDL_TEXTUREACCESS_TARGET);
     sdl.set_target(texture);
     tilemap = std::vector<std::vector<Tile>>(map_h, std::vector<Tile>(map_w));
+    planted = std::vector<std::vector<bool>>(map_h, std::vector<bool>(map_w));
     for (int i = 0; i < map_h; i++) {
         for (int j = 0; j < map_w; j++) {
             float x = j * 48, y = i * 48;
@@ -60,6 +64,18 @@ MapResource::MapResource() {
 
 MapResource::~MapResource() {
 
+}
+
+bool MapResource::plant(const std::string& name, const Vector2D<double>& position) {
+    auto [i, j] = pos2idx(position);
+    if (i < 0 || i >= planted.size() || j < 0 || j >= planted[0].size() || planted[i][j]) {
+        return false;
+    }
+
+    auto pos = idx2pos(i, j);
+    Entity entity = ecs.get_entities<SelfComponent>()[0];
+    EntityManager::instance().create_tower(name, entity, pos);
+    return true;
 }
 
 }  // namespace wheel

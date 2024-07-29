@@ -11,6 +11,8 @@
 #include <game/texture_manager.hpp>
 #include <game/item_manager.hpp>
 
+#include <game/item/tower.hpp>
+
 #include <game/component/size.hpp>
 #include <game/component/position.hpp>
 #include <game/component/velocity.hpp>
@@ -35,6 +37,7 @@
 #include <game/component/self.hpp>
 #include <game/component/tower.hpp>
 #include <game/component/health_bar.hpp>
+#include <game/component/perk.hpp>
 
 namespace wheel {
 
@@ -83,6 +86,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     inventory.pick("m4a1");
     inventory.pick("awp");
     inventory.pick("hp_potion", 1);
+    inventory.pick("archer_tower", 3);
     inventory.pick("coin", 10);
     inventory.select(1);
 
@@ -106,9 +110,11 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
         position = GameUtils::gen_spawn_internal_position(200);
     }
 
+    int power = static_cast<const Tower::Data*>(ItemManager::instance().get_data(name))->power;
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
+    t[typeid(PerkComponent)] = PerkComponent{(double)power / 100};
     Entity entity = ecs.add_entity(t);
 
     ecs.add_components(entity, InventoryComponent{{entity}});

@@ -60,12 +60,6 @@ struct FlashCooldownCard : Card {
     void execute() override;
 };
 
-struct TowerCard : Card {
-    TowerCard() : Card("tower+1") {}
-
-    void execute() override;
-};
-
 class CardFactory : public Singleton<CardFactory> {
 public:
     CardFactory();

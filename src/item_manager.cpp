@@ -14,6 +14,7 @@
 #include <game/item/gun.hpp>
 #include <game/item/consumable.hpp>
 #include <game/item/potion.hpp>
+#include <game/item/tower.hpp>
 
 namespace wheel {
 
@@ -48,6 +49,10 @@ std::shared_ptr<Item> ItemManager::create_item(const std::string& name, Entity e
                     auto potion_data = static_cast<Potion::Data*>(consumable_data);
                     return std::make_shared<Potion>(potion_data, entity, *slot);
                 }
+                case Consumable::Type::TOWER: {
+                    auto tower_data = static_cast<Tower::Data*>(consumable_data);
+                    return std::make_shared<Tower>(tower_data, entity, *slot);
+                }
             }
         }
     }
@@ -79,8 +84,8 @@ void ItemManager::parse_item_json() {
                 item_data_map[name] = data;
             }
         } else if (sub_types[0] == "consumable") {
+            int max_uses = item.count("max_uses") ? item["max_uses"] : 1;
             if (sub_types[1] == "potion") {
-                int max_uses = item.count("max_uses") ? item["max_uses"] : 1;
                 std::vector<std::shared_ptr<Buff>> buffs;
                 for (JsonDictType& buff_obj : static_cast<JsonListType&>(item["buffs"])) {
                     std::string buff_name = buff_obj["name"];
@@ -89,6 +94,10 @@ void ItemManager::parse_item_json() {
                     buffs.emplace_back(buff);
                 }
                 auto data = std::make_shared<Potion::Data>(name, "", max_uses, buffs);
+                item_data_map[name] = data;
+            } else if (sub_types[1] == "tower") {
+                int power = item["power"];
+                auto data = std::make_shared<Tower::Data>(name, "", max_uses, power);
                 item_data_map[name] = data;
             }
         }

@@ -51,5 +51,10 @@
                 "value": 2
             }
         ]
+    },
+    {
+        "name": "archer_tower",
+        "type": "consumable.tower",
+        "power": 30
     }
 ]

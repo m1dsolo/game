@@ -13,25 +13,18 @@ class Potion : public Consumable {
 public:
     struct Data : Consumable::Data {
         Data(const std::string& name, const std::string& description, int max_uses = 1, const std::vector<std::shared_ptr<Buff>>& buffs = {})
-            : Consumable::Data(name, description, max_uses), buffs(buffs) {}
+            : Consumable::Data(name, description, Consumable::Type::POTION, max_uses), buffs(buffs) {}
 
         std::vector<std::shared_ptr<Buff>> buffs;
     };
 
-    Potion(Data* data, Entity entity, Slot& slot);
+    Potion(Data* data, Entity entity, Slot& slot) : Consumable(data, entity, slot, "drink_potion", []() { return 90; }) {}
 
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }
 
-    std::string info() const override {
-        auto& d = data();
-        return std::format("{}: {}/{}", d.name, uses_, data().max_uses);
-    }
-
-    int progress() override { return uses_ * 100 / data().max_uses; }
-
 private:
-    void on_effect();
+    void use() override;
 };
 
 }  // namespace wheel

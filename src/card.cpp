@@ -52,11 +52,6 @@ void FlashCooldownCard::execute() {
     }
 }
 
-void TowerCard::execute() {
-    Entity entity = ecs.get_entities<SelfComponent>()[0];
-    EntityManager::instance().create_tower("archer_tower", entity);
-}
-
 CardFactory::CardFactory() {
     cards_map_[typeid(MaxHpCard)] = std::make_shared<MaxHpCard>();
     cards_map_[typeid(HealCard)] = std::make_shared<HealCard>();
@@ -65,7 +60,6 @@ CardFactory::CardFactory() {
     cards_map_[typeid(ReloadSpeedCard)] = std::make_shared<ReloadSpeedCard>();
     cards_map_[typeid(AccuracyCard)] = std::make_shared<AccuracyCard>();
     cards_map_[typeid(FlashCooldownCard)] = std::make_shared<FlashCooldownCard>();
-    cards_map_[typeid(TowerCard)] = std::make_shared<TowerCard>();
 }
 
 std::shared_ptr<Card> CardFactory::get(size_t idx) const {
