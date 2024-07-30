@@ -21,6 +21,8 @@ void GameLayer::on_attach() {
     Entity entity = ecs.get_entities<SelfComponent>()[0];
     action_map_ = &ecs.get_component<ActionsComponent>(entity).action_map;
     key_bindings = &ecs.get_component<InputComponent>(entity).key_bindings;
+    position_ = &ecs.get_component<PositionComponent>(entity).vec;
+    direction_ = &ecs.get_component<DirectionComponent>(entity).vec;
 }
 
 void GameLayer::on_detach() {
@@ -61,10 +63,11 @@ bool GameLayer::on_event(const SDL_Event& event) {
             }
             return true;
         }
-        // case SDL_EVENT_MOUSE_MOTION: {
-        //     float x = event.motion.x, y = event.motion.y;
-        //     return false;
-        // }
+        case SDL_EVENT_MOUSE_MOTION: {
+            float x = event.motion.x, y = event.motion.y;
+            *direction_ = (Vector2D<double>{x, y} - *position_).normalize();
+            return false;
+        }
         // case SDL_EVENT_MOUSE_BUTTON_DOWN: {
         //     float x = event.motion.x, y = event.motion.y;
         //     int button = event.button.button;

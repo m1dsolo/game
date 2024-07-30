@@ -6,6 +6,8 @@
 
 #include <game/component/actions.hpp>
 #include <game/component/input.hpp>
+#include <game/component/position.hpp>
+#include <game/component/direction.hpp>
 
 namespace wheel {
 
@@ -29,6 +31,8 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<Action>>* action_map_;
     std::unordered_map<SDL_Keycode, std::string>* key_bindings;
+    Vector2D<double>* position_;
+    Vector2D<double>* direction_;
 };
 
 }  // namespace wheel
