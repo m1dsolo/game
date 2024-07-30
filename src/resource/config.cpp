@@ -14,7 +14,6 @@ ConfigResource::ConfigResource() {
     fps = json["fps"];
     w = json["w"];
     h = json["h"];
-    online = json["online"];
 }
 
 ConfigResource::~ConfigResource() {

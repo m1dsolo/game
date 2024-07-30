@@ -4,7 +4,6 @@
 
 #include <game/global.hpp>
 #include <game/entity_manager.hpp>
-#include <game/client.hpp>
 #include <game/ui.hpp>
 
 #include <game/layer/map.hpp>
@@ -22,8 +21,7 @@
 #include <game/system/timer.hpp>
 #include <game/system/combat.hpp>
 #include <game/system/tower.hpp>
-#include <game/system/handle_sdl_event.hpp>
-#include <game/system/handle_game_event.hpp>
+#include <game/system/game_event.hpp>
 #include <game/system/render.hpp>
 
 namespace wheel {
@@ -41,13 +39,9 @@ void add_system() {
 }
 
 void GameManager::run() {
-    if (config_resource.online) {
-        Client::instance().connect();
-    }
     ecs.add_startup_system(std::bind(&AudioSystem::startup, &AudioSystem::instance()));
     ecs.add_startup_system(std::bind(&EventSystem::startup, &EventSystem::instance()));
 
-    add_system<HandleSDLEventSystem>();
     add_system<InputSystem>();
     add_system<MoveSystem>();
     add_system<TowerSystem>();
@@ -55,15 +49,13 @@ void GameManager::run() {
     add_system<AnimationSystem>();
     add_system<CombatSystem>();
     add_system<RenderSystem>();
-    add_system<HandleGameEventSystem>();
+    add_system<GameEventSystem>();
     add_system<TimerSystem>();
 
-    if (!config_resource.online) {
-        auto& entity_mangaer = EntityManager::instance();
-        Entity entity = EntityManager::instance().create_player("slime", true);
-        // EntityManager::instance().create_enemy("skeleton", {800., 600.});
-        // EntityManager::instance().create_tower("archer_tower", entity);
-    }
+    auto& entity_mangaer = EntityManager::instance();
+    Entity entity = EntityManager::instance().create_player("slime", true);
+    // EntityManager::instance().create_enemy("skeleton", {800., 600.});
+    // EntityManager::instance().create_tower("archer_tower", entity);
 
     auto& ui = UI::instance();
     ui.push_back<MapLayer>();  // use SelfComponent

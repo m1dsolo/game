@@ -4,6 +4,9 @@
 
 #include <game/layer/layer.hpp>
 
+#include <game/component/actions.hpp>
+#include <game/component/input.hpp>
+
 namespace wheel {
 
 class GameLayer final : public Layer, public Singleton<GameLayer> {
@@ -23,6 +26,9 @@ private:
 
     void render_texture();
     void render_health_bar();
+
+    std::unordered_map<std::string, std::shared_ptr<Action>>* action_map_;
+    std::unordered_map<SDL_Keycode, std::string>* key_bindings;
 };
 
 }  // namespace wheel

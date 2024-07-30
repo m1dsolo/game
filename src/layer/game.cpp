@@ -1,7 +1,6 @@
 #include <game/layer/game.hpp>
 
 #include <game/global.hpp>
-#include <game/client.hpp>
 #include <game/ui.hpp>
 #include <game/event.hpp>
 #include <game/game_manager.hpp>
@@ -19,6 +18,9 @@
 namespace wheel {
 
 void GameLayer::on_attach() {
+    Entity entity = ecs.get_entities<SelfComponent>()[0];
+    action_map_ = &ecs.get_component<ActionsComponent>(entity).action_map;
+    key_bindings = &ecs.get_component<InputComponent>(entity).key_bindings;
 }
 
 void GameLayer::on_detach() {
@@ -39,30 +41,35 @@ bool GameLayer::on_event(const SDL_Event& event) {
             return true;
         }
         case SDL_EVENT_KEY_DOWN: {
-            auto key = event.key.key;
-            if (key == SDLK_ESCAPE) {
+            auto keycode = event.key.key;
+            if (keycode == SDLK_ESCAPE) {
                 UI::instance().push_back<ExitLayer>();
                 break;
             }
 
-            if (ecs.has_components<SelfComponent>()) {
-                Entity entity = ecs.get_entities<SelfComponent>()[0];
-                Client::instance().send(std::format(R"({{"entity": {}, "type": "{}", "code": {}}})", entity, "down", key));
+            if (key_bindings->count(keycode)) {
+                const std::string& action_name = key_bindings->at(keycode);
+                action_map_->at(action_name)->start();
             }
             return true;
         }
         case SDL_EVENT_KEY_UP: {
-            auto key = event.key.key;
-            if (ecs.has_components<SelfComponent>()) {
-                Entity entity = ecs.get_entities<SelfComponent>()[0];
-                Client::instance().send(std::format(R"({{"entity": {}, "type": "{}", "code": {}}})", entity, "up", key));
+            auto keycode = event.key.key;
+            if (key_bindings->count(keycode)) {
+                const std::string& action_name = key_bindings->at(keycode);
+                action_map_->at(action_name)->finish();
             }
             return true;
         }
-        case SDL_EVENT_MOUSE_MOTION: {
-            // float x = event.motion.x, y = event.motion.y;
-            return false;
-        }
+        // case SDL_EVENT_MOUSE_MOTION: {
+        //     float x = event.motion.x, y = event.motion.y;
+        //     return false;
+        // }
+        // case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+        //     float x = event.motion.x, y = event.motion.y;
+        //     int button = event.button.button;
+        //     return false;
+        // }
     }
 
     return false;

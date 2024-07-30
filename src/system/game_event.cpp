@@ -1,4 +1,4 @@
-#include <game/system/handle_game_event.hpp>
+#include <game/system/game_event.hpp>
 
 #include <game/global.hpp>
 #include <game/ui.hpp>
@@ -12,7 +12,7 @@
 
 namespace wheel {
 
-void HandleGameEventSystem::execute_impl() {
+void GameEventSystem::execute_impl() {
     // card
     for (auto& event : ecs.get_events<LevelUpEvent>()) {
         if (ecs.has_components<SelfComponent>(event.entity)) {
