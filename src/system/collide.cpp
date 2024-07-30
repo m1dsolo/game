@@ -2,6 +2,7 @@
 
 #include <game/global.hpp>
 #include <game/event.hpp>
+#include <game/game_manager.hpp>
 
 #include <game/component/position.hpp>
 #include <game/component/size.hpp>
@@ -19,11 +20,7 @@
 
 namespace wheel {
 
-void CollideSystem::execute() {
-    if (game_resource.paused) {
-        return;
-    }
-
+void CollideSystem::execute_impl() {
     collide();
     bullet_out_of_boundary();
     auto_pickup();

@@ -2,6 +2,7 @@
 
 #include <game/global.hpp>
 #include <game/entity_manager.hpp>
+#include <game/game_manager.hpp>
 
 #include <game/component/tower.hpp>
 #include <game/component/position.hpp>
@@ -11,11 +12,7 @@
 
 namespace wheel {
 
-void TowerSystem::execute() {
-    if (game_resource.paused) {
-        return;
-    }
-
+void TowerSystem::execute_impl() {
     attack();
 }
 

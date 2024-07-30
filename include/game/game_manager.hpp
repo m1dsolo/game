@@ -1,19 +1,27 @@
 #pragma once
 
-#include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
-#include <SDL3_mixer/SDL_mixer.h>
-#include <SDL3_ttf/SDL_ttf.h>
-
+#include <wheel/singleton.hpp>
 
 namespace wheel {
 
-class GameManager final {
+class GameManager : public Singleton<GameManager> {
+    friend class Singleton<GameManager>;
+
 public:
+    void run();
+    void quit();
+    void pause();
+    void resume();
+    void swap_stage();  // swap between combat and construction stage
+
+    bool paused() const { return paused_; }
+
+private:
     GameManager();
     ~GameManager();
 
-    void run();
+    bool running_ = true;
+    bool paused_ = false;
 };
 
 }  // namespace game

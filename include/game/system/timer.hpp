@@ -1,17 +1,17 @@
 #pragma once
 
-#include <wheel/singleton.hpp>
+#include <game/system/base.hpp>
 
 namespace wheel {
 
-class TimerSystem : public Singleton<TimerSystem> {
-    friend class Singleton<TimerSystem>;
+class TimerSystem : public BaseSystem<TimerSystem> {
+    friend class BaseSystem<TimerSystem>;
 
 public:
-    void execute();
+    void execute_impl() override;
      
 private:
-    TimerSystem() = default;
+    TimerSystem() : BaseSystem(true) {}
     ~TimerSystem() = default;
     TimerSystem(const TimerSystem&) = delete;
 

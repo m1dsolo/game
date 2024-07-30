@@ -6,16 +6,14 @@
 #include <game/client.hpp>
 #include <game/event.hpp>
 #include <game/entity_manager.hpp>
+#include <game/game_manager.hpp>
 
 #include <game/component/input.hpp>
 #include <game/component/actions.hpp>
 
 namespace wheel {
 
-InputSystem::InputSystem() {
-}
-
-void InputSystem::execute() {
+void InputSystem::execute_impl() {
     auto& queue = Client::instance().get_queue();
     while (!queue.empty()) {
         auto msg = queue.front(); queue.pop();
@@ -37,7 +35,7 @@ void InputSystem::execute() {
                 std::string action_name = input.key_bindings[keycode];
                 auto& actions = ecs.get_component<ActionsComponent>(entity);
                 if (type == "down") {
-                    if (!game_resource.paused) {
+                    if (!GameManager::instance().paused()) {
                         actions.action_map[action_name]->start();
                     }
                 } else if (type == "up") {

@@ -1,6 +1,7 @@
 #include <game/action.hpp>
 
 #include <game/audio_manager.hpp>
+#include <game/game_manager.hpp>
 
 #include <game/component/move.hpp>
 #include <game/component/position.hpp>
@@ -62,7 +63,7 @@ void MultiShotAction::finish() {
 
 QuitAction::QuitAction() : OneShotAction("quit", 'q') {
     start_func_ = []() {
-        game_resource.running = false;
+        GameManager::instance().quit();
     };
 }
 

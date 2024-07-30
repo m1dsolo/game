@@ -1,17 +1,17 @@
 #pragma once
 
-#include <wheel/singleton.hpp>
+#include <game/system/base.hpp>
 
 namespace wheel {
 
-class AudioSystem : public Singleton<AudioSystem> {
-    friend class Singleton<AudioSystem>;
+class AudioSystem : public BaseSystem<AudioSystem> {
+    friend class BaseSystem<AudioSystem>;
 
 public:
     void startup();
 
 private:
-    AudioSystem() = default;
+    AudioSystem() : BaseSystem(true) {}
     ~AudioSystem() = default;
     AudioSystem(const AudioSystem&) = delete;
 };

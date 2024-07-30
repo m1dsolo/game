@@ -22,6 +22,9 @@
 #include <game/system/timer.hpp>
 #include <game/system/combat.hpp>
 #include <game/system/tower.hpp>
+#include <game/system/handle_sdl_event.hpp>
+#include <game/system/handle_game_event.hpp>
+#include <game/system/render.hpp>
 
 namespace wheel {
 
@@ -32,6 +35,11 @@ GameManager::~GameManager() {
     ecs.shutdown();
 }
 
+template <typename T> requires std::derived_from<T, BaseSystem<T>>
+void add_system() {
+    ecs.add_system(std::bind(&T::execute, &T::instance()));
+}
+
 void GameManager::run() {
     if (config_resource.online) {
         Client::instance().connect();
@@ -39,18 +47,16 @@ void GameManager::run() {
     ecs.add_startup_system(std::bind(&AudioSystem::startup, &AudioSystem::instance()));
     ecs.add_startup_system(std::bind(&EventSystem::startup, &EventSystem::instance()));
 
-    ecs.add_system(std::bind(&EventSystem::handle_sdl_event, &EventSystem::instance()));
-    ecs.add_system(std::bind(&InputSystem::execute, &InputSystem::instance()));
-    ecs.add_system(std::bind(&MoveSystem::execute, &MoveSystem::instance()));  // need event
-    ecs.add_system(std::bind(&TowerSystem::execute, &TowerSystem::instance()));
-    ecs.add_system(std::bind(&CollideSystem::execute, &CollideSystem::instance()));
-    ecs.add_system(std::bind(&AnimationSystem::execute, &AnimationSystem::instance()));  // need move
-    ecs.add_system(std::bind(&CombatSystem::execute, &CombatSystem::instance()));
-    ecs.add_system(std::bind(&UI::update, &UI::instance()));
-    ecs.add_system(std::bind(&UI::render, &UI::instance()));  // need animation
-    ecs.add_system(std::bind(&EventSystem::handle_game_event, &EventSystem::instance()));
-    ecs.add_system(std::bind(&EventSystem::handle_tag, &EventSystem::instance()));
-    ecs.add_system(std::bind(&TimerSystem::execute, &TimerSystem::instance()));  // at last
+    add_system<HandleSDLEventSystem>();
+    add_system<InputSystem>();
+    add_system<MoveSystem>();
+    add_system<TowerSystem>();
+    add_system<CollideSystem>();
+    add_system<AnimationSystem>();
+    add_system<CombatSystem>();
+    add_system<RenderSystem>();
+    add_system<HandleGameEventSystem>();
+    add_system<TimerSystem>();
 
     if (!config_resource.online) {
         auto& entity_mangaer = EntityManager::instance();
@@ -67,9 +73,32 @@ void GameManager::run() {
 
     ecs.startup();
 
-    while (game_resource.running) {
+    while (running_) {
         ecs.update();
     }
+}
+
+void GameManager::quit() {
+    running_ = false;
+}
+
+void GameManager::pause() {
+    if (paused_) {
+        return;
+    }
+    paused_ = true;
+    timer.pause();
+}
+
+void GameManager::resume() {
+    if (!paused_) {
+        return;
+    }
+    paused_ = false;
+    timer.resume();
+}
+
+void GameManager::swap_stage() {
 }
 
 }  // namespace wheel

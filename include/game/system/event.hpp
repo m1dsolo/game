@@ -1,23 +1,17 @@
 #pragma once
 
-#include <wheel/singleton.hpp>
+#include <game/system/base.hpp>
 
 namespace wheel {
 
-class EventSystem : public Singleton<EventSystem> {
-    friend class Singleton<EventSystem>;
+class EventSystem : public BaseSystem<EventSystem> {
+    friend class BaseSystem<EventSystem>;
 
 public:
-    void handle_sdl_event();
-
-    void handle_game_event();
-
-    void handle_tag();
-
     void startup();
 
 private:
-    EventSystem() = default;
+    EventSystem() : BaseSystem(true) {}
     ~EventSystem() = default;
     EventSystem(const EventSystem&) = delete;
 };

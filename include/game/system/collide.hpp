@@ -1,18 +1,18 @@
 #pragma once
 
-#include <wheel/singleton.hpp>
+#include <game/system/base.hpp>
 #include <wheel/geometry.hpp>
 
 namespace wheel {
 
-class CollideSystem : public Singleton<CollideSystem> {
-    friend class Singleton<CollideSystem>;
+class CollideSystem : public BaseSystem<CollideSystem> {
+    friend class BaseSystem<CollideSystem>;
 
 public:
-    void execute();
+    void execute_impl() override;
 
 private:
-    CollideSystem() = default;
+    CollideSystem() : BaseSystem(false) {}
     ~CollideSystem() = default;
     CollideSystem(const CollideSystem&) = delete;
 

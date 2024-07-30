@@ -13,11 +13,7 @@
 
 namespace wheel {
 
-void MoveSystem::execute() {
-    if (game_resource.paused) {
-        return;
-    }
-
+void MoveSystem::execute_impl() {
     calc_input_direction();
     calc_direction_by_track_nearest_enemy();
     move();

@@ -3,6 +3,7 @@
 #include <game/global.hpp>
 #include <game/ui.hpp>
 #include <game/event.hpp>
+#include <game/game_manager.hpp>
 
 namespace wheel {
 
@@ -36,13 +37,11 @@ ExitLayer::ExitLayer() {
 }
 
 void ExitLayer::on_attach() {
-    game_resource.paused = true;
-    timer.pause();
+    GameManager::instance().pause();
 }
 
 void ExitLayer::on_detach() {
-    game_resource.paused = false;
-    timer.resume();
+    GameManager::instance().resume();
 }
 
 void ExitLayer::on_update() {
@@ -58,7 +57,7 @@ bool ExitLayer::on_event(const SDL_Event& event) {
         case SDL_EVENT_KEY_DOWN: {
             switch (event.key.key) {
                 case SDLK_1: {
-                    game_resource.running = false;
+                    GameManager::instance().quit();
                     return true;
                 }
                 case SDLK_2: {

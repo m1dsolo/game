@@ -3,6 +3,7 @@
 #include <game/global.hpp>
 #include <game/card.hpp>
 #include <game/event.hpp>
+#include <game/game_manager.hpp>
 
 #include <game/component/animation.hpp>
 
@@ -31,11 +32,7 @@ CardLayer::CardLayer() {
 }
 
 void CardLayer::on_attach() {
-    if (game_resource.paused) {
-        return;
-    }
-    game_resource.paused = true;
-    timer.pause();
+    GameManager::instance().pause();
 
     text_texture_ = sdl.create_texture(config_resource.w, config_resource.h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET, SDL_PIXELFORMAT_RGBA8888);
     sdl.set_blend_mode(text_texture_, SDL_BLENDMODE_BLEND);
@@ -138,8 +135,7 @@ bool CardLayer::on_event(const SDL_Event& event) {
 void CardLayer::choose(int idx) {
     CardFactory::instance().get(idx)->execute();
     ecs.emplace_event<PopLayerEvent>();
-    game_resource.paused = false;
-    timer.resume();
+    GameManager::instance().resume();
 }
 
 }  // namespace wheel

@@ -4,6 +4,7 @@
 #include <game/client.hpp>
 #include <game/ui.hpp>
 #include <game/event.hpp>
+#include <game/game_manager.hpp>
 
 #include <game/layer/exit.hpp>
 
@@ -34,8 +35,8 @@ void GameLayer::on_render() {
 bool GameLayer::on_event(const SDL_Event& event) {
     switch (event.type) {
         case SDL_EVENT_QUIT: {
-            game_resource.running = false;
-            break;
+            GameManager::instance().quit();
+            return true;
         }
         case SDL_EVENT_KEY_DOWN: {
             auto key = event.key.key;
@@ -59,8 +60,8 @@ bool GameLayer::on_event(const SDL_Event& event) {
             return true;
         }
         case SDL_EVENT_MOUSE_MOTION: {
-            float x = event.motion.x, y = event.motion.y;
-
+            // float x = event.motion.x, y = event.motion.y;
+            return false;
         }
     }
 

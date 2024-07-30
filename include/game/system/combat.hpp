@@ -1,17 +1,17 @@
 #pragma once
 
-#include <wheel/singleton.hpp>
+#include <game/system/base.hpp>
 
 namespace wheel {
 
-class CombatSystem : public Singleton<CombatSystem> {
-    friend class Singleton<CombatSystem>;
+class CombatSystem : public BaseSystem<CombatSystem> {
+    friend class BaseSystem<CombatSystem>;
 
 public:
-    void execute();
+    void execute_impl() override;
      
 private:
-    CombatSystem() = default;
+    CombatSystem() : BaseSystem(false) {}
     ~CombatSystem() = default;
     CombatSystem(const CombatSystem&) = delete;
 

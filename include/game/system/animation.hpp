@@ -1,17 +1,17 @@
 #pragma once
 
-#include <wheel/singleton.hpp>
+#include <game/system/base.hpp>
 
 namespace wheel {
 
-class AnimationSystem : public Singleton<AnimationSystem> {
-    friend class Singleton<AnimationSystem>;
+class AnimationSystem : public BaseSystem<AnimationSystem> {
+    friend class BaseSystem<AnimationSystem>;
 
 public:
-    void execute();
+    void execute_impl() override;
 
 private:
-    AnimationSystem() = default;
+    AnimationSystem() : BaseSystem(true) {}
     ~AnimationSystem() = default;
     AnimationSystem(const AnimationSystem&) = delete;
 

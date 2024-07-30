@@ -2,19 +2,19 @@
 
 #include <SDL3/SDL.h>
 
-#include <wheel/singleton.hpp>
+#include <game/system/base.hpp>
 #include <wheel/json.hpp>
 
 namespace wheel {
 
-class InputSystem : public Singleton<InputSystem> {
-    friend class Singleton<InputSystem>;
+class InputSystem : public BaseSystem<InputSystem> {
+    friend class BaseSystem<InputSystem>;
 
 public:
-    void execute();
+    void execute_impl() override;
 
 private:
-    InputSystem();
+    InputSystem() : BaseSystem(true) {}
     ~InputSystem() = default;
     InputSystem(const InputSystem&) = delete;
 };

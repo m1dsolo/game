@@ -10,11 +10,7 @@
 
 namespace wheel {
 
-void AnimationSystem::execute() {
-    if (game_resource.paused) {
-        return;
-    }
-
+void AnimationSystem::execute_impl() {
     update_animation_counter();
     update_texture();
 }

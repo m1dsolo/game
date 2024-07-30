@@ -27,11 +27,7 @@
 
 namespace wheel {
 
-void CombatSystem::execute() {
-    if (game_resource.paused) {
-        return;
-    }
-
+void CombatSystem::execute_impl() {
     damage();
     player_get_damage_add_invincible();
     get_damage_add_sketch();

@@ -4,7 +4,7 @@
 
 namespace wheel {
 
-void TimerSystem::execute() {
+void TimerSystem::execute_impl() {
     update();
 }
 
