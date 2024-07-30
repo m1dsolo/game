@@ -19,13 +19,14 @@ public:
     };
 
     struct Data {
-        Data(const std::string& name = "", const std::string& description = "", Type type = Type::NONE, bool stackable = true)
-            : name(name), description(description), type(type), stackable(stackable) {}
+        Data(const std::string& name = "", const std::string& description = "", Type type = Type::NONE, bool stackable = true, bool show_selected_tile = false)
+            : name(name), description(description), type(type), stackable(stackable), show_selected_tile(show_selected_tile) {}
 
         std::string name;
         std::string description;
         Type type;
         bool stackable;
+        bool show_selected_tile;
         std::unordered_map<std::string, std::shared_ptr<Action>> action_map;
     };
 

@@ -58,6 +58,10 @@ bool GameLayer::on_event(const SDL_Event& event) {
             }
             return true;
         }
+        case SDL_EVENT_MOUSE_MOTION: {
+            float x = event.motion.x, y = event.motion.y;
+
+        }
     }
 
     return false;

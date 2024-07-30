@@ -15,8 +15,8 @@ public:
     virtual ~Consumable() = default;
 
     struct Data : Item::Data {
-        Data(const std::string& name, const std::string& description, Type type, int max_uses = 1)
-            : Item::Data(name, description, Item::Type::CONSUMABLE, true), type(type), max_uses(max_uses) {}
+        Data(const std::string& name, const std::string& description, Type type, bool show_selected_tile, int max_uses = 1)
+            : Item::Data(name, description, Item::Type::CONSUMABLE, true, show_selected_tile), type(type), max_uses(max_uses) {}
 
         Type type;
         int max_uses;

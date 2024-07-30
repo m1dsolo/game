@@ -4,6 +4,7 @@
 
 #include <wheel/singleton.hpp>
 
+#include <game/inventory.hpp>
 #include <game/layer/layer.hpp>
 
 namespace wheel {
@@ -24,6 +25,11 @@ private:
     MapLayer(const MapLayer&) = delete;
 
     std::pair<int, int> tile_pos_;
+    Inventory* inventory_ = nullptr;
+
+    SDL_FRect map_dst_;
+
+    float TILE_SIZE = 48;
 };
 
 }  // namespace wheel

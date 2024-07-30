@@ -26,11 +26,6 @@
 namespace wheel {
 
 GameManager::GameManager() {
-    auto& ui = UI::instance();
-    ui.push_back<MapLayer>();
-    ui.push_back<GameLayer>();
-    ui.push_back<StatusLayer>();
-    ui.push_back<HotBarLayer>();
 }
 
 GameManager::~GameManager() {
@@ -63,6 +58,12 @@ void GameManager::run() {
         // EntityManager::instance().create_enemy("skeleton", {800., 600.});
         // EntityManager::instance().create_tower("archer_tower", entity);
     }
+
+    auto& ui = UI::instance();
+    ui.push_back<MapLayer>();  // use SelfComponent
+    ui.push_back<GameLayer>();
+    ui.push_back<StatusLayer>();
+    ui.push_back<HotBarLayer>();
 
     ecs.startup();
 

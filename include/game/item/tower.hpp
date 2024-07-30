@@ -8,7 +8,7 @@ class Tower : public Consumable {
 public:
     struct Data : Consumable::Data {
         Data(const std::string& name, const std::string& description, int max_uses = 1, int power = 50)
-            : Consumable::Data(name, description, Consumable::Type::TOWER, max_uses), power(power) {}
+            : Consumable::Data(name, description, Consumable::Type::TOWER, true, max_uses), power(power) {}
 
         int power;
     };

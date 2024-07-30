@@ -4,8 +4,6 @@
 
 namespace wheel {
 
-const int TILE_SIZE = 48;
-
 struct Tile {
     enum class Type {
         NONE,

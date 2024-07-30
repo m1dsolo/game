@@ -14,7 +14,7 @@ public:
 
     struct Data : Item::Data {
         Data(const std::string& name, const std::string& description, Type type)
-            : Item::Data(name, description, Item::Type::WEAPON, false), type(type) {}
+            : Item::Data(name, description, Item::Type::WEAPON, false, false), type(type) {}
 
         Type type;
     };

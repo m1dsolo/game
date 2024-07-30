@@ -13,7 +13,7 @@ class Potion : public Consumable {
 public:
     struct Data : Consumable::Data {
         Data(const std::string& name, const std::string& description, int max_uses = 1, const std::vector<std::shared_ptr<Buff>>& buffs = {})
-            : Consumable::Data(name, description, Consumable::Type::POTION, max_uses), buffs(buffs) {}
+            : Consumable::Data(name, description, Consumable::Type::POTION, false, max_uses), buffs(buffs) {}
 
         std::vector<std::shared_ptr<Buff>> buffs;
     };
