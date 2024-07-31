@@ -5,12 +5,14 @@
 #include <game/global.hpp>
 #include <game/entity_manager.hpp>
 #include <game/audio_manager.hpp>
+#include <game/sdl.hpp>
 
 #include <game/component/position.hpp>
 #include <game/component/direction.hpp>
 #include <game/component/inventory.hpp>
 #include <game/component/actions.hpp>
 #include <game/component/perk.hpp>
+#include <game/component/aim_direction.hpp>
 
 namespace wheel {
 
@@ -19,7 +21,7 @@ Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
     int reload_interval = data->reload_interval;
     data->action_map["shoot"] = std::make_shared<MultiShotAction>(
         "shoot",
-        ' ',
+        SDLK_MOUSE_LEFT,
         [shoot_interval, &entity = entity_]() {
             double cooldown = shoot_interval;
             if (ecs.has_components<PerkComponent>(entity)) {
@@ -52,6 +54,8 @@ Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
     ammo_ = data->clip;
 }
 
+// use AimDirectionComponent first
+// if not, use DirectionComponent
 void Gun::shoot() {
     if (reloading_) {
         return;
@@ -63,7 +67,8 @@ void Gun::shoot() {
     ammo_ -= 1;
 
     auto& pos = ecs.get_component<PositionComponent>(entity_).vec;
-    auto& direction = ecs.get_component<DirectionComponent>(entity_).vec;
+    auto& direction = ecs.has_components<AimDirectionComponent>(entity_) ?
+        ecs.get_component<AimDirectionComponent>(entity_).vec : ecs.get_component<DirectionComponent>(entity_).vec;
     int a = data().angle;
     if (ecs.has_components<PerkComponent>(entity_)) {
         auto& perk = ecs.get_component<PerkComponent>(entity_);

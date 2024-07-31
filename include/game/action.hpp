@@ -16,7 +16,7 @@ protected:
     Action(const std::string& name, SDL_Keycode keycode) : name_(name), keycode_(keycode) {}
 
     std::string name_;
-    SDL_Keycode keycode_ = 0;
+    SDL_Keycode keycode_;
 };
 
 class OneShotAction : public Action {

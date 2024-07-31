@@ -42,6 +42,8 @@ public:
     virtual std::string info() const { return data_->name; }
 
     virtual int progress() { return 100; }  // 0~100, 100 means completed
+    virtual void select_impl() {}
+    virtual void unselect_impl() {}
 
     bool empty() const { return !data_; }
 

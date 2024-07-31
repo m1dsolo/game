@@ -12,6 +12,10 @@
 
 namespace wheel {
 
+#define SDLK_MOUSE_LEFT 0x00001000u
+#define SDLK_MOUSE_MIDDLE 0x00001001u
+#define SDLK_MOUSE_RIGHT 0x00001002u
+
 class SDL : public Singleton<SDL> {
     friend class Singleton<SDL>;
 

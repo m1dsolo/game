@@ -38,6 +38,7 @@
 #include <game/component/tower.hpp>
 #include <game/component/health_bar.hpp>
 #include <game/component/perk.hpp>
+#include <game/component/aim_direction.hpp>
 
 namespace wheel {
 
@@ -57,6 +58,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     t[typeid(SizeComponent)] = SizeComponent{48, 48};
     t[typeid(VelocityComponent)] = VelocityComponent{100, 100};
     t[typeid(DirectionComponent)] = DirectionComponent{};
+    t[typeid(AimDirectionComponent)] = AimDirectionComponent{};
     t[typeid(HPComponent)] = HPComponent{3};
     t[typeid(LevelComponent)] = LevelComponent{1, 0};
     t[typeid(ActionsComponent)] = ActionsComponent{};
@@ -231,7 +233,7 @@ void EntityManager::cache_tower(const std::string& name) {
     t[typeid(FriendComponent)] = FriendComponent{};
     t[typeid(TowerComponent)] = TowerComponent{300};
     t[typeid(ActionsComponent)] = ActionsComponent{};
-    t[typeid(DirectionComponent)] = DirectionComponent{};
+    t[typeid(AimDirectionComponent)] = AimDirectionComponent{};
 
     template_map_[name] = std::move(t);
 }

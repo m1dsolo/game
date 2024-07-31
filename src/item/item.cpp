@@ -21,6 +21,8 @@ void Item::select() {
         }
     }
 
+    select_impl();
+
     AudioManager::instance().play(data_->name + "_select");
 }
 
@@ -37,6 +39,8 @@ void Item::unselect() {
             key_bindings.erase(action->keycode());
         }
     }
+
+    unselect_impl();
 }
 
 }  // namespace wheel

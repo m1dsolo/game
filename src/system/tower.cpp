@@ -6,7 +6,7 @@
 
 #include <game/component/tower.hpp>
 #include <game/component/position.hpp>
-#include <game/component/direction.hpp>
+#include <game/component/aim_direction.hpp>
 #include <game/component/actions.hpp>
 #include <game/component/enemy.hpp>
 
@@ -17,8 +17,8 @@ void TowerSystem::execute_impl() {
 }
 
 void TowerSystem::attack() {
-    for (auto [tower_entity, tower, actions, tower_position, tower_direction]
-        : ecs.get_entity_and_components<TowerComponent, ActionsComponent, PositionComponent, DirectionComponent>()) {
+    for (auto [tower_entity, tower, actions, tower_position, tower_aim_direction]
+        : ecs.get_entity_and_components<TowerComponent, ActionsComponent, PositionComponent, AimDirectionComponent>()) {
 
         // get nearest enemy position
         Vector2D<double> pos = {1000000, 1000000};
@@ -33,7 +33,7 @@ void TowerSystem::attack() {
 
         if (min_distance <= tower.range) {
             // aim
-            tower_direction.vec = (pos - tower_position.vec).normalize();
+            tower_aim_direction.vec = (pos - tower_position.vec).normalize();
 
             if (actions.action_map.count("shoot")) {
                 actions.action_map["shoot"]->start();
