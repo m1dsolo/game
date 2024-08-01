@@ -31,8 +31,21 @@ public:
         layers_.push_back(&t);
     }
 
+    template <typename T> requires std::derived_from<T, Layer>
+    void del() {
+        for (auto it = layers_.begin(); it != layers_.end(); ++it) {
+            if (dynamic_cast<T*>(*it)) {
+                (*it)->on_detach();
+                layers_.erase(it);
+                break;
+            }
+        }
+    }
+
     void pop_front();
     void pop_back();
+
+    std::deque<Layer*>& layers() { return layers_; }
 
 private:
     UI() = default;

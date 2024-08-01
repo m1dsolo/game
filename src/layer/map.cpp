@@ -31,7 +31,7 @@ void MapLayer::on_render() {
             pos.y += map.dst().y;
             float tile_size = map.TILE_SIZE;
             SDL_FRect dst = {(float)pos.x - tile_size / 2, (float)pos.y - tile_size / 2, tile_size, tile_size};
-            sdl.draw_boarder(&dst, 4, sdl.GREEN);
+            sdl.draw_border(&dst, 4, sdl.GREEN);
         }
     }
 }

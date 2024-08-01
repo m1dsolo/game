@@ -6,6 +6,7 @@
 #include <game/entity_manager.hpp>
 
 #include <game/layer/card.hpp>
+#include <game/layer/cursor.hpp>
 
 #include <game/component/tag.hpp>
 #include <game/component/self.hpp>
@@ -16,7 +17,16 @@ void GameEventSystem::execute_impl() {
     // card
     for (auto& event : ecs.get_events<LevelUpEvent>()) {
         if (ecs.has_components<SelfComponent>(event.entity)) {
-            UI::instance().push_back<CardLayer>();
+            auto& ui = UI::instance();
+            auto& layers = ui.layers();
+            auto back_layer = layers.back();
+            if (dynamic_cast<CursorLayer*>(back_layer)) {
+                ui.pop_back();
+                ui.push_back<CardLayer>();
+                layers.emplace_back(back_layer);
+            } else {
+                ui.push_back<CardLayer>();
+            }
         }
     }
 

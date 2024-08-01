@@ -72,4 +72,3 @@ bool ExitLayer::on_event(const SDL_Event& event) {
 }
 
 }  // namespace wheel
-

@@ -4,6 +4,7 @@
 #include <game/card.hpp>
 #include <game/event.hpp>
 #include <game/game_manager.hpp>
+#include <game/ui.hpp>
 
 #include <game/component/animation.hpp>
 
@@ -83,7 +84,7 @@ void CardLayer::on_render() {
 
     // render selection
     if (selection_ != -1) {
-        sdl.draw_boarder(&card_dsts[selection_], 4, sdl.RED);
+        sdl.draw_border(&card_dsts[selection_], 4, sdl.RED);
     }
 }
 
@@ -134,7 +135,7 @@ bool CardLayer::on_event(const SDL_Event& event) {
 
 void CardLayer::choose(int idx) {
     CardFactory::instance().get(idx)->execute();
-    ecs.emplace_event<PopLayerEvent>();
+    UI::instance().del<CardLayer>();
     GameManager::instance().resume();
 }
 

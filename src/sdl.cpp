@@ -1,6 +1,7 @@
 #include <game/sdl.hpp>
 
 #include <filesystem>
+#include <cmath>
 
 #include <wheel/log.hpp>
 
@@ -8,6 +9,9 @@ namespace wheel {
 
 SDL::SDL() {
     Log::assert(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) == 0, "SDL init failed");
+
+    // no cursor
+    SDL_HideCursor();
 
     // img
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG;
@@ -100,6 +104,63 @@ SDL_Texture* SDL::create_texture(int w, int h, SDL_Color color, SDL_TextureAcces
     return texture;
 }
 
+SDL_Texture* SDL::create_filled_circle_texture(int radius, SDL_Color color) {
+    auto texture = create_texture(radius * 2, radius * 2, BLACK, SDL_TEXTUREACCESS_TARGET);
+    set_target(texture);
+    for (int w = 0; w < radius * 2; w++) {
+        for (int h = 0; h < radius * 2; h++) {
+            int dx = radius - w;
+            int dy = radius - h;
+            if ((dx * dx + dy * dy) < (radius * radius)) {
+                draw_point(radius + dx, radius + dy, color);
+            }
+        }
+    }
+    set_target(nullptr);
+
+    return texture;
+}
+
+SDL_Texture* SDL::create_border_circle_texture(int radius, SDL_Color color) {
+    auto texture = create_texture(radius * 2 + 1, radius * 2 + 1, BLACK, SDL_TEXTUREACCESS_TARGET);
+    const int diameter = (radius * 2);
+
+    int x = (radius - 1);
+    int y = 0;
+    int tx = 1;
+    int ty = 1;
+    int error = (tx - diameter);
+
+    set_target(texture);
+    int cx = radius;
+    int cy = radius;
+    while (x >= y) {
+        draw_point(cx - x, cy - y, color);
+        draw_point(cx - x, cy + y, color);
+        draw_point(cx + x, cy - y, color);
+        draw_point(cx + x, cy + y, color);
+        draw_point(cx - y, cy - x, color);
+        draw_point(cx - y, cy + x, color);
+        draw_point(cx + y, cy - x, color);
+        draw_point(cx + y, cy + x, color);
+
+        if (error <= 0) {
+            ++y;
+            error += ty;
+            ty += 2;
+        }
+
+        if (error > 0) {
+            --x;
+            tx += 2;
+            error += (tx - diameter);
+        }
+    }
+    set_target(nullptr);
+
+    return texture;
+}
+
 void SDL::set_color(SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 }
@@ -116,7 +177,7 @@ void SDL::set_alpha_mod(SDL_Texture* texture, Uint8 alpha) {
     SDL_SetTextureAlphaMod(texture, alpha);
 }
 
-void SDL::draw_boarder(const SDL_FRect* dst, float border_w, SDL_Color color) {
+void SDL::draw_border(const SDL_FRect* dst, float border_w, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
     auto [x, y, w, h] = *dst;
@@ -132,6 +193,11 @@ void SDL::draw_boarder(const SDL_FRect* dst, float border_w, SDL_Color color) {
 
     SDL_FRect rightRect = {x + w - border_w, y, border_w, h};
     SDL_RenderFillRect(renderer, &rightRect);
+}
+
+void SDL::draw_point(int x, int y, SDL_Color color) {
+    set_color(color);
+    SDL_RenderPoint(renderer, x, y);
 }
 
 void SDL::draw_rect(const SDL_FRect* dst, SDL_Color color) {

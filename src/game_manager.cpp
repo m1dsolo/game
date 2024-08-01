@@ -11,6 +11,7 @@
 #include <game/layer/status.hpp>
 #include <game/layer/card.hpp>
 #include <game/layer/hotbar.hpp>
+#include <game/layer/cursor.hpp>
 
 #include <game/system/audio.hpp>
 #include <game/system/event.hpp>
@@ -64,6 +65,7 @@ void GameManager::run() {
     ui.push_back<GameLayer>();
     ui.push_back<StatusLayer>();
     ui.push_back<HotBarLayer>();
+    ui.push_back<CursorLayer>();
 
     ecs.startup();
 

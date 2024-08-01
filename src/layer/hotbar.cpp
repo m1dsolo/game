@@ -84,7 +84,7 @@ void HotBarLayer::on_render() {
     float w = slot_w;
     float h = slot_h;
     SDL_FRect dst = {x, y, w, h};
-    sdl.draw_boarder(&dst, 4, sdl.RED);
+    sdl.draw_border(&dst, 4, sdl.RED);
 }
 
 bool HotBarLayer::on_event(const SDL_Event& event) {
