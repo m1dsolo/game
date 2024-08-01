@@ -16,6 +16,7 @@
 #include <game/component/hp.hpp>
 #include <game/component/tag.hpp>
 #include <game/component/aim_direction.hpp>
+#include <game/component/continuous_action.hpp>
 
 namespace wheel {
 
@@ -39,6 +40,14 @@ void GameLayer::on_render() {
 }
 
 bool GameLayer::on_event(const SDL_Event& event) {
+    // interrupt continuous actions
+    if (event.type == SDL_EVENT_KEY_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+        Entity entity = ecs.get_entities<SelfComponent>()[0];
+        if (ecs.has_components<ContinuousActionComponent>(entity)) {
+            ecs.del_components<ContinuousActionComponent>(entity);
+        }
+    }
+
     switch (event.type) {
         case SDL_EVENT_QUIT: {
             GameManager::instance().quit();
@@ -70,7 +79,6 @@ bool GameLayer::on_event(const SDL_Event& event) {
             *aim_direction_ = (Vector2D<double>{x, y} - *position_).normalize();
             return false;
         }
-        // equal to space button down
         case SDL_EVENT_MOUSE_BUTTON_DOWN: {
             float x = event.motion.x, y = event.motion.y;
             switch (event.button.button) {
@@ -78,6 +86,7 @@ bool GameLayer::on_event(const SDL_Event& event) {
                     if (key_bindings->count(SDLK_MOUSE_LEFT)) {
                         const std::string& action_name = key_bindings->at(SDLK_MOUSE_LEFT);
                         action_map_->at(action_name)->start();
+                        action_map_->at(action_name)->start(x, y);
                     }
                     break;
                 }
@@ -85,6 +94,7 @@ bool GameLayer::on_event(const SDL_Event& event) {
                     if (key_bindings->count(SDLK_MOUSE_MIDDLE)) {
                         const std::string& action_name = key_bindings->at(SDLK_MOUSE_MIDDLE);
                         action_map_->at(action_name)->start();
+                        action_map_->at(action_name)->start(x, y);
                     }
                     break;
                 }
@@ -92,6 +102,7 @@ bool GameLayer::on_event(const SDL_Event& event) {
                     if (key_bindings->count(SDLK_MOUSE_RIGHT)) {
                         const std::string& action_name = key_bindings->at(SDLK_MOUSE_RIGHT);
                         action_map_->at(action_name)->start();
+                        action_map_->at(action_name)->start(x, y);
                     }
                     break;
                 }

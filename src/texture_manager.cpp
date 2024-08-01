@@ -52,15 +52,17 @@ TextureManager::~TextureManager() {
     }
 }
 
-SDL_Texture* TextureManager::get_texture(const std::string& name) {
+SDL_Texture* TextureManager::get_texture(const std::string& name, int w, int h) {
     if (texture_map_.count(name)) {
         return texture_map_.at(name);
     } else {
-        return nullptr;
+        auto texture = sdl.create_texture(w, h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET);
+        SDL_FRect dst = {0, 0, (float)w, (float)h};
+        sdl.set_target(texture);
+        sdl.draw_text(name.substr(0, 8), &dst, sdl.BLACK, true, w, h);
+        sdl.set_target(nullptr);
+        return texture_map_[name] = texture;
     }
 }
 
 }  // namespace wheel
-
-
-

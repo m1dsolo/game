@@ -10,6 +10,7 @@
 #include <game/component/enemy.hpp>
 #include <game/component/ai.hpp>
 #include <game/component/player.hpp>
+#include <game/component/continuous_action.hpp>
 
 namespace wheel {
 
@@ -22,7 +23,11 @@ void MoveSystem::execute_impl() {
 
 void MoveSystem::calc_input_direction() {
     // get input direction and speed
-    for (auto [move, velocity, direction] : ecs.get_components<MoveComponent, VelocityComponent, DirectionComponent>()) {
+    for (auto [entity, move, velocity, direction] : ecs.get_entity_and_components<MoveComponent, VelocityComponent, DirectionComponent>()) {
+        if (ecs.has_components<ContinuousActionComponent>(entity)) {
+            continue;
+        }
+
         auto d = Vector2D<double>{(double)move.right - move.left, (double)move.down - move.up};
         if (d.is_zero()) {
             velocity.speed = 0;

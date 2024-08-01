@@ -5,6 +5,7 @@
 #include <wheel/singleton.hpp>
 
 #include <game/inventory.hpp>
+#include <game/map.hpp>
 #include <game/layer/layer.hpp>
 
 namespace wheel {
@@ -20,16 +21,14 @@ public:
     bool on_event(const SDL_Event& event) override;
 
 private:
-    MapLayer() = default;
+    MapLayer() : map(Map::instance()) {}
     ~MapLayer() = default;
     MapLayer(const MapLayer&) = delete;
 
     std::pair<int, int> tile_pos_;
     Inventory* inventory_ = nullptr;
 
-    SDL_FRect map_dst_;
-
-    float TILE_SIZE = 48;
+    Map& map;
 };
 
 }  // namespace wheel

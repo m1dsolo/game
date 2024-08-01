@@ -24,6 +24,7 @@
 #include <game/component/master.hpp>
 #include <game/component/buff.hpp>
 #include <game/component/texture.hpp>
+#include <game/component/continuous_action.hpp>
 
 namespace wheel {
 

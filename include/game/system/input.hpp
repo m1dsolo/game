@@ -1,9 +1,5 @@
 #pragma once
 
-#include <SDL3/SDL.h>
-
-#include <wheel/json.hpp>
-
 #include <game/system/base.hpp>
 #include <game/ui.hpp>
 

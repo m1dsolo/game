@@ -12,7 +12,7 @@
 
 namespace wheel {
 
-void OneShotAction::start() {
+void OneShotAction::start_impl() {
     if (ready_ && start_func_) {
         if (get_cooldown_) {
             int cooldown = get_cooldown_();
@@ -35,7 +35,7 @@ void OneShotAction::finish() {
     }
 }
 
-void MultiShotAction::start() {
+void MultiShotAction::start_impl() {
     if (!start_ && ready_ && func_) {
         func_();
         ready_ = false;
@@ -59,6 +59,29 @@ void MultiShotAction::start() {
 
 void MultiShotAction::finish() {
     start_ = false;
+}
+
+void ClickAction::start_impl(float x, float y) {
+    if (ready_ && start_func_) {
+        if (get_cooldown_) {
+            int cooldown = get_cooldown_();
+            if (cooldown) {
+                ready_ = false;
+                timer_resource.add(get_cooldown_(), 1, [&]() {
+                    ready_ = true;
+                });
+            }
+        }
+        start_ = true;
+        start_func_(x, y);
+    }
+}
+
+void ClickAction::finish() {
+    if (start_ && finish_func_) {
+        start_ = false;
+        finish_func_();
+    }
 }
 
 QuitAction::QuitAction() : OneShotAction("quit", 'q') {

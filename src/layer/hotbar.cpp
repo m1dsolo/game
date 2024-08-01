@@ -52,14 +52,9 @@ void HotBarLayer::on_render() {
         float tgt_x = (float)(config_resource.w - this->w) / 2 + slot_padding + (i - 1) * (slot_w + slot_padding);
         float tgt_y = (float)(config_resource.h - this->h) + slot_padding;
         SDL_FRect dst_rect = {tgt_x + (float)(slot_w - item_w) / 2, tgt_y + (float)(slot_h - item_h) / 2, (float)item_w, (float)item_h};
-        if (texture) {
-            auto [src_w, src_h] = sdl.get_texture_size(texture);
-            SDL_FRect src_rect = {0, 0, src_w, src_h};
-            sdl.render(texture, &src_rect, &dst_rect);
-        } else {
-            // use name as texture
-            sdl.draw_text(name, &dst_rect, sdl.BLACK, true);
-        }
+        auto [src_w, src_h] = sdl.get_texture_size(texture);
+        SDL_FRect src_rect = {0, 0, src_w, src_h};
+        sdl.render(texture, &src_rect, &dst_rect);
 
         // draw count
         int count = slot.count();

@@ -23,19 +23,19 @@ SDL::SDL() {
     // ttf
     Log::assert(TTF_Init() == 0, "SDL_ttf init failed");
     const std::string& font_path = std::filesystem::current_path().string() + "/resources/font/SauceCodeProNerdFont-Medium.ttf";
-    font = TTF_OpenFont(font_path.c_str(), 24);
+    font = TTF_OpenFont(font_path.c_str(), default_font_size_);
 
     // window and renderer
     // window = SDL_CreateWindow("My Simple Game", config_resource.w, config_resource.h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    window = SDL_CreateWindow("My Simple Game", 1920, 1080, SDL_WINDOW_OPENGL);
-    Log::assert(window, SDL_GetError);
-    renderer = SDL_CreateRenderer(window, nullptr);
+    window_ = SDL_CreateWindow("My Simple Game", 1920, 1080, SDL_WINDOW_OPENGL);
+    Log::assert(window_, SDL_GetError);
+    renderer = SDL_CreateRenderer(window_, nullptr);
     Log::assert(renderer, SDL_GetError);
 }
 
 SDL::~SDL() {
     SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(window_);
 
     TTF_Quit();
     Mix_Quit();
@@ -59,16 +59,26 @@ SDL_Surface* SDL::create_surface(int w, int h, SDL_Color color, SDL_PixelFormat 
     return surface;
 }
 
-SDL_Surface* SDL::create_surface(const std::string& text, SDL_Color color) {
-    return TTF_RenderText_Blended(font, text.c_str(), color);
+SDL_Surface* SDL::create_surface(const std::string& text, SDL_Color color, int max_w, int max_h) {
+    if (max_w) {
+        int w, h;
+        TTF_SizeText(font, text.c_str(), &w, &h);
+        double scale = std::max((double)w / max_w, (double)h / max_h);
+        if (scale > 1.) {
+            TTF_SetFontSize(font, int(default_font_size_ / scale));
+        }
+    }
+    auto surface = TTF_RenderText_Blended(font, text.c_str(), color);
+    TTF_SetFontSize(font, default_font_size_);
+    return surface;
 }
 
 SDL_Texture* SDL::create_texture(SDL_Surface* surface) {
     return SDL_CreateTextureFromSurface(renderer, surface);
 }
 
-SDL_Texture* SDL::create_texture(const std::string& text, SDL_Color color) {
-    SDL_Surface* surface = create_surface(text, color);
+SDL_Texture* SDL::create_texture(const std::string& text, SDL_Color color, int max_w, int max_h) {
+    SDL_Surface* surface = create_surface(text, color, max_w, max_h);
     SDL_Texture* texture = create_texture(surface);
     destroy(surface);
     return texture;
@@ -131,8 +141,8 @@ void SDL::draw_rect(const SDL_FRect* dst, SDL_Color color) {
 }
 
 // dst is left top corner
-void SDL::draw_text(const std::string& text, const SDL_FRect* dst, SDL_Color color, bool mid) {
-    SDL_Texture* texture = create_texture(text, color);
+void SDL::draw_text(const std::string& text, const SDL_FRect* dst, SDL_Color color, bool mid, int max_w, int max_h) {
+    SDL_Texture* texture = create_texture(text, color, max_w, max_h);
     auto [w, h] = get_texture_size(texture);
     SDL_FRect text_dst = *dst;
     if (mid) {

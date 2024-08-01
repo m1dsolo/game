@@ -7,7 +7,6 @@
 #include <game/resource/config.hpp>
 #include <game/resource/game.hpp>
 #include <game/resource/player.hpp>
-#include <game/resource/map.hpp>
 #include <game/resource/timer.hpp>
 
 namespace wheel {
@@ -33,11 +32,6 @@ inline auto ecs_init_player_resource = ([]() {
     ecs.add_resource<PlayerResource>();
 }(), 0);
 inline auto& player_resource = ecs.get_resource<PlayerResource>();
-
-inline auto ecs_init_map_resource = ([]() {
-    ecs.add_resource<MapResource>();
-}(), 0);
-inline auto& map_resource = ecs.get_resource<MapResource>();
 
 inline auto ecs_init_timer_resource = ([]() {
     ecs.add_resource<TimerResource>();

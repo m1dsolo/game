@@ -6,7 +6,18 @@ namespace wheel {
 
 class Action {
 public:
-    virtual void start() = 0;
+    template <typename... Args>
+    void start(Args&&... args) {
+        if constexpr (sizeof...(Args) == 0) {
+            start_impl();
+        } else {
+            start_impl(std::forward<Args>(args)...);
+        }
+    }
+
+    virtual void start_impl() {};  // for keyboard
+    virtual void start_impl(float x, float y) {};  // for mouse
+
     virtual void finish() = 0;
 
     const std::string& name() const { return name_; }
@@ -21,10 +32,15 @@ protected:
 
 class OneShotAction : public Action {
 public:
-    OneShotAction(const std::string& name, SDL_Keycode keycode, std::function<int()> get_cooldown = nullptr, std::function<void()> start_func = nullptr, std::function<void()> finish_func = nullptr)
-        : Action(name, keycode), get_cooldown_(get_cooldown), start_func_(start_func), finish_func_(finish_func) {}
+    OneShotAction(
+        const std::string& name,
+        SDL_Keycode keycode,
+        std::function<int()> get_cooldown = nullptr,
+        std::function<void()> start_func = nullptr,
+        std::function<void()> finish_func = nullptr
+    ) : Action(name, keycode), get_cooldown_(get_cooldown), start_func_(start_func), finish_func_(finish_func) {}
 
-    void start() override;
+    void start_impl() override;
     void finish() override;
 
 protected:
@@ -39,16 +55,43 @@ private:
 
 class MultiShotAction : public Action {
 public:
-    MultiShotAction(const std::string& name, SDL_Keycode keycode, std::function<int()> get_cooldown = nullptr, std::function<void()> func = nullptr)
-        : Action(name, keycode), get_cooldown_(get_cooldown), func_(func) {}
+    MultiShotAction(
+        const std::string& name,
+        SDL_Keycode keycode,
+        std::function<int()> get_cooldown = nullptr,
+        std::function<void()> func = nullptr
+    ) : Action(name, keycode), get_cooldown_(get_cooldown), func_(func) {}
 
-    void start() override;
+    void start_impl() override;
     void finish() override;
 
 protected:
     std::function<int()> get_cooldown_;  // nullptr means no cooldown
     std::function<void()> func_;
     std::function<void()> timer_func_;
+
+private:
+    bool ready_ = true;
+    bool start_ = false;
+};
+
+class ClickAction : public Action {
+public:
+    ClickAction(
+        const std::string& name,
+        SDL_Keycode keycode,
+        std::function<int()> get_cooldown = nullptr,
+        std::function<void(float, float)> start_func = nullptr,
+        std::function<void()> finish_func = nullptr
+    ) : Action(name, keycode), get_cooldown_(get_cooldown), start_func_(start_func), finish_func_(finish_func) {}
+
+    void start_impl(float x, float y) override;
+    void finish() override;
+
+protected:
+    std::function<int()> get_cooldown_;  // nullptr means no cooldown
+    std::function<void(float, float)> start_func_;
+    std::function<void()> finish_func_;
 
 private:
     bool ready_ = true;

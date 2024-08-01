@@ -13,7 +13,7 @@ class TextureManager : public Singleton<TextureManager> {
     friend class Singleton<TextureManager>;
 
 public:
-    SDL_Texture* get_texture(const std::string& name);
+    SDL_Texture* get_texture(const std::string& name, int w = 48, int h = 48);
 
 private:
     TextureManager();

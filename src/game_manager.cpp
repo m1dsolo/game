@@ -12,17 +12,18 @@
 #include <game/layer/card.hpp>
 #include <game/layer/hotbar.hpp>
 
-#include <game/system/input.hpp>
 #include <game/system/audio.hpp>
 #include <game/system/event.hpp>
+#include <game/system/input.hpp>
+#include <game/system/continuous_action.hpp>
 #include <game/system/move.hpp>
-#include <game/system/animation.hpp>
-#include <game/system/collide.hpp>
-#include <game/system/timer.hpp>
-#include <game/system/combat.hpp>
 #include <game/system/tower.hpp>
-#include <game/system/game_event.hpp>
+#include <game/system/collide.hpp>
+#include <game/system/animation.hpp>
+#include <game/system/combat.hpp>
 #include <game/system/render.hpp>
+#include <game/system/game_event.hpp>
+#include <game/system/timer.hpp>
 
 namespace wheel {
 
@@ -43,6 +44,7 @@ void GameManager::run() {
     ecs.add_startup_system(std::bind(&EventSystem::startup, &EventSystem::instance()));
 
     add_system<InputSystem>();
+    add_system<ContinuousActionSystem>();
     add_system<MoveSystem>();
     add_system<TowerSystem>();
     add_system<CollideSystem>();
