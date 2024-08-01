@@ -34,14 +34,14 @@ std::pair<int, int> Map::pos2idx(const Vector2D<double>& pos) {
     return {i, j};
 }
 
-bool Map::plant(const std::string& name, const Vector2D<double>& position) {
+bool Map::plant(const std::string& name, Entity entity, const Vector2D<double>& position) {
     auto [i, j] = pos2idx(position);
     if (i < 0 || i >= planted_.size() || j < 0 || j >= planted_[0].size() || planted_[i][j]) {
         return false;
     }
 
+    planted_[i][j] = true;
     auto pos = idx2pos(i, j);
-    Entity entity = ecs.get_entities<SelfComponent>()[0];
     EntityManager::instance().create_tower(name, entity, pos);
     return true;
 }

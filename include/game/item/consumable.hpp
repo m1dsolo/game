@@ -35,7 +35,7 @@ public:
 
     int progress() override { return uses_ * 100 / data().max_uses; }
 
-    virtual void use() = 0;
+    virtual bool use() = 0;
 
 protected:
     Consumable(

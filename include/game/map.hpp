@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 
+#include <wheel/ecs.hpp>
 #include <wheel/geometry.hpp>
 #include <wheel/singleton.hpp>
 
@@ -16,7 +17,7 @@ public:
     Vector2D<double> idx2pos(int i, int j);
     std::pair<int, int> pos2idx(const Vector2D<double>& pos);
 
-    bool plant(const std::string& name, const Vector2D<double>& position);
+    bool plant(const std::string& name, Entity entity, const Vector2D<double>& position);
 
     SDL_Texture* texture() { return texture_; }
     const SDL_FRect& dst() const { return map_dst_; }

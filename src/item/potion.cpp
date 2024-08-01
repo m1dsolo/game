@@ -2,10 +2,11 @@
 
 namespace wheel {
 
-void Potion::use() {
+bool Potion::use() {
     for (auto& buff : data().buffs) {
         buff->on_effect(entity_);
     }
+    return true;
 }
 
 }  // namespace wheel

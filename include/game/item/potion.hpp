@@ -24,7 +24,7 @@ public:
     const Data& data() const override { return *static_cast<Data*>(data_); }
 
 private:
-    void use() override;
+    bool use() override;
 };
 
 }  // namespace wheel

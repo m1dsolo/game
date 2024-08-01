@@ -18,7 +18,7 @@ public:
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }
 
-    void use() override;
+    bool use() override;
 };
 
 }  // namespace wheel

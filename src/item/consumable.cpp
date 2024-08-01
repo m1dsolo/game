@@ -55,8 +55,7 @@ Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string&
                     if (!uses_) {
                         return true;
                     }
-                    use();
-                    if (!--uses_) {
+                    if (use() && !--uses_) {
                         this->slot().reduce(1);
                         uses_ = this->data().max_uses;
                     }

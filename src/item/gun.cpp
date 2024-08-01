@@ -70,9 +70,11 @@ void Gun::shoot() {
     auto& direction = ecs.has_components<AimDirectionComponent>(entity_) ?
         ecs.get_component<AimDirectionComponent>(entity_).vec : ecs.get_component<DirectionComponent>(entity_).vec;
     int a = data().angle;
+    int atk = data().atk;
     if (ecs.has_components<PerkComponent>(entity_)) {
         auto& perk = ecs.get_component<PerkComponent>(entity_);
         a = (double)a / perk.accuracy_ratio;
+        atk = std::ceil((double)atk * perk.atk_ratio);
     }
     for (int i = 0; i < data().count; ++i) {
         double angle = random.uniform(-a, a) * M_PI / 180;
@@ -82,7 +84,7 @@ void Gun::shoot() {
             "bullet_shell",
             pos,
             dir,
-            data().atk,
+            atk,
             data().penetration,
             entity_
         );
