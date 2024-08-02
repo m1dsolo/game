@@ -15,6 +15,8 @@
 #include <game/item/consumable.hpp>
 #include <game/item/potion.hpp>
 #include <game/item/tower.hpp>
+#include <game/item/structure.hpp>
+#include <game/item/floor.hpp>
 
 namespace wheel {
 
@@ -52,6 +54,14 @@ std::shared_ptr<Item> ItemManager::create_item(const std::string& name, Entity e
                 case Consumable::Type::TOWER: {
                     auto tower_data = static_cast<Tower::Data*>(consumable_data);
                     return std::make_shared<Tower>(tower_data, entity, *slot);
+                }
+                case Consumable::Type::STRUCTURE: {
+                    auto structure_data = static_cast<Structure::Data*>(consumable_data);
+                    return std::make_shared<Structure>(structure_data, entity, *slot);
+                }
+                case Consumable::Type::FLOOR: {
+                    auto floor_data = static_cast<Floor::Data*>(consumable_data);
+                    return std::make_shared<Floor>(floor_data, entity, *slot);
                 }
             }
         }
@@ -98,6 +108,12 @@ void ItemManager::parse_item_json() {
             } else if (sub_types[1] == "tower") {
                 int power = item["power"];
                 auto data = std::make_shared<Tower::Data>(name, "", max_uses, power);
+                item_data_map[name] = data;
+            } else if (sub_types[1] == "structure") {
+                auto data = std::make_shared<Structure::Data>(name, "", max_uses);
+                item_data_map[name] = data;
+            } else if (sub_types[1] == "floor") {
+                auto data = std::make_shared<Floor::Data>(name, "", max_uses);
                 item_data_map[name] = data;
             }
         }

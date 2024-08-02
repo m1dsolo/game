@@ -20,13 +20,13 @@ Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string&
             if (!uses_) {
                 return;
             }
-            use();
-            if (!--uses_) {
-                this->slot().reduce(1);
-                uses_ = this->data().max_uses;
+            if (use()) {
+                AudioManager::instance().play(action_name);
+                if (!--uses_) {
+                    this->slot().reduce(1);
+                    uses_ = this->data().max_uses;
+                }
             }
-
-            AudioManager::instance().play(action_name);
         }
     );
 
@@ -55,13 +55,13 @@ Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string&
                     if (!uses_) {
                         return true;
                     }
-                    if (use() && !--uses_) {
-                        this->slot().reduce(1);
-                        uses_ = this->data().max_uses;
+                    if (use()) {
+                        AudioManager::instance().play(action_name);
+                        if (!--uses_) {
+                            this->slot().reduce(1);
+                            uses_ = this->data().max_uses;
+                        }
                     }
-
-                    AudioManager::instance().play(action_name);
-
                     return true;
                 }
                 return false;

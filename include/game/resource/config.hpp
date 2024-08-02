@@ -13,9 +13,6 @@ struct ConfigResource {
 
     int w = 1920;
     int h = 1080;
-
-    int map_w = 36;
-    int map_h = 18;
 };
 
 }  // namespace wheel

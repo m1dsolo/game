@@ -56,5 +56,17 @@
         "name": "archer_tower",
         "type": "consumable.tower",
         "power": 30
+    },
+    {
+        "name": "floor",
+        "type": "consumable.floor"
+    },
+    {
+        "name": "wall",
+        "type": "consumable.structure"
+    },
+    {
+        "name": "door",
+        "type": "consumable.structure"
     }
 ]

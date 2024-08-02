@@ -18,7 +18,9 @@ public:
 
     void create_enemy(const std::string& name, Vector2D<double> position = {-1, -1});
 
-    void create_tower(const std::string& name, Entity master_entity, Vector2D<double> position = {-1, -1});
+    void create_tower(const std::string& name, Entity master_entity, Vector2D<double> position);
+
+    void create_structure(const std::string& name, Entity master_entity, Vector2D<double> position);
 
     void create_bullet(const std::string& name, Vector2D<double> position, Vector2D<double> direction, int atk, int penetration, Entity master_entity);
 
@@ -33,6 +35,7 @@ private:
 
     void cache_bullet(const std::string& name);
     void cache_tower(const std::string& name);
+    void cache_structure(const std::string& name);
 
     EntityManager();
     ~EntityManager() = default;

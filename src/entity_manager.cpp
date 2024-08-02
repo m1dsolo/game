@@ -10,8 +10,10 @@
 #include <game/animation_manager.hpp>
 #include <game/texture_manager.hpp>
 #include <game/item_manager.hpp>
+#include <game/map.hpp>
 
 #include <game/item/tower.hpp>
+#include <game/item/structure.hpp>
 
 #include <game/component/size.hpp>
 #include <game/component/position.hpp>
@@ -47,6 +49,9 @@ EntityManager::EntityManager() {
 
     cache_bullet("bullet_shell");
     cache_tower("archer_tower");
+    cache_structure("floor");
+    cache_structure("wall");
+    cache_structure("door");
 }
 
 Entity EntityManager::create_player(const std::string& name, bool self) {
@@ -89,6 +94,9 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     inventory.pick("awp");
     inventory.pick("hp_potion", 1);
     inventory.pick("archer_tower", 3);
+    inventory.pick("floor", 10);
+    inventory.pick("wall", 10);
+    inventory.pick("door", 10);
     inventory.pick("coin", 10);
     inventory.select(1);
 
@@ -108,10 +116,6 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<double> posit
 }
 
 void EntityManager::create_tower(const std::string& name, Entity master_entity, Vector2D<double> position) {
-    if (position == Vector2D<double>{-1, -1}) {
-        position = GameUtils::gen_spawn_internal_position(200);
-    }
-
     int power = static_cast<const Tower::Data*>(ItemManager::instance().get_data(name))->power;
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
@@ -123,6 +127,13 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
     inventory.pick("usp");
     inventory.select(1);
+}
+
+void EntityManager::create_structure(const std::string& name, Entity master_entity, Vector2D<double> position) {
+    EntityTemplate t = template_map_[name];
+    t[typeid(PositionComponent)] = PositionComponent{position};
+    t[typeid(MasterComponent)] = MasterComponent{master_entity};
+    Entity entity = ecs.add_entity(t);
 }
 
 void EntityManager::create_bullet(const std::string& name, Vector2D<double> position, Vector2D<double> direction, int atk, int penetration, Entity master_entity) {
@@ -234,6 +245,15 @@ void EntityManager::cache_tower(const std::string& name) {
     t[typeid(TowerComponent)] = TowerComponent{300};
     t[typeid(ActionsComponent)] = ActionsComponent{};
     t[typeid(AimDirectionComponent)] = AimDirectionComponent{};
+
+    template_map_[name] = std::move(t);
+}
+
+void EntityManager::cache_structure(const std::string& name) {
+    EntityTemplate t;
+    t[typeid(TextureComponent)] = TextureComponent{name};
+    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(FriendComponent)] = FriendComponent{};
 
     template_map_[name] = std::move(t);
 }

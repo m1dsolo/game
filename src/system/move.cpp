@@ -1,6 +1,7 @@
 #include <game/system/move.hpp>
 
 #include <game/global.hpp>
+#include <game/map.hpp>
 
 #include <game/component/move.hpp>
 #include <game/component/position.hpp>
@@ -66,8 +67,9 @@ void MoveSystem::move() {
 
 // TODO: cache
 void MoveSystem::clamp_player_position() {
-    int map_w = config_resource.map_w * 48;
-    int map_h = config_resource.map_h * 48;
+    auto& map = Map::instance();
+    int map_w = map.dst().w;
+    int map_h = map.dst().h;
     for (auto [player, position, size] : ecs.get_components<PlayerComponent, PositionComponent, SizeComponent>()) {
         int x0 = (config_resource.w - map_w + size.w) / 2;
         int y0 = (config_resource.h - map_h + size.h) / 2;

@@ -9,7 +9,9 @@ class Consumable : public Item {
 public:
     enum class Type {
         POTION,
-        TOWER
+        TOWER,
+        STRUCTURE,
+        FLOOR,
     };
 
     virtual ~Consumable() = default;
