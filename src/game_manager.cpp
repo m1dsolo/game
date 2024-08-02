@@ -118,11 +118,9 @@ void GameManager::swap_stage() {
                 EntityManager::instance().create_enemy("goblin");
             }
             enemy_cnt_++;
-
-            static int cnt = 0;
-            if (++cnt == second) {
-                combat_time_over_ = true;
-            }
+        });
+        timer.add(1000000 * second, 1, [this]() {
+            combat_time_over_ = true;
         });
     }
     // combat to construction

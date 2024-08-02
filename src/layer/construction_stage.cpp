@@ -32,6 +32,16 @@ void ConstructionStageLayer::on_render() {
 }
 
 bool ConstructionStageLayer::on_event(const SDL_Event& event) {
+    switch (event.type) {
+        case SDL_EVENT_KEY_DOWN: {
+            switch (event.key.key) {
+                case SDLK_RETURN: {
+                    GameManager::instance().swap_stage();
+                    return true;
+                }
+            }
+        }
+    }
     return start_button_.on_event(event);
 }
 
