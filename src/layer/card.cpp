@@ -65,7 +65,7 @@ void CardLayer::on_attach() {
         // add card text texture
         const std::string& name = CardFactory::instance().get(idx)->name;
         SDL_FRect text_dst = {(float)positions[i].x, (float)positions[i].y, 0, 0};
-        sdl.draw_text_in_mid(name, &text_dst, sdl.BLACK);
+        sdl.draw_text(name, &text_dst, sdl.BLACK, true, 0, 0, card_w_ - 100);
     }
     sdl.set_target(nullptr);
 }

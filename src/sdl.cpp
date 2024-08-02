@@ -63,26 +63,30 @@ SDL_Surface* SDL::create_surface(int w, int h, SDL_Color color, SDL_PixelFormat 
     return surface;
 }
 
-SDL_Surface* SDL::create_surface(const std::string& text, SDL_Color color, int max_w, int max_h) {
-    if (max_w) {
-        int w, h;
-        TTF_SizeText(font, text.c_str(), &w, &h);
-        double scale = std::max((double)w / max_w, (double)h / max_h);
-        if (scale > 1.) {
-            TTF_SetFontSize(font, int(default_font_size_ / scale));
+SDL_Surface* SDL::create_surface(const std::string& text, SDL_Color color, int max_w, int max_h, int wrap_len) {
+    if (wrap_len) {
+        return TTF_RenderText_Blended_Wrapped(font, text.c_str(), color, wrap_len);
+    } else {
+        if (max_w) {
+            int w, h;
+            TTF_SizeText(font, text.c_str(), &w, &h);
+            double scale = std::max((double)w / max_w, (double)h / max_h);
+            if (scale > 1.) {
+                TTF_SetFontSize(font, int(default_font_size_ / scale));
+            }
         }
+        auto surface = TTF_RenderText_Blended(font, text.c_str(), color);
+        TTF_SetFontSize(font, default_font_size_);
+        return surface;
     }
-    auto surface = TTF_RenderText_Blended(font, text.c_str(), color);
-    TTF_SetFontSize(font, default_font_size_);
-    return surface;
 }
 
 SDL_Texture* SDL::create_texture(SDL_Surface* surface) {
     return SDL_CreateTextureFromSurface(renderer, surface);
 }
 
-SDL_Texture* SDL::create_texture(const std::string& text, SDL_Color color, int max_w, int max_h) {
-    SDL_Surface* surface = create_surface(text, color, max_w, max_h);
+SDL_Texture* SDL::create_texture(const std::string& text, SDL_Color color, int max_w, int max_h, int wrap_len) {
+    SDL_Surface* surface = create_surface(text, color, max_w, max_h, wrap_len);
     SDL_Texture* texture = create_texture(surface);
     destroy(surface);
     return texture;
@@ -207,8 +211,8 @@ void SDL::draw_rect(const SDL_FRect* dst, SDL_Color color) {
 }
 
 // dst is left top corner
-void SDL::draw_text(const std::string& text, const SDL_FRect* dst, SDL_Color color, bool mid, int max_w, int max_h) {
-    SDL_Texture* texture = create_texture(text, color, max_w, max_h);
+void SDL::draw_text(const std::string& text, const SDL_FRect* dst, SDL_Color color, bool mid, int max_w, int max_h, int wrap_len) {
+    SDL_Texture* texture = create_texture(text, color, max_w, max_h, wrap_len);
     auto [w, h] = get_texture_size(texture);
     SDL_FRect text_dst = *dst;
     if (mid) {
@@ -217,15 +221,6 @@ void SDL::draw_text(const std::string& text, const SDL_FRect* dst, SDL_Color col
     }
     text_dst.w = w;
     text_dst.h = h;
-    render(texture, nullptr, &text_dst);
-    destroy(texture);
-}
-
-// dst is mid
-void SDL::draw_text_in_mid(const std::string& text, const SDL_FRect* dst, SDL_Color color) {
-    SDL_Texture* texture = create_texture(text, color);
-    auto [w, h] = get_texture_size(texture);
-    SDL_FRect text_dst = {dst->x - w / 2, dst->y - h / 2, w, h};
     render(texture, nullptr, &text_dst);
     destroy(texture);
 }
