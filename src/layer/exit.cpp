@@ -64,7 +64,15 @@ bool ExitLayer::on_event(const SDL_Event& event) {
                     ecs.emplace_event<PopLayerEvent>();
                     return true;
                 }
+                case SDLK_ESCAPE: {
+                    ecs.emplace_event<PopLayerEvent>();
+                    return true;
+                }
             }
+            return true;
+        }
+        // TODO
+        case SDL_EVENT_MOUSE_BUTTON_DOWN: {
             return true;
         }
     }

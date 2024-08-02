@@ -35,6 +35,7 @@ void CombatSystem::execute_impl() {
     enemy_get_damage_show_text();
     heal_buff();
     heal_show_text();
+    send_enemy_dead_event();
     dead();
     add_exp();
     del_damage_components();
@@ -114,6 +115,12 @@ void CombatSystem::heal_show_text() {
         timer_resource.add(20, 1, [entity]() {
             ecs.add_components<DelEntityTag>(entity, {});
         });
+    }
+}
+
+void CombatSystem::send_enemy_dead_event() {
+    for (auto [enemy, dead]: ecs.get_components<EnemyComponent, DeadComponent>()) {
+        ecs.emplace_event<EnemyDeadEvent>();
     }
 }
 

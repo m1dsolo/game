@@ -21,6 +21,7 @@ private:
     void enemy_get_damage_show_text();
     void heal_buff();
     void heal_show_text();
+    void send_enemy_dead_event();
     void dead();
     void add_exp();
     void del_damage_components();

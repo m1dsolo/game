@@ -6,6 +6,7 @@
 #include <wheel/singleton.hpp>
 
 #include <game/layer/layer.hpp>
+#include <game/layer/cursor.hpp>
 
 namespace wheel {
 
@@ -48,11 +49,12 @@ public:
     std::deque<Layer*>& layers() { return layers_; }
 
 private:
-    UI() = default;
+    UI() : cursor_layer_(&CursorLayer::instance()) {}
     ~UI() = default;
     UI(const UI&) = delete;
 
     std::deque<Layer*> layers_;
+    Layer* cursor_layer_;
 };
 
 }  // namespace wheel

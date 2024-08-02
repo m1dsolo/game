@@ -17,22 +17,18 @@ void GameEventSystem::execute_impl() {
     // card
     for (auto& event : ecs.get_events<LevelUpEvent>()) {
         if (ecs.has_components<SelfComponent>(event.entity)) {
-            auto& ui = UI::instance();
-            auto& layers = ui.layers();
-            auto back_layer = layers.back();
-            if (dynamic_cast<CursorLayer*>(back_layer)) {
-                ui.pop_back();
-                ui.push_back<CardLayer>();
-                layers.emplace_back(back_layer);
-            } else {
-                ui.push_back<CardLayer>();
-            }
+            UI::instance().push_back<CardLayer>();
         }
     }
 
     // pop layer
     for (auto& event : ecs.get_events<PopLayerEvent>()) {
         UI::instance().pop_back();
+    }
+
+    // enemy dead
+    for (auto& event : ecs.get_events<EnemyDeadEvent>()) {
+        GameManager::instance().enemy_cnt()--;
     }
 
     // game over

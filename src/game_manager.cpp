@@ -5,16 +5,17 @@
 #include <game/global.hpp>
 #include <game/entity_manager.hpp>
 #include <game/ui.hpp>
+#include <game/event.hpp>
 
 #include <game/layer/map.hpp>
 #include <game/layer/game.hpp>
 #include <game/layer/status.hpp>
 #include <game/layer/card.hpp>
 #include <game/layer/hotbar.hpp>
+#include <game/layer/construction_stage.hpp>
 #include <game/layer/cursor.hpp>
 
 #include <game/system/audio.hpp>
-#include <game/system/event.hpp>
 #include <game/system/input.hpp>
 #include <game/system/continuous_action.hpp>
 #include <game/system/move.hpp>
@@ -25,6 +26,11 @@
 #include <game/system/render.hpp>
 #include <game/system/game_event.hpp>
 #include <game/system/timer.hpp>
+
+#include <game/component/self.hpp>
+#include <game/component/inventory.hpp>
+#include <game/component/item.hpp>
+#include <game/component/tag.hpp>
 
 namespace wheel {
 
@@ -42,7 +48,6 @@ void add_system() {
 
 void GameManager::run() {
     ecs.add_startup_system(std::bind(&AudioSystem::startup, &AudioSystem::instance()));
-    ecs.add_startup_system(std::bind(&EventSystem::startup, &EventSystem::instance()));
 
     add_system<InputSystem>();
     add_system<ContinuousActionSystem>();
@@ -57,20 +62,24 @@ void GameManager::run() {
 
     auto& entity_mangaer = EntityManager::instance();
     Entity entity = EntityManager::instance().create_player("slime", true);
-    // EntityManager::instance().create_enemy("skeleton", {800., 600.});
-    // EntityManager::instance().create_tower("archer_tower", entity);
 
     auto& ui = UI::instance();
     ui.push_back<MapLayer>();  // use SelfComponent
     ui.push_back<GameLayer>();
     ui.push_back<StatusLayer>();
     ui.push_back<HotBarLayer>();
-    ui.push_back<CursorLayer>();
+    ui.push_back<ConstructionStageLayer>();
 
     ecs.startup();
 
     while (running_) {
         ecs.update();
+
+        // finish combat
+        if (combat_time_over_ && !enemy_cnt_) {
+            combat_time_over_ = false;
+            swap_stage();
+        }
     }
 }
 
@@ -95,6 +104,40 @@ void GameManager::resume() {
 }
 
 void GameManager::swap_stage() {
+    // construction to combat
+    if (!stage_) {
+        UI::instance().del<ConstructionStageLayer>();
+
+        // Spawns monsters continuously for 1min
+        int second = 2;
+        timer.add(1000000, second, [this, second]() {
+            int val = random.uniform(0, 3);
+            if (val < 3) {
+                EntityManager::instance().create_enemy("skeleton");
+            } else {
+                EntityManager::instance().create_enemy("goblin");
+            }
+            enemy_cnt_++;
+
+            static int cnt = 0;
+            if (++cnt == second) {
+                combat_time_over_ = true;
+            }
+        });
+    }
+    // combat to construction
+    else {
+        UI::instance().push_back<ConstructionStageLayer>();
+
+        // pick all item(TODO: if multiplayer)
+        Entity entity = ecs.get_entities<SelfComponent>()[0];
+        auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
+        for (auto [entity, item] : ecs.get_entity_and_components<ItemComponent>()) {
+            inventory.pick(item.name, item.count);
+            ecs.add_components(entity, DelEntityTag{});
+        }
+    }
+    stage_ = !stage_;
 }
 
 }  // namespace wheel

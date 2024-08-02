@@ -19,4 +19,10 @@ struct LevelUpEvent {
 struct PopLayerEvent {
 };
 
+struct SwapStageEvent {
+};
+
+struct EnemyDeadEvent {
+};
+
 }  // namespace wheel
