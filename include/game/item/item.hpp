@@ -27,7 +27,6 @@ public:
         Type type;
         bool stackable;
         bool show_selected_tile;
-        std::unordered_map<std::string, std::shared_ptr<Action>> action_map;
     };
 
     Item(Data* data = nullptr, Entity entity = EntityNone) : data_(data), entity_(entity) {}
@@ -50,6 +49,7 @@ public:
 protected:
     Data* data_;
     Entity entity_;
+    std::unordered_map<std::string, std::shared_ptr<Action>> action_map_;
 };
 
 }  // namespace wheel

@@ -19,7 +19,7 @@ namespace wheel {
 Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
     int shoot_interval = data->shoot_interval;
     int reload_interval = data->reload_interval;
-    data->action_map["shoot"] = std::make_shared<MultiShotAction>(
+    action_map_["shoot"] = std::make_shared<MultiShotAction>(
         "shoot",
         SDLK_MOUSE_LEFT,
         [shoot_interval, &entity = entity_]() {
@@ -35,7 +35,7 @@ Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
         }
     );
 
-    data->action_map["reload"] = std::make_shared<OneShotAction>(
+    action_map_["reload"] = std::make_shared<OneShotAction>(
         "reload",
         'r',
         [reload_interval, &entity = entity_]() {

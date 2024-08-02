@@ -10,13 +10,13 @@ namespace wheel {
 void Item::select() {
     if (ecs.has_components<ActionsComponent>(entity_)) {
         auto& action_map = ecs.get_component<ActionsComponent>(entity_).action_map;
-        for (auto& [name, action] : data_->action_map) {
+        for (auto& [name, action] : action_map_) {
             action_map[name] = action;
         }
     }
     if (ecs.has_components<InputComponent>(entity_)) {
         auto& key_bindings = ecs.get_component<InputComponent>(entity_).key_bindings;
-        for (auto& [name, action] : data_->action_map) {
+        for (auto& [name, action] : action_map_) {
             key_bindings[action->keycode()] = action->name();
         }
     }
@@ -29,13 +29,13 @@ void Item::select() {
 void Item::unselect() {
     if (ecs.has_components<ActionsComponent>(entity_)) {
         auto& action_map = ecs.get_component<ActionsComponent>(entity_).action_map;
-        for (auto& [name, action] : data_->action_map) {
+        for (auto& [name, action] : action_map_) {
             action_map.erase(name);
         }
     }
     if (ecs.has_components<InputComponent>(entity_)) {
         auto& key_bindings = ecs.get_component<InputComponent>(entity_).key_bindings;
-        for (auto& [name, action] : data_->action_map) {
+        for (auto& [name, action] : action_map_) {
             key_bindings.erase(action->keycode());
         }
     }
