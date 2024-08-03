@@ -1,6 +1,7 @@
 #include <game/item/consumable.hpp>
 
 #include <game/audio_manager.hpp>
+#include <game/texture_manager.hpp>
 #include <game/map.hpp>
 
 #include <game/component/position.hpp>
@@ -68,6 +69,10 @@ Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string&
             }});
         }
     );
+}
+
+SDL_Texture* Consumable::get_cursor_texture() const {
+    return TextureManager::instance().get_texture(data().name);
 }
 
 }  // namespace wheel

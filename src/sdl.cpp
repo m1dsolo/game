@@ -165,8 +165,22 @@ SDL_Texture* SDL::create_border_circle_texture(int radius, SDL_Color color) {
     return texture;
 }
 
+SDL_Texture* SDL::merge_textures(SDL_Texture* texture1, SDL_Texture* texture2) {
+    auto [w, h] = get_texture_size(texture1);
+    auto texture = create_texture(w, h, BLACK, SDL_TEXTUREACCESS_TARGET);
+    set_target(texture);
+    render(texture1, nullptr, nullptr);
+    render(texture2, nullptr, nullptr);
+    set_target(nullptr);
+    return texture;
+}
+
 void SDL::set_color(SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+}
+
+void SDL::set_blend_mode(SDL_Surface* surface, SDL_BlendMode mode) {
+    SDL_SetSurfaceBlendMode(surface, mode);
 }
 
 void SDL::set_blend_mode(SDL_Texture* texture, SDL_BlendMode mode) {
@@ -223,6 +237,10 @@ void SDL::draw_text(const std::string& text, const SDL_FRect* dst, SDL_Color col
     text_dst.h = h;
     render(texture, nullptr, &text_dst);
     destroy(texture);
+}
+
+void SDL::blit(SDL_Surface* src_surface, const SDL_FRect* src, SDL_Surface* dst_surface, const SDL_FRect* dst) {
+    SDL_BlitSurface(src_surface, (SDL_Rect*)src, dst_surface, (SDL_Rect*)dst);
 }
 
 std::pair<float, float> SDL::get_texture_size(SDL_Texture* texture) {

@@ -44,6 +44,8 @@ public:
     virtual void select_impl() {}
     virtual void unselect_impl() {}
 
+    virtual SDL_Texture* get_cursor_texture() const;
+
     bool empty() const { return !data_; }
 
 protected:

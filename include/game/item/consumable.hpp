@@ -39,6 +39,8 @@ public:
 
     virtual bool use() = 0;
 
+    SDL_Texture* get_cursor_texture() const override;
+
 protected:
     Consumable(
         Data* data,

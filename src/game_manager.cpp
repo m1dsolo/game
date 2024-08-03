@@ -47,6 +47,9 @@ void add_system() {
 }
 
 void GameManager::run() {
+    auto& entity_mangaer = EntityManager::instance();
+    Entity entity = EntityManager::instance().create_player("slime", true);
+
     ecs.add_startup_system(std::bind(&AudioSystem::startup, &AudioSystem::instance()));
 
     add_system<InputSystem>();
@@ -59,9 +62,6 @@ void GameManager::run() {
     add_system<RenderSystem>();
     add_system<GameEventSystem>();
     add_system<TimerSystem>();
-
-    auto& entity_mangaer = EntityManager::instance();
-    Entity entity = EntityManager::instance().create_player("slime", true);
 
     auto& ui = UI::instance();
     ui.push_back<MapLayer>();  // use SelfComponent

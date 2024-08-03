@@ -4,6 +4,7 @@
 #include <wheel/geometry.hpp>
 
 #include <game/layer/layer.hpp>
+#include <game/inventory.hpp>
 
 namespace wheel {
 
@@ -22,9 +23,8 @@ private:
     ~CursorLayer() = default;
     CursorLayer(const CursorLayer&) = delete;
 
-    SDL_Texture* cursor_texture_ = nullptr;
-    SDL_FRect cursor_dst_;
-    static const int cursor_radius_ = 5;
+    SDL_FRect cursor_dst_ {0., 0., 0., 0.};
+    Inventory* inventory_;
 };
 
 }  // namespace wheel

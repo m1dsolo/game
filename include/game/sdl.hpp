@@ -27,6 +27,7 @@ public:
     static const inline SDL_Color GREEN = {0, 255, 0, 255};
     static const inline SDL_Color BLUE = {0, 0, 255, 255};
     static const inline SDL_Color PINK = {255, 192, 203, 255};
+    static const inline SDL_Color TRANSPARENT = {0, 0, 0, 0};
 
     SDL_Texture* load_img(const std::string& path);
     void render(SDL_Texture* texture, const SDL_FRect* src, const SDL_FRect* dst);
@@ -37,14 +38,17 @@ public:
     SDL_Texture* create_texture(int w, int h, SDL_Color color = BLACK, SDL_TextureAccess access = SDL_TEXTUREACCESS_STATIC, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA8888);
     SDL_Texture* create_filled_circle_texture(int radius, SDL_Color color);
     SDL_Texture* create_border_circle_texture(int radius, SDL_Color color);
+    SDL_Texture* merge_textures(SDL_Texture* texture1, SDL_Texture* texture2);
     void set_color(SDL_Color color);
     void set_target(SDL_Texture* texture);
     void set_alpha_mod(SDL_Texture* texture, Uint8 alpha);
+    void set_blend_mode(SDL_Surface* surface, SDL_BlendMode mode);
     void set_blend_mode(SDL_Texture* texture, SDL_BlendMode mode);
     void draw_border(const SDL_FRect* dst, float border_width, SDL_Color color);
     void draw_point(int x, int y, SDL_Color color);
     void draw_rect(const SDL_FRect* dst, SDL_Color color);
     void draw_text(const std::string& text, const SDL_FRect* dst, SDL_Color color = BLACK, bool mid = false, int max_w = 0, int max_h = 0, int wrap_len = 0);
+    void blit(SDL_Surface* src_surface, const SDL_FRect* src, SDL_Surface* dst_surface, const SDL_FRect* dst);
     std::pair<float, float> get_texture_size(SDL_Texture* texture);
     const char* get_error();
     void destroy(SDL_Texture* texture);

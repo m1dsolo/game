@@ -41,6 +41,8 @@ public:
 
     int progress() override { return ammo_ * 100 / data().clip; }
 
+    SDL_Texture* get_cursor_texture() const override;
+
 private:
     int ammo_ = 0;
     bool reloading_ = false;

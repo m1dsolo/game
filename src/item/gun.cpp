@@ -5,7 +5,7 @@
 #include <game/global.hpp>
 #include <game/entity_manager.hpp>
 #include <game/audio_manager.hpp>
-#include <game/sdl.hpp>
+#include <game/texture_manager.hpp>
 
 #include <game/component/position.hpp>
 #include <game/component/direction.hpp>
@@ -105,6 +105,10 @@ void Gun::reload() {
     });
 
     AudioManager::instance().play(data().name + "_reload", data().reload_interval);
+}
+
+SDL_Texture* Gun::get_cursor_texture() const {
+    return TextureManager::instance().get_texture("cross_cursor");
 }
 
 }  // namespace wheel

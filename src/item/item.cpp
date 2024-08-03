@@ -1,6 +1,7 @@
 #include <game/item/item.hpp>
 
 #include <game/audio_manager.hpp>
+#include <game/texture_manager.hpp>
 
 #include <game/component/actions.hpp>
 #include <game/component/input.hpp>
@@ -41,6 +42,10 @@ void Item::unselect() {
     }
 
     unselect_impl();
+}
+
+SDL_Texture* Item::get_cursor_texture() const {
+    return TextureManager::instance().get_texture("circle_cursor");
 }
 
 }  // namespace wheel

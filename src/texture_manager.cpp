@@ -44,6 +44,9 @@ TextureManager::TextureManager() {
             texture_map_[tile_name] = tile_texture;
         }
     }
+
+    // cursor texture
+    texture_map_["circle_cursor"] = sdl.create_filled_circle_texture(5, SDL::RED);
 }
 
 TextureManager::~TextureManager() {
