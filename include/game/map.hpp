@@ -17,15 +17,21 @@ public:
     Vector2D<double> idx2pos(int i, int j);
     std::pair<int, int> pos2idx(const Vector2D<double>& pos);
 
+    // [w, h]
+    std::pair<int, int> grid_size() const;
+    const Rect<double>& rect() const { return rect_; }
+
+    bool is_in_bound(const Vector2D<double>& pos) const;
+
     // position is the world coordinate system
     bool plant(const std::string& name, Entity entity, const Vector2D<double>& position);
 
     SDL_Texture* texture() { return texture_; }
-    const SDL_FRect& dst() const { return map_dst_; }
 
     static const int TILE_SIZE = 48;
-    static const int TILE_NUM_W = 36;
-    static const int TILE_NUM_H = 18;
+    static inline const int TILE_NUM_W = 30;
+    static inline const int TILE_NUM_H = 20;
+    static inline const int PADDING_TILE_NUM = 20;
 
 private:
     Map();
@@ -37,7 +43,7 @@ private:
     SDL_Texture* texture_;
     std::vector<std::vector<bool>> planted_structure_;
     std::vector<std::vector<bool>> planted_floor_;
-    SDL_FRect map_dst_;
+    Rect<double> rect_;
 };
 
 }  // namespace wheel

@@ -60,7 +60,15 @@ void MoveSystem::calc_direction_by_track_nearest_enemy() {
 }
 
 void MoveSystem::move() {
+    auto& map = Map::instance();
     for (auto [position, velocity, direction] : ecs.get_components<PositionComponent, VelocityComponent, DirectionComponent>()) {
+        // 如果碰到障碍物map[i][j]，则阻挡那个方向的速度分量
+        // int x0 = position.vec.x;
+        // int y0 = position.vec.y;
+        // int x1 = x0 + velocity.speed * direction.vec.x;
+        // int y1 = y0 + velocity.speed * direction.vec.y;
+        // int w = map.pos2idx();
+
         position.vec += direction.vec.normalize() * velocity.speed * timer_resource.delta / 1000000;
     }
 }
@@ -68,14 +76,14 @@ void MoveSystem::move() {
 // TODO: cache
 void MoveSystem::clamp_player_position() {
     auto& map = Map::instance();
-    int map_w = map.dst().w;
-    int map_h = map.dst().h;
+    auto& [pos, map_size] = map.rect();
     for (auto [player, position, size] : ecs.get_components<PlayerComponent, PositionComponent, SizeComponent>()) {
-        int x0 = (config_resource.w - map_w + size.w) / 2;
-        int y0 = (config_resource.h - map_h + size.h) / 2;
-        int x1 = x0 + map_w;
-        int y1 = y0 + map_h;
-        position.vec.clamp(x0, x1 - size.w, y0, y1 - size.h);
+        position.vec.clamp(
+            pos.x + (float)size.w / 2,
+            pos.x + map_size.x - (float)size.w / 2,
+            pos.y + (float)size.h / 2,
+            pos.y + map_size.y - (float)size.h / 2
+        );
     }
 }
 

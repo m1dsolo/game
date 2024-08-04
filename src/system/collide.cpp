@@ -3,6 +3,7 @@
 #include <game/global.hpp>
 #include <game/event.hpp>
 #include <game/game_manager.hpp>
+#include <game/map.hpp>
 
 #include <game/component/position.hpp>
 #include <game/component/size.hpp>
@@ -106,12 +107,9 @@ void CollideSystem::collide() {
 }
 
 void CollideSystem::bullet_out_of_boundary() {
-    for (auto [bullet_entity, bullet, position, size] : ecs.get_entity_and_components<BulletComponent, PositionComponent, SizeComponent>()) {
-        int u = size.h;
-        int d = config_resource.h - size.h;
-        int l = size.w;
-        int r = config_resource.w - size.w;
-        if (position.vec.y <= u || position.vec.y >= d || position.vec.x <= l || position.vec.x >= r) {
+    auto& map = Map::instance();
+    for (auto [bullet_entity, bullet, position] : ecs.get_entity_and_components<BulletComponent, PositionComponent>()) {
+        if (!map.is_in_bound(position.vec)) {
             ecs.add_components<DelEntityTag>(bullet_entity, {});
         }
     }

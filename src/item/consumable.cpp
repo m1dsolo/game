@@ -42,17 +42,16 @@ Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string&
             auto& dir = ecs.get_component<DirectionComponent>(entity_).vec;
 
             auto& map = Map::instance();
-            auto target_idx = map.pos2idx({x - map.dst().x, y - map.dst().y});
+            auto map_pos = camera.screen2world({x, y});
+            auto target_idx = map.pos2idx(map_pos);
             auto target = map.idx2pos(target_idx.first, target_idx.second);
-            target.x += map.dst().x;
-            target.y += map.dst().y;
             dir = (target - pos).normalize();
 
             auto& velocity = ecs.get_component<VelocityComponent>(entity_);
             velocity.speed = velocity.max_speed;
             ecs.add_components<ContinuousActionComponent>(entity_, {[this, target, action_name, &pos, &map]() {
                 // arrived
-                if (pos.distance(target) <= map.TILE_SIZE / 3.) {
+                if (pos.distance(target) <= (float)map.TILE_SIZE / 4) {
                     if (!uses_) {
                         return true;
                     }

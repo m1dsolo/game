@@ -6,6 +6,7 @@
 #include <game/entity_manager.hpp>
 #include <game/ui.hpp>
 #include <game/event.hpp>
+#include <game/camera.hpp>
 
 #include <game/layer/map.hpp>
 #include <game/layer/game.hpp>
@@ -73,6 +74,8 @@ void GameManager::run() {
     ecs.startup();
 
     while (running_) {
+        camera.update_pos();
+
         ecs.update();
 
         // finish combat
@@ -109,8 +112,9 @@ void GameManager::swap_stage() {
         UI::instance().del<ConstructionStageLayer>();
 
         // Spawns monsters continuously for 1min
-        int second = 2;
-        timer.add(1000000, second, [this, second]() {
+        int frequence = 500000;
+        int count = 10;
+        timer.add(frequence, count, [this]() {
             int val = random.uniform(0, 3);
             if (val < 3) {
                 EntityManager::instance().create_enemy("skeleton");
@@ -119,7 +123,7 @@ void GameManager::swap_stage() {
             }
             enemy_cnt_++;
         });
-        timer.add(1000000 * second, 1, [this]() {
+        timer.add(frequence, count, [this]() {
             combat_time_over_ = true;
         });
     }

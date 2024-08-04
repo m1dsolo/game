@@ -20,7 +20,7 @@
         "clip": 8,
         "shoot_interval": 30,
         "reload_interval": 120,
-        "angle": 20
+        "angle": 15
     },
     {
         "name": "m4a1",
@@ -29,7 +29,7 @@
         "clip": 30,
         "shoot_interval": 5,
         "reload_interval": 120,
-        "angle": 10
+        "angle": 5
     },
     {
         "name": "awp",

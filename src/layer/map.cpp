@@ -20,16 +20,18 @@ void MapLayer::on_update() {
 
 void MapLayer::on_render() {
     // render map
-    sdl.render(map.texture(), nullptr, &map.dst());
+    auto& pos = camera.pos();
+    auto& [screen_w, screen_h] = camera.size();
+    SDL_FRect src = {(float)pos.x, (float)pos.y, (float)screen_w, (float)screen_h};
+    sdl.render(map.texture(), &src, nullptr);
 
     // render selection
     auto& item = inventory_->selected_slot().item();
     if (!item.empty() && item.data().show_selected_tile) {
         if (tile_pos_.first != -1 && tile_pos_.second != -1) {
             Vector2D<double> pos = map.idx2pos(tile_pos_.first, tile_pos_.second);
-            pos.x += map.dst().x;
-            pos.y += map.dst().y;
             float tile_size = map.TILE_SIZE;
+            pos = camera.world2screen(pos);
             SDL_FRect dst = {(float)pos.x - tile_size / 2, (float)pos.y - tile_size / 2, tile_size, tile_size};
             sdl.draw_border(&dst, 4, sdl.GREEN);
         }
@@ -40,7 +42,8 @@ bool MapLayer::on_event(const SDL_Event& event) {
     switch (event.type) {
         case SDL_EVENT_MOUSE_MOTION: {
             float x = event.motion.x, y = event.motion.y;
-            tile_pos_ = map.pos2idx({x - map.dst().x, y - map.dst().y});
+            auto [world_x, world_y] = camera.screen2world({x, y});
+            tile_pos_ = map.pos2idx({world_x, world_y});
             return true;
         }
         // case SDL_EVENT_KEY_DOWN: {

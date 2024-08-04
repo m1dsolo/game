@@ -33,8 +33,8 @@ void CursorLayer::on_render() {
 bool CursorLayer::on_event(const SDL_Event& event) {
     switch (event.type) {
         case SDL_EVENT_MOUSE_MOTION: {
-            cursor_dst_.x = event.motion.x;
-            cursor_dst_.y = event.motion.y;
+            cursor_dst_.x = event.motion.x - cursor_dst_.w / 2;
+            cursor_dst_.y = event.motion.y - cursor_dst_.h / 2;
             break;
         }
     }

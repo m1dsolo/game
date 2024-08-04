@@ -76,7 +76,8 @@ bool GameLayer::on_event(const SDL_Event& event) {
         }
         case SDL_EVENT_MOUSE_MOTION: {
             float x = event.motion.x, y = event.motion.y;
-            *aim_direction_ = (Vector2D<double>{x, y} - *position_).normalize();
+            auto [w, h] = camera.size();
+            *aim_direction_ = (Vector2D<double>{x, y} - Vector2D<double>{w / 2., h / 2.}).normalize();
             return false;
         }
         case SDL_EVENT_MOUSE_BUTTON_DOWN: {
@@ -136,6 +137,10 @@ bool GameLayer::on_event(const SDL_Event& event) {
             }
             return true;
         }
+        case SDL_EVENT_WINDOW_RESIZED: {
+            camera.size() = {event.window.data1, event.window.data2};
+            return true;
+        }
     }
 
     return false;
@@ -147,17 +152,19 @@ void GameLayer::render_texture() {
         if (!texture.texture) {
             continue;
         }
-        auto left_top = position.vec - Vector2D<double>{size.w / 2., size.h / 2.};
+        auto left_top = position.vec - Vector2D<double>{size.w / 2., size.h / 2.} - camera.pos();
         SDL_FRect dst_frect = {(float)left_top.x, (float)left_top.y, (float)size.w, (float)size.h};
         sdl.render(texture.texture, nullptr, &dst_frect);
     }
 }
 
+// TODO: merge to render_texture
 void GameLayer::render_health_bar() {
     for (auto [health_bar, position, size] : ecs.get_components<HealthBarComponent, PositionComponent, SizeComponent>()) {
         auto& hp = ecs.get_component<HPComponent>(health_bar.master);
 
-        SDL_FRect dst = {(float)position.vec.x, (float)position.vec.y, (float)size.w, (float)size.h};
+        auto left_top = position.vec - camera.pos();
+        SDL_FRect dst = {(float)left_top.x, (float)left_top.y, (float)size.w, (float)size.h};
         sdl.draw_rect(&dst, sdl.RED);
         dst.w = (float)size.w * hp.hp / hp.max_hp;
         sdl.draw_rect(&dst, sdl.GREEN);

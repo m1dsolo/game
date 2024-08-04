@@ -25,43 +25,57 @@ Map::~Map() {
 }
 
 Vector2D<double> Map::idx2pos(int i, int j) {
-    return {(double)j * TILE_SIZE + TILE_SIZE / 2., (double)i * TILE_SIZE + TILE_SIZE / 2.};
+    return {
+        (double)(j + PADDING_TILE_NUM) * TILE_SIZE + TILE_SIZE / 2.,
+        (double)(i + PADDING_TILE_NUM) * TILE_SIZE + TILE_SIZE / 2.
+    };
 }
 
 std::pair<int, int> Map::pos2idx(const Vector2D<double>& pos) {
-    int i = pos.y / TILE_SIZE, j = pos.x / TILE_SIZE;
+    int i = pos.y / TILE_SIZE - PADDING_TILE_NUM, j = pos.x / TILE_SIZE - PADDING_TILE_NUM;
     if (i < 0 || i >= tilemap_.size() || j < 0 || j >= tilemap_[0].size()) {
         return {-1, -1};
     }
     return {i, j};
 }
 
+std::pair<int, int> Map::grid_size() const {
+    return {TILE_NUM_W, TILE_NUM_H};
+}
+
+bool Map::is_in_bound(const Vector2D<double>& pos) const {
+    return pos.x >= PADDING_TILE_NUM * TILE_SIZE &&
+        pos.x <= (TILE_NUM_W + PADDING_TILE_NUM) * TILE_SIZE &&
+        pos.y >= PADDING_TILE_NUM * TILE_SIZE &&
+        pos.y <= (TILE_NUM_H + PADDING_TILE_NUM) * TILE_SIZE;
+}
+
 bool Map::plant(const std::string& name, Entity entity, const Vector2D<double>& position) {
-    auto [i, j] = pos2idx(position - Vector2D<double>(map_dst_.x, map_dst_.y));
+    auto [i, j] = pos2idx(position);
     if (i < 0 || i >= TILE_NUM_H || j < 0 || j >= TILE_NUM_W) {
         return false;
     }
 
     auto pos = idx2pos(i, j);
     if (name.find("floor") != std::string::npos) {
-        if (planted_floor_[i][j]) {
-            return false;
-        }
-        planted_floor_[i][j] = true;
-        sdl.set_target(texture_);
-        auto texture = TextureManager::instance().get_texture(name);
-        SDL_FRect dst = {(float)pos.x - (float)TILE_SIZE / 2, (float)pos.y - (float)TILE_SIZE / 2, TILE_SIZE, TILE_SIZE};
-        sdl.render(texture, nullptr, &dst);
-        sdl.set_target(nullptr);
+        // if (planted_floor_[i][j]) {
+        //     return false;
+        // }
+        // planted_floor_[i][j] = true;
+        // sdl.set_target(texture_);
+        // auto texture = TextureManager::instance().get_texture(name);
+        // SDL_FRect dst = {(float)pos.x - (float)TILE_SIZE / 2, (float)pos.y - (float)TILE_SIZE / 2, TILE_SIZE, TILE_SIZE};
+        // sdl.render(texture, nullptr, &dst);
+        // sdl.set_target(nullptr);
     } else {
         if (planted_structure_[i][j]) {
             return false;
         }
         planted_structure_[i][j] = true;
         if (name.find("tower") != std::string::npos) {
-            EntityManager::instance().create_tower(name, entity, pos + Vector2D<double>(map_dst_.x, map_dst_.y));
+            EntityManager::instance().create_tower(name, entity, pos);
         } else {
-            EntityManager::instance().create_structure(name, entity, pos + Vector2D<double>(map_dst_.x, map_dst_.y));
+            EntityManager::instance().create_structure(name, entity, pos);
         }
     }
 
@@ -73,12 +87,12 @@ void Map::generate_map_texture() {
 	const siv::PerlinNoise perlin{seed};
 	
     auto& texture_manager = TextureManager::instance();
-    texture_ = sdl.create_texture(TILE_NUM_W * TILE_SIZE, TILE_NUM_H * TILE_SIZE, sdl.BLACK, SDL_TEXTUREACCESS_TARGET);
+    texture_ = sdl.create_texture((TILE_NUM_W + 2 * PADDING_TILE_NUM) * TILE_SIZE, (TILE_NUM_H + 2 * PADDING_TILE_NUM) * TILE_SIZE, sdl.BLACK, SDL_TEXTUREACCESS_TARGET);
     sdl.set_target(texture_);
     tilemap_ = std::vector<std::vector<Tile>>(TILE_NUM_H, std::vector<Tile>(TILE_NUM_W));
     for (int i = 0; i < TILE_NUM_H; i++) {
         for (int j = 0; j < TILE_NUM_W; j++) {
-            float x = j * TILE_SIZE, y = i * TILE_SIZE;
+            float x = (j + PADDING_TILE_NUM) * TILE_SIZE, y = (i + PADDING_TILE_NUM) * TILE_SIZE;
 			const double noise = perlin.octave2D_01((x * 0.01), (y * 0.01), 8);
             std::string tile_name = "";
             Tile::Type type = Tile::Type::NONE;
@@ -112,11 +126,11 @@ void Map::generate_map_texture() {
 	}
     sdl.set_target(nullptr);
 
-    map_dst_ = {
-        (config_resource.w - (float)TILE_NUM_W * TILE_SIZE) / 2,
-        (config_resource.h - (float)TILE_NUM_H * TILE_SIZE) / 2,
-        (float)TILE_NUM_W * TILE_SIZE,
-        (float)TILE_NUM_H * TILE_SIZE
+    rect_ = {
+        PADDING_TILE_NUM * TILE_SIZE,
+        PADDING_TILE_NUM * TILE_SIZE,
+        TILE_NUM_W * TILE_SIZE,
+        TILE_NUM_H * TILE_SIZE
     };
 }
 

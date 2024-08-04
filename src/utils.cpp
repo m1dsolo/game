@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include <game/global.hpp>
+#include <game/map.hpp>
 
 namespace wheel {
 
@@ -25,25 +26,27 @@ std::vector<SDL_Texture*> GameUtils::read_textures(std::string_view path) {
 Vector2D<double> GameUtils::gen_spawn_boundary_position() {
     Vector2D<double> position;
     int direction = random.uniform(0, 3);
+    auto& [pos, size] = Map::instance().rect();
+    int w = size.x, h = size.y;
     switch (direction) {
         // up
         case 0: {
-            position = {(double)random.uniform(0, config_resource.w - 1), 0};
+            position = {(double)random.uniform(0, w - 1), 0};
             break;
         }
         // down
         case 1: {
-            position = {(double)random.uniform(0, config_resource.w - 1), (double)config_resource.h};
+            position = {(double)random.uniform(0, w - 1), (double)h};
             break;
         }
         // left
         case 2: {
-            position = {0, (double)random.uniform(0, config_resource.h - 1)};
+            position = {0, (double)random.uniform(0, h - 1)};
             break;
         }
         // right
         case 3: {
-            position = {(double)config_resource.w, (double)random.uniform(0, config_resource.h - 1)};
+            position = {(double)w, (double)random.uniform(0, h - 1)};
             break;
         }
     }
@@ -52,8 +55,9 @@ Vector2D<double> GameUtils::gen_spawn_boundary_position() {
 }
 
 Vector2D<double> GameUtils::gen_spawn_internal_position(int margin) {
-    double w = random.uniform(margin, config_resource.w - margin);
-    double h = random.uniform(margin, config_resource.h - margin);
+    auto& [pos, size] = Map::instance().rect();
+    double w = random.uniform(margin, (int)size.x - margin);
+    double h = random.uniform(margin, (int)size.y - margin);
     return {w, h};
 }
 

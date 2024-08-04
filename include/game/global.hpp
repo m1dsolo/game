@@ -3,6 +3,7 @@
 #include <wheel/ecs.hpp>
 
 #include <game/sdl.hpp>
+#include <game/camera.hpp>
 
 #include <game/resource/config.hpp>
 #include <game/resource/game.hpp>
@@ -38,5 +39,7 @@ inline auto ecs_init_timer_resource = ([]() {
 }(), 0);
 inline auto& timer_resource = ecs.get_resource<TimerResource>();
 inline auto& timer = timer_resource.timer;
+
+inline auto& camera = Camera::instance();
 
 }  // namespace wheel
