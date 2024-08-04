@@ -1,6 +1,7 @@
 #include <game/layer/status.hpp>
 
 #include <game/global.hpp>
+#include <game/game_manager.hpp>
 
 #include <game/component/self.hpp>
 #include <game/component/level.hpp>
@@ -41,6 +42,10 @@ void StatusLayer::on_render() {
     auto& item = inventory.selected_slot().item();
     if (!item.empty()) {
         s += " " + item.info();
+    }
+    int enemy_left = GameManager::instance().enemy_cnt();
+    if (enemy_left > 0) {
+        s += std::format(" enemy left: {}", enemy_left);
     }
 
     SDL_FRect dst_ui = {20, 20, 20 + (float)width, (float)height};

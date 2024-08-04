@@ -7,6 +7,7 @@
 #include <game/ui.hpp>
 #include <game/event.hpp>
 #include <game/camera.hpp>
+#include <game/layer_manager.hpp>
 
 #include <game/layer/map.hpp>
 #include <game/layer/game.hpp>
@@ -34,6 +35,8 @@
 #include <game/component/tag.hpp>
 #include <game/component/ai.hpp>
 
+#include <game/resource/enemy.hpp>
+
 namespace wheel {
 
 GameManager::GameManager() {
@@ -51,6 +54,8 @@ void add_system() {
 void GameManager::run() {
     auto& entity_mangaer = EntityManager::instance();
     Entity entity = EntityManager::instance().create_player("slime", true);
+
+    ecs.add_resource<EnemyResource>();
 
     ecs.add_startup_system(std::bind(&AudioSystem::startup, &AudioSystem::instance()));
 
@@ -110,23 +115,29 @@ void GameManager::resume() {
 void GameManager::swap_stage() {
     // construction to combat
     if (!stage_) {
-        UI::instance().del<ConstructionStageLayer>();
+        // add enemy card
+        CardLayer* layer = static_cast<CardLayer*>(LayerManager::instance().get("enemy_cards"));
+        layer->set_detach_callback([&]() {
+            UI::instance().del<ConstructionStageLayer>();
 
-        // Spawns monsters continuously for 1min
-        int combat_seconds = game_resource.combat_seconds;
-        int enemy_num = game_resource.enemy_num;
-        timer_resource.add(config_resource.fps * combat_seconds / enemy_num, enemy_num, [this]() {
-            int val = random.uniform(0, 3);
-            if (val < 3) {
-                EntityManager::instance().create_enemy("skeleton");
-            } else {
-                EntityManager::instance().create_enemy("goblin");
-            }
-            enemy_cnt_++;
+            auto& enemy_resource = ecs.get_resource<EnemyResource>();
+            int combat_seconds = enemy_resource.combat_seconds;
+            int enemy_num = enemy_resource.enemy_num;
+            enemy_cnt_ = enemy_num;
+            timer_resource.add(config_resource.fps * combat_seconds / enemy_num, enemy_num, [this](int cnt) {
+                int val = random.uniform(0, 3);
+                if (val < 2) {
+                    EntityManager::instance().create_enemy("skeleton");
+                } else {
+                    EntityManager::instance().create_enemy("goblin");
+                }
+
+                if (cnt == 1) {
+                    combat_time_over_ = true;
+                }
+            }, true);
         });
-        timer_resource.add(config_resource.fps * combat_seconds, 1, [this]() {
-            combat_time_over_ = true;
-        });
+        UI::instance().push_back(layer);
     }
     // combat to construction
     else {

@@ -29,7 +29,7 @@ public:
     SDL_Texture* texture() { return texture_; }
 
     static const int TILE_SIZE = 48;
-    static inline const int TILE_NUM_W = 30;
+    static inline const int TILE_NUM_W = 35;
     static inline const int TILE_NUM_H = 20;
     static inline const int PADDING_TILE_NUM = 20;
 

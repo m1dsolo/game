@@ -29,11 +29,14 @@ public:
     CardManager();
 
     std::vector<std::shared_ptr<Card>>& player_cards() { return player_cards_; }
+    std::vector<std::shared_ptr<Card>>& enemy_cards() { return enemy_cards_; }
 
-    // size_t size() const { return player_cards_.size(); }
+    void parse_player_card(const std::string& path);
+    void parse_enemy_card(const std::string& path);
 
 private:
     std::vector<std::shared_ptr<Card>> player_cards_;
+    std::vector<std::shared_ptr<Card>> enemy_cards_;
 };
 
 }  // namespace wheel

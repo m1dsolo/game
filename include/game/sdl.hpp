@@ -26,6 +26,9 @@ public:
     static const inline SDL_Color RED = {255, 0, 0, 255};
     static const inline SDL_Color GREEN = {0, 255, 0, 255};
     static const inline SDL_Color BLUE = {0, 0, 255, 255};
+    static const inline SDL_Color YELLOW = {255, 255, 0, 255};
+    static const inline SDL_Color PURPLE = {255, 0, 255, 255};
+    static const inline SDL_Color CYAN = {0, 255, 255, 255};
     static const inline SDL_Color PINK = {255, 192, 203, 255};
     static const inline SDL_Color TRANSPARENT = {0, 0, 0, 0};
 

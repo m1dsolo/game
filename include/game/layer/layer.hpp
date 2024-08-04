@@ -6,6 +6,8 @@ namespace wheel {
 
 class Layer {
 public:
+    virtual ~Layer() = default;
+
     virtual void on_attach() {}
     virtual void on_detach() {}
     virtual void on_update() {}
@@ -14,7 +16,6 @@ public:
 
 protected:
     Layer() = default;
-    virtual ~Layer() = default;
 };
 
 }  // namespace wheel

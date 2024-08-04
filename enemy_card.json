@@ -1,0 +1,22 @@
+[
+    {
+        "name": "max_hp_ratio+50",
+        "key": "max_hp_ratio",
+        "value": 50
+    },
+    {
+        "name": "max_speed_ratio+50",
+        "key": "max_speed_ratio",
+        "value": 50
+    },
+    {
+        "name": "extra_collide_damage+1",
+        "key": "extra_collide_damage",
+        "value": 1
+    },
+    {
+        "name": "enemy_num+10",
+        "key": "enemy_num",
+        "value": 10
+    }
+]

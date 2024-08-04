@@ -4,6 +4,7 @@
 #include <game/ui.hpp>
 #include <game/event.hpp>
 #include <game/entity_manager.hpp>
+#include <game/layer_manager.hpp>
 
 #include <game/layer/card.hpp>
 #include <game/layer/cursor.hpp>
@@ -17,7 +18,7 @@ void GameEventSystem::execute_impl() {
     // card
     for (auto& event : ecs.get_events<LevelUpEvent>()) {
         if (ecs.has_components<SelfComponent>(event.entity)) {
-            UI::instance().push_back<CardLayer>();
+            UI::instance().push_back(LayerManager::instance().get("player_cards"));
         }
     }
 

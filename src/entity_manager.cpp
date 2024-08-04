@@ -42,6 +42,8 @@
 #include <game/component/perk.hpp>
 #include <game/component/aim_direction.hpp>
 
+#include <game/resource/enemy.hpp>
+
 namespace wheel {
 
 EntityManager::EntityManager() {
@@ -96,7 +98,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     inventory.pick("m4a1");
     inventory.pick("awp");
     inventory.pick("hp_potion", 1);
-    inventory.pick("archer_tower", 3);
+    inventory.pick("archer_tower", 1);
     inventory.pick("floor", 10);
     inventory.pick("wall", 10);
     inventory.pick("door", 10);
@@ -116,6 +118,14 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<double> posit
 
     Entity entity = ecs.add_entity(t);
     create_health_bar(entity);
+
+    auto& enemy_resource = ecs.get_resource<EnemyResource>();
+    auto& hp = ecs.get_component<HPComponent>(entity);
+    hp.max_hp = hp.hp = enemy_resource.max_hp_ratio * hp.max_hp / 100;
+    auto& velocity = ecs.get_component<VelocityComponent>(entity);
+    velocity.max_speed = velocity.speed = enemy_resource.max_speed_ratio * velocity.speed / 100;
+    auto& collide = ecs.get_component<CollideComponent>(entity);
+    collide.atk += enemy_resource.extra_collide_damage;
 }
 
 void EntityManager::create_tower(const std::string& name, Entity master_entity, Vector2D<double> position) {

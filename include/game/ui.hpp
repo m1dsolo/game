@@ -10,6 +10,7 @@
 
 namespace wheel {
 
+// TODO: layers memory management, no singleton layer
 class UI final : public Singleton<UI> {
     friend class Singleton<UI>;
 
@@ -32,6 +33,11 @@ public:
         layers_.push_back(&t);
     }
 
+    void push_back(Layer* layer) {
+        layer->on_attach();
+        layers_.push_back(layer);
+    }
+
     template <typename T> requires std::derived_from<T, Layer>
     void del() {
         for (auto it = layers_.begin(); it != layers_.end(); ++it) {
@@ -50,7 +56,7 @@ public:
 
 private:
     UI() : cursor_layer_(&CursorLayer::instance()) {}
-    ~UI() = default;
+    ~UI();
     UI(const UI&) = delete;
 
     std::deque<Layer*> layers_;

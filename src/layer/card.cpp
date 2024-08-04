@@ -9,12 +9,14 @@
 
 namespace wheel {
 
-CardLayer::CardLayer() : cards_(CardManager::instance().player_cards()) {
+CardLayer::CardLayer(bool player_cards)
+    : cards_(player_cards ? CardManager::instance().player_cards() : CardManager::instance().enemy_cards()) {
     bg_texture_ = sdl.create_texture(config_resource.w, config_resource.h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET, SDL_PIXELFORMAT_RGBA8888);
     sdl.set_blend_mode(bg_texture_, SDL_BLENDMODE_BLEND);
     sdl.set_alpha_mod(bg_texture_, 0);
 
-    SDL_Texture* card_bg_texture = sdl.create_texture(card_w_, card_h_, sdl.PINK);
+    auto color = player_cards ? sdl.PINK : sdl.BLUE;
+    SDL_Texture* card_bg_texture = sdl.create_texture(card_w_, card_h_, color);
 
     positions[1] = {(config_resource.w) / 2., (config_resource.h) / 2.};
     positions[0] = {positions[1].x - card_w_ - 200, positions[1].y};
@@ -71,6 +73,9 @@ void CardLayer::on_attach() {
 
 void CardLayer::on_detach() {
     sdl.destroy(text_texture_);
+    if (detach_callback_) {
+        detach_callback_();
+    }
 }
 
 void CardLayer::on_update() {
