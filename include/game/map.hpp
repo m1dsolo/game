@@ -21,7 +21,7 @@ public:
     std::pair<int, int> grid_size() const;
     const Rect<double>& rect() const { return rect_; }
 
-    bool is_in_bound(const Vector2D<double>& pos) const;
+    static bool is_in_bound(const Vector2D<double>& pos);
 
     // position is the world coordinate system
     bool plant(const std::string& name, Entity entity, const Vector2D<double>& position);

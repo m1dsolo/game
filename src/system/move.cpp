@@ -62,7 +62,6 @@ void MoveSystem::calc_direction_by_track_nearest_enemy() {
 void MoveSystem::move() {
     auto& map = Map::instance();
     for (auto [position, velocity, direction] : ecs.get_components<PositionComponent, VelocityComponent, DirectionComponent>()) {
-        // 如果碰到障碍物map[i][j]，则阻挡那个方向的速度分量
         // int x0 = position.vec.x;
         // int y0 = position.vec.y;
         // int x1 = x0 + velocity.speed * direction.vec.x;

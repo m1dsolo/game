@@ -59,6 +59,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
 
     EntityTemplate t;
     t[typeid(PlayerComponent)] = PlayerComponent{};
+    t[typeid(PerkComponent)] = PerkComponent{};
     t[typeid(AnimationComponent)] = AnimationComponent{name};
     t[typeid(TextureComponent)] = TextureComponent{};
     t[typeid(PositionComponent)] = PositionComponent{map_pos + map_size / 2};
@@ -122,7 +123,7 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
-    t[typeid(PerkComponent)] = PerkComponent{(double)power / 100};
+    t[typeid(PerkComponent)] = PerkComponent{power};
     Entity entity = ecs.add_entity(t);
 
     ecs.add_components(entity, InventoryComponent{{entity}});

@@ -112,9 +112,9 @@ void GameManager::swap_stage() {
         UI::instance().del<ConstructionStageLayer>();
 
         // Spawns monsters continuously for 1min
-        int frequence = 500000;
-        int count = 10;
-        timer.add(frequence, count, [this]() {
+        int combat_seconds = game_resource.combat_seconds;
+        int enemy_num = game_resource.enemy_num;
+        timer_resource.add(config_resource.fps * combat_seconds / enemy_num, enemy_num, [this]() {
             int val = random.uniform(0, 3);
             if (val < 3) {
                 EntityManager::instance().create_enemy("skeleton");
@@ -123,7 +123,7 @@ void GameManager::swap_stage() {
             }
             enemy_cnt_++;
         });
-        timer.add(frequence, count, [this]() {
+        timer_resource.add(config_resource.fps * combat_seconds, 1, [this]() {
             combat_time_over_ = true;
         });
     }

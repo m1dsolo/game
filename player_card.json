@@ -1,0 +1,69 @@
+[
+    {
+        "name": "max_hp+1",
+        "buffs": [
+            {
+                "name": "max_hp",
+                "value": 1
+            },
+            {
+                "name": "hp",
+                "value": 1
+            }
+        ]
+    },
+    {
+        "name": "restore_all_hp",
+        "buffs": [
+            {
+                "name": "hp",
+                "value": 100
+            }
+        ]
+    },
+    {
+        "name": "max_speed+50",
+        "buffs": [
+            {
+                "name": "max_speed",
+                "value": 50
+            }
+        ]
+    },
+    {
+        "name": "atk_ratio+50%",
+        "buffs": [
+            {
+                "name": "atk_ratio",
+                "value": 50
+            }
+        ]
+    },
+    {
+        "name": "shoot_speed_ratio+50%",
+        "buffs": [
+            {
+                "name": "shoot_speed_ratio",
+                "value": 50
+            }
+        ]
+    },
+    {
+        "name": "reload_speed_ratio+50%",
+        "buffs": [
+            {
+                "name": "reload_speed_ratio",
+                "value": 50
+            }
+        ]
+    },
+    {
+        "name": "accuracy_ratio+50%",
+        "buffs": [
+            {
+                "name": "accuracy_ratio",
+                "value": 50
+            }
+        ]
+    }
+]

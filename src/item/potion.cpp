@@ -4,7 +4,7 @@ namespace wheel {
 
 bool Potion::use() {
     for (auto& buff : data().buffs) {
-        buff->on_effect(entity_);
+        buff(entity_);
     }
     return true;
 }

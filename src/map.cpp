@@ -43,7 +43,7 @@ std::pair<int, int> Map::grid_size() const {
     return {TILE_NUM_W, TILE_NUM_H};
 }
 
-bool Map::is_in_bound(const Vector2D<double>& pos) const {
+bool Map::is_in_bound(const Vector2D<double>& pos) {
     return pos.x >= PADDING_TILE_NUM * TILE_SIZE &&
         pos.x <= (TILE_NUM_W + PADDING_TILE_NUM) * TILE_SIZE &&
         pos.y >= PADDING_TILE_NUM * TILE_SIZE &&

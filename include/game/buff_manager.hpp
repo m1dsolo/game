@@ -1,12 +1,19 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 #include <wheel/singleton.hpp>
 
-#include <game/buff.hpp>
+#include <game/global.hpp>
+#include <game/component/buff.hpp>
+#include <game/component/hp.hpp>
+#include <game/component/velocity.hpp>
+#include <game/component/perk.hpp>
 
 namespace wheel {
+
+using Buff = std::function<void(Entity)>;
 
 // TODO: reflection
 class BuffManager : public Singleton<BuffManager> {
@@ -14,9 +21,49 @@ class BuffManager : public Singleton<BuffManager> {
 
 public:
     template <typename... Args>
-    std::shared_ptr<Buff> create(const std::string& name, Args&&... args) {
+    Buff create(const std::string& name, Args&&... args) {
+        auto args_tuple = std::make_tuple(std::forward<Args>(args)...);
         if (name == "hp") {
-            return std::make_shared<HPBuff>(std::forward<Args>(args)...);
+            auto [hp] = args_tuple;
+            return [hp](Entity entity) {
+                ecs.add_components(entity, HealBuffComponent{hp});
+            };
+        } else if (name == "max_hp") {
+            auto [max_hp] = args_tuple;
+            return [max_hp](Entity entity) {
+                auto& hp = ecs.get_component<HPComponent>(entity);
+                hp.max_hp += max_hp;
+            };
+        } else if (name == "max_speed") {
+            auto [max_speed] = args_tuple;
+            return [max_speed](Entity entity) {
+                auto& velocity = ecs.get_component<VelocityComponent>(entity);
+                velocity.max_speed += max_speed;
+            };
+        } else if (name == "atk_ratio") {
+            auto [atk_ratio] = args_tuple;
+            return [atk_ratio](Entity entity) {
+                auto& perk = ecs.get_component<PerkComponent>(entity);
+                perk.atk_ratio += atk_ratio;
+            };
+        } else if (name == "shoot_speed_ratio") {
+            auto [shoot_speed_ratio] = args_tuple;
+            return [shoot_speed_ratio](Entity entity) {
+                auto& perk = ecs.get_component<PerkComponent>(entity);
+                perk.shoot_speed_ratio += shoot_speed_ratio;
+            };
+        } else if (name == "reload_speed_ratio") {
+            auto [reload_speed_ratio] = args_tuple;
+            return [reload_speed_ratio](Entity entity) {
+                auto& perk = ecs.get_component<PerkComponent>(entity);
+                perk.reload_speed_ratio += reload_speed_ratio;
+            };
+        } else if (name == "accuracy_ratio") {
+            auto [accuracy_ratio] = args_tuple;
+            return [accuracy_ratio](Entity entity) {
+                auto& perk = ecs.get_component<PerkComponent>(entity);
+                perk.accuracy_ratio += accuracy_ratio;
+            };
         }
         return nullptr;
     }

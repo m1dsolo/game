@@ -2,79 +2,38 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
-#include <typeindex>
+#include <vector>
 
 #include <wheel/singleton.hpp>
 
+#include <game/buff_manager.hpp>
+
 namespace wheel {
 
-struct Card {
-    Card(const std::string& name) : name(name) {}
-    virtual ~Card() = default;
-
-    virtual void execute() = 0;
-
-    std::string name;
-};
-
-struct MaxHpCard : Card {
-    MaxHpCard() : Card("max_hp+1") {}
-
-    void execute() override;
-};
-
-struct HealCard : Card {
-    HealCard() : Card("hp+3") {}
-
-    void execute() override;
-};
-
-struct AtkCard : Card {
-    AtkCard() : Card("atk+50%") {}
-
-    void execute() override;
-};
-
-struct ShootSpeedCard : Card {
-    ShootSpeedCard() : Card("shoot_speed+50%") {}
-
-    void execute() override;
-};
-
-struct ReloadSpeedCard : Card {
-    ReloadSpeedCard() : Card("reload_speed+100%") {}
-
-    void execute() override;
-};
-
-struct AccuracyCard : Card {
-    AccuracyCard() : Card("accuracy+50%") {}
-
-    void execute() override;
-};
-
-struct FlashCooldownCard : Card {
-    FlashCooldownCard() : Card("flash_cooldown_speed+50%") {}
-
-    void execute() override;
-};
-
-class CardFactory : public Singleton<CardFactory> {
+class Card {
 public:
-    CardFactory();
+    Card(const std::string& name, std::vector<Buff> buffs) : name_(name), buffs_(buffs) {}
 
-    template <typename CardType>
-    CardType create() const {
-        return static_cast<CardType>(cards_map_.at(typeid(CardType)));
-    }
+    void use();
 
-    std::shared_ptr<Card> get(size_t idx) const;
-
-    size_t size() const { return cards_map_.size(); }
+    const std::string& name() const { return name_; }
+    const std::vector<Buff>& buffs() const { return buffs_; }
 
 private:
-    std::unordered_map<std::type_index, std::shared_ptr<Card>> cards_map_;
+    std::string name_;
+    std::vector<Buff> buffs_;
+};
+
+class CardManager : public Singleton<CardManager> {
+public:
+    CardManager();
+
+    std::vector<std::shared_ptr<Card>>& player_cards() { return player_cards_; }
+
+    // size_t size() const { return player_cards_.size(); }
+
+private:
+    std::vector<std::shared_ptr<Card>> player_cards_;
 };
 
 }  // namespace wheel

@@ -26,7 +26,7 @@ Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
             double cooldown = shoot_interval;
             if (ecs.has_components<PerkComponent>(entity)) {
                 auto& perk = ecs.get_component<PerkComponent>(entity);
-                cooldown /= perk.shoot_speed_ratio;
+                cooldown = cooldown * 100 / perk.shoot_speed_ratio;
             }
             return static_cast<int>(cooldown);
         },
@@ -42,7 +42,7 @@ Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
             double cooldown = reload_interval;
             if (ecs.has_components<PerkComponent>(entity)) {
                 auto& perk = ecs.get_component<PerkComponent>(entity);
-                cooldown /= perk.reload_speed_ratio;
+                cooldown = cooldown * 100 / perk.reload_speed_ratio;
             }
             return static_cast<int>(cooldown);
         },
@@ -73,8 +73,8 @@ void Gun::shoot() {
     int atk = data().atk;
     if (ecs.has_components<PerkComponent>(entity_)) {
         auto& perk = ecs.get_component<PerkComponent>(entity_);
-        a = (double)a / perk.accuracy_ratio;
-        atk = std::ceil((double)atk * perk.atk_ratio);
+        a = (double)a * 100 / perk.accuracy_ratio;
+        atk = std::ceil((double)atk * perk.atk_ratio / 100);
     }
     for (int i = 0; i < data().count; ++i) {
         double angle = random.uniform(-a, a) * M_PI / 180;

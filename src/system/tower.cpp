@@ -3,6 +3,7 @@
 #include <game/global.hpp>
 #include <game/entity_manager.hpp>
 #include <game/game_manager.hpp>
+#include <game/map.hpp>
 
 #include <game/component/tower.hpp>
 #include <game/component/position.hpp>
@@ -24,6 +25,9 @@ void TowerSystem::attack() {
         Vector2D<double> pos = {1000000, 1000000};
         double min_distance = tower_position.vec.distance(pos);
         for (auto [enemy, enemy_position] : ecs.get_components<EnemyComponent, PositionComponent>()) {
+            if (!Map::is_in_bound(enemy_position.vec)) {
+                continue;
+            }
             double distance = tower_position.vec.distance(enemy_position.vec);
             if (distance < min_distance) {
                 min_distance = distance;

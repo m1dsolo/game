@@ -3,11 +3,10 @@
 namespace wheel {
 
 struct PerkComponent {
-    double atk_ratio = 1.;
-    double shoot_speed_ratio = 1.;
-    double reload_speed_ratio = 1.;
-    double flash_cooldown_ratio = 1.;
-    double accuracy_ratio = 1.;
+    int atk_ratio = 100;
+    int shoot_speed_ratio = 100;
+    int reload_speed_ratio = 100;
+    int accuracy_ratio = 100;
 };
 
 }  // namespace wheel

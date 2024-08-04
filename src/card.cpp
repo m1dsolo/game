@@ -1,5 +1,7 @@
 #include <game/card.hpp>
 
+#include <wheel/json.hpp>
+
 #include <game/global.hpp>
 #include <game/event.hpp>
 #include <game/entity_manager.hpp>
@@ -10,64 +12,31 @@
 
 namespace wheel {
 
-void MaxHpCard::execute() {
-    for (auto [_, hp] : ecs.get_components<SelfComponent, HPComponent>()) {
-        hp.max_hp += 1;
+void Card::use() {
+    Entity entity = ecs.get_entities<SelfComponent>()[0];
+    for (auto buff : buffs_) {
+        buff(entity);
     }
 }
 
-void HealCard::execute() {
-    for (auto [_, hp] : ecs.get_components<SelfComponent, HPComponent>()) {
-        hp.hp = std::min(hp.max_hp, hp.hp + 3);
+CardManager::CardManager() {
+    JsonListType obj = Json::parse_file(game_resource.path + "/player_card.json");
+    for (JsonDictType& card_obj : obj) {
+        std::string name = card_obj["name"];
+        std::vector<Buff> buffs;
+        for (JsonDictType& buff_obj : static_cast<JsonListType&>(card_obj["buffs"])) {
+            std::string buff_name = buff_obj["name"];
+            int value = buff_obj["value"];
+            auto buff = BuffManager::instance().create(buff_name, value);
+            buffs.emplace_back(buff);
+        }
+        player_cards_.emplace_back(std::make_shared<Card>(name, buffs));
     }
 }
 
-void AtkCard::execute() {
-    for (auto [_, perk] : ecs.get_components<SelfComponent, PerkComponent>()) {
-        perk.atk_ratio += 0.5;
-    }
-}
-
-void ShootSpeedCard::execute() {
-    for (auto [_, perk] : ecs.get_components<SelfComponent, PerkComponent>()) {
-        perk.shoot_speed_ratio += 0.5;
-    }
-}
-
-void ReloadSpeedCard::execute() {
-    for (auto [_, perk] : ecs.get_components<SelfComponent, PerkComponent>()) {
-        perk.reload_speed_ratio += 1.;
-    }
-}
-
-void AccuracyCard::execute() {
-    for (auto [_, perk] : ecs.get_components<SelfComponent, PerkComponent>()) {
-        perk.accuracy_ratio += 0.5;
-    }
-}
-
-void FlashCooldownCard::execute() {
-    for (auto [_, perk] : ecs.get_components<SelfComponent, PerkComponent>()) {
-        perk.flash_cooldown_ratio += 0.5;
-    }
-}
-
-CardFactory::CardFactory() {
-    cards_map_[typeid(MaxHpCard)] = std::make_shared<MaxHpCard>();
-    cards_map_[typeid(HealCard)] = std::make_shared<HealCard>();
-    cards_map_[typeid(AtkCard)] = std::make_shared<AtkCard>();
-    cards_map_[typeid(ShootSpeedCard)] = std::make_shared<ShootSpeedCard>();
-    cards_map_[typeid(ReloadSpeedCard)] = std::make_shared<ReloadSpeedCard>();
-    cards_map_[typeid(AccuracyCard)] = std::make_shared<AccuracyCard>();
-    cards_map_[typeid(FlashCooldownCard)] = std::make_shared<FlashCooldownCard>();
-}
-
-std::shared_ptr<Card> CardFactory::get(size_t idx) const {
-    std::vector<std::shared_ptr<Card>> cards;
-    for (const auto& [_, card] : cards_map_) {
-        cards.emplace_back(card);
-    }
-    return cards[idx];
-}
+// std::shared_ptr<Card> CardFactory::get(size_t idx) const {
+//     std::vector<std::shared_ptr<Card>> cards;
+//     return cards[idx];
+// }
 
 }  // namespace wheel

@@ -1,7 +1,6 @@
 #include <game/layer/card.hpp>
 
 #include <game/global.hpp>
-#include <game/card.hpp>
 #include <game/event.hpp>
 #include <game/game_manager.hpp>
 #include <game/ui.hpp>
@@ -10,7 +9,7 @@
 
 namespace wheel {
 
-CardLayer::CardLayer() {
+CardLayer::CardLayer() : cards_(CardManager::instance().player_cards()) {
     bg_texture_ = sdl.create_texture(config_resource.w, config_resource.h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET, SDL_PIXELFORMAT_RGBA8888);
     sdl.set_blend_mode(bg_texture_, SDL_BLENDMODE_BLEND);
     sdl.set_alpha_mod(bg_texture_, 0);
@@ -46,7 +45,7 @@ void CardLayer::on_attach() {
         // get card idx
         size_t idx;
         while (true) {
-            idx = game_resource.random.uniform(0, (int)CardFactory::instance().size() - 1);
+            idx = game_resource.random.uniform(0, (int)cards_.size() - 1);
             bool found = false;
             for (auto card_idx : card_idxs) {
                 if (card_idx == idx) {
@@ -63,7 +62,7 @@ void CardLayer::on_attach() {
         }
 
         // add card text texture
-        const std::string& name = CardFactory::instance().get(idx)->name;
+        const std::string& name = cards_[idx]->name();
         SDL_FRect text_dst = {(float)positions[i].x, (float)positions[i].y, 0, 0};
         sdl.draw_text(name, &text_dst, sdl.BLACK, true, 0, 0, card_w_ - 100);
     }
@@ -134,7 +133,7 @@ bool CardLayer::on_event(const SDL_Event& event) {
 }
 
 void CardLayer::choose(int idx) {
-    CardFactory::instance().get(idx)->execute();
+    cards_[idx]->use();
     UI::instance().del<CardLayer>();
     GameManager::instance().resume();
 }

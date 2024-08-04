@@ -18,6 +18,9 @@ struct GameResource {
     std::string path = std::filesystem::current_path();
 
     Random random;
+
+    int combat_seconds = 30;
+    int enemy_num = 30;
 };
 
 }  // namespace wheel

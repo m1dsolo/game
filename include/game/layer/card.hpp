@@ -5,6 +5,7 @@
 #include <wheel/singleton.hpp>
 #include <wheel/geometry.hpp>
 
+#include <game/card.hpp>
 #include <game/layer/layer.hpp>
 
 namespace wheel {
@@ -37,6 +38,8 @@ private:
 
     int card_w_ = 300;
     int card_h_ = 500;
+
+    const std::vector<std::shared_ptr<Card>>& cards_;
 };
 
 }  // namespace wheel

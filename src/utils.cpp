@@ -28,25 +28,29 @@ Vector2D<double> GameUtils::gen_spawn_boundary_position() {
     int direction = random.uniform(0, 3);
     auto& [pos, size] = Map::instance().rect();
     int w = size.x, h = size.y;
+    int x0 = pos.x;
+    int y0 = pos.y;
+    int x1 = pos.x + w;
+    int y1 = pos.y + h;
     switch (direction) {
         // up
         case 0: {
-            position = {(double)random.uniform(0, w - 1), 0};
+            position = {(double)random.uniform(x0, x1 - 1), (double)y0};
             break;
         }
         // down
         case 1: {
-            position = {(double)random.uniform(0, w - 1), (double)h};
+            position = {(double)random.uniform(x0, x1 - 1), (double)y1 - 1};
             break;
         }
         // left
         case 2: {
-            position = {0, (double)random.uniform(0, h - 1)};
+            position = {(double)x0, (double)random.uniform(y0, y1 - 1)};
             break;
         }
         // right
         case 3: {
-            position = {(double)w, (double)random.uniform(0, h - 1)};
+            position = {(double)x1 - 1, (double)random.uniform(y0, y1 - 1)};
             break;
         }
     }

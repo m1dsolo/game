@@ -96,7 +96,7 @@ void ItemManager::parse_item_json() {
         } else if (sub_types[0] == "consumable") {
             int max_uses = item.count("max_uses") ? item["max_uses"] : 1;
             if (sub_types[1] == "potion") {
-                std::vector<std::shared_ptr<Buff>> buffs;
+                std::vector<Buff> buffs;
                 for (JsonDictType& buff_obj : static_cast<JsonListType&>(item["buffs"])) {
                     std::string buff_name = buff_obj["name"];
                     int value = buff_obj["value"];
