@@ -209,7 +209,7 @@ void EntityManager::parse_enemy_json() {
         t[typeid(HPComponent)] = HPComponent{hp};
         t[typeid(CollideComponent)] = CollideComponent{collide, -1, 30};
         t[typeid(RewardComponent)] = RewardComponent{exp, rewards};
-        t[typeid(TrackNearestEnemyTag)] = TrackNearestEnemyTag{};
+        t[typeid(TrackNearestPlayerTag)] = TrackNearestPlayerTag{};
         std::string animation_name = enemy.count("animation_name") ? enemy["animation_name"] : name;
         t[typeid(AnimationComponent)] = AnimationComponent{animation_name};
         t[typeid(TextureComponent)] = TextureComponent{};

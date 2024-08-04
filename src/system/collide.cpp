@@ -6,6 +6,8 @@
 #include <game/map.hpp>
 
 #include <game/component/position.hpp>
+#include <game/component/direction.hpp>
+#include <game/component/velocity.hpp>
 #include <game/component/size.hpp>
 #include <game/component/item.hpp>
 #include <game/component/damage.hpp>
@@ -18,12 +20,16 @@
 #include <game/component/master.hpp>
 #include <game/component/hp.hpp>
 #include <game/component/inventory.hpp>
+#include <game/component/perk.hpp>
+#include <game/component/ai.hpp>
+#include <game/component/player.hpp>
 
 namespace wheel {
 
 void CollideSystem::execute_impl() {
     collide();
     bullet_out_of_boundary();
+    pick_range();
     auto_pickup();
 }
 
@@ -115,11 +121,33 @@ void CollideSystem::bullet_out_of_boundary() {
     }
 }
 
+// TODO: performance
+void CollideSystem::pick_range() {
+    for (auto [perk, inventory, position0] : ecs.get_components<PerkComponent, InventoryComponent, PositionComponent>()) {
+        if (perk.pick_range > 0) {
+            for (auto [entity, item, position1] : ecs.get_entity_and_components<ItemComponent, PositionComponent>()) {
+                if (ecs.has_components<TrackNearestPlayerTag>(entity)) {
+                    continue;
+                }
+                if (position0.vec.distance(position1.vec) <= perk.pick_range) {
+                    if (inventory.inventory.pick(item.name, item.count)) {
+                        ecs.add_components(
+                            entity,
+                            TrackNearestPlayerTag{},
+                            DirectionComponent{},
+                            VelocityComponent{perk.pick_range + 100.}
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
 void CollideSystem::auto_pickup() {
-    // auto pick item
     for (auto [entity0, item, position0, size0] : ecs.get_entity_and_components<ItemComponent, PositionComponent, SizeComponent>()) {
         Rect<double> rect0 = {{position0.vec.x, position0.vec.y}, {(double)size0.w / 2, (double)size0.h / 2}};
-        for (auto [inventory, position1, size1] : ecs.get_components<InventoryComponent, PositionComponent, SizeComponent>()) {
+        for (auto [_, inventory, position1, size1] : ecs.get_components<PlayerComponent, InventoryComponent, PositionComponent, SizeComponent>()) {
             Rect<double> rect1 = {{position1.vec.x, position1.vec.y}, {(double)size1.w / 2, (double)size1.h / 2}};
             if (rect0.intersection(rect1) > 0) {
                 if (inventory.inventory.pick(item.name, item.count)) {

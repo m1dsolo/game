@@ -64,6 +64,12 @@ public:
                 auto& perk = ecs.get_component<PerkComponent>(entity);
                 perk.accuracy_ratio += accuracy_ratio;
             };
+        } else if (name == "pick_range") {
+            auto [pick_range] = args_tuple;
+            return [pick_range](Entity entity) {
+                auto& perk = ecs.get_component<PerkComponent>(entity);
+                perk.pick_range += pick_range;
+            };
         }
         return nullptr;
     }

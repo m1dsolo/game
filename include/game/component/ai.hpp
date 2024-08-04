@@ -2,6 +2,6 @@
 
 namespace wheel {
 
-struct TrackNearestEnemyTag {};
+struct TrackNearestPlayerTag {};
 
 }  // namespace wheel

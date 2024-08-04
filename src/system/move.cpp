@@ -40,8 +40,8 @@ void MoveSystem::calc_input_direction() {
 }
 
 void MoveSystem::calc_direction_by_track_nearest_enemy() {
-    for (auto [_, enemy, position0, velocity0, direction0]
-        : ecs.get_components<TrackNearestEnemyTag, EnemyComponent, PositionComponent, VelocityComponent, DirectionComponent>()) {
+    for (auto [_, position0, velocity0, direction0]
+        : ecs.get_components<TrackNearestPlayerTag, PositionComponent, VelocityComponent, DirectionComponent>()) {
         Vector2D<double> pos = {1000000, 1000000};
         auto& pos0 = position0.vec;
         double min_distance = pos0.distance(pos);

@@ -32,6 +32,7 @@
 #include <game/component/inventory.hpp>
 #include <game/component/item.hpp>
 #include <game/component/tag.hpp>
+#include <game/component/ai.hpp>
 
 namespace wheel {
 
@@ -135,8 +136,12 @@ void GameManager::swap_stage() {
         Entity entity = ecs.get_entities<SelfComponent>()[0];
         auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
         for (auto [entity, item] : ecs.get_entity_and_components<ItemComponent>()) {
-            inventory.pick(item.name, item.count);
-            ecs.add_components(entity, DelEntityTag{});
+            ecs.add_components(
+                entity,
+                TrackNearestPlayerTag{},
+                DirectionComponent{},
+                VelocityComponent{500}
+            );
         }
     }
     stage_ = !stage_;

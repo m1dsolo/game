@@ -65,5 +65,14 @@
                 "value": 50
             }
         ]
+    },
+    {
+        "name": "pick_range+100",
+        "buffs": [
+            {
+                "name": "pick_range",
+                "value": 100
+            }
+        ]
     }
 ]
