@@ -23,8 +23,11 @@ private:
     ~Camera() = default;
     Camera(const Camera&) = delete;
 
+    Vector2D<double> stable_pos_ {0., 0.};
+    Vector2D<double> shake_pos_ {0., 0.};
     Vector2D<double> pos_ {0., 0.};
     Vector2D<int> size_;
+    bool shaking_ = false;
 };
 
 }  // namespace wheel

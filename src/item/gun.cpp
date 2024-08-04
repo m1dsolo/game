@@ -91,6 +91,7 @@ void Gun::shoot() {
     }
 
     AudioManager::instance().play(data().name + "_shoot");
+    // camera.shake(10, 3, 1);
 }
 
 void Gun::reload() {

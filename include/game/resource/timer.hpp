@@ -15,9 +15,9 @@ struct TimerResource {
     timer_t us_per_frame;
     bool pause = false;
 
-    template <typename F, typename... Args>
-    void add(int frames, int cnt, F&& f, Args&&... args) {
-        timer.add(frames * us_per_frame, cnt, std::forward<F>(f), std::forward<Args>(args)...);
+    template <typename F>
+    void add(int frames, int cnt, F&& f, bool immediately = false) {
+        timer.add(frames * us_per_frame, cnt, std::forward<F>(f), immediately);
     }
 };
 
