@@ -26,12 +26,7 @@ std::vector<SDL_Texture*> GameUtils::read_textures(std::string_view path) {
 Vector2D<double> GameUtils::gen_spawn_boundary_position() {
     Vector2D<double> position;
     int direction = random.uniform(0, 3);
-    auto& [pos, size] = Map::instance().rect();
-    int w = size.x, h = size.y;
-    int x0 = pos.x;
-    int y0 = pos.y;
-    int x1 = pos.x + w;
-    int y1 = pos.y + h;
+    auto [x0, y0, x1, y1] = Map::instance().game_rect();
     switch (direction) {
         // up
         case 0: {
@@ -59,9 +54,9 @@ Vector2D<double> GameUtils::gen_spawn_boundary_position() {
 }
 
 Vector2D<double> GameUtils::gen_spawn_internal_position(int margin) {
-    auto& [pos, size] = Map::instance().rect();
-    double w = random.uniform(margin, (int)size.x - margin);
-    double h = random.uniform(margin, (int)size.y - margin);
+    auto size = Map::instance().pixel_size();
+    double w = random.uniform(margin, (int)size.first - margin);
+    double h = random.uniform(margin, (int)size.second - margin);
     return {w, h};
 }
 

@@ -22,7 +22,8 @@ void MapLayer::on_render() {
     // render map
     auto& pos = camera.pos();
     auto& [screen_w, screen_h] = camera.size();
-    SDL_FRect src = {(float)pos.x, (float)pos.y, (float)screen_w, (float)screen_h};
+    auto [real_x0, real_y0, real_x1, real_y1] = map.real_rect();
+    SDL_FRect src = {(float)pos.x + real_x0, (float)pos.y + real_y0, (float)screen_w, (float)screen_h};
     sdl.render(map.texture(), &src, nullptr);
 
     // render selection

@@ -14,17 +14,24 @@ class Map : public Singleton<Map> {
     friend class Singleton<Map>;
 
 public:
-    Vector2D<double> idx2pos(int i, int j);
-    std::pair<int, int> pos2idx(const Vector2D<double>& pos);
+    Vector2D<double> idx2pos(int i, int j) const;
+    std::pair<int, int> pos2idx(const Vector2D<double>& pos) const;
+    Rect<int> idx2tile_rect(int i, int j) const;
 
     // [w, h]
     std::pair<int, int> grid_size() const;
-    const Rect<double>& rect() const { return rect_; }
+    std::pair<int, int> pixel_size() const;
+    const Rect<int>& game_rect() const { return game_rect_; }
+    const Rect<int>& real_rect() const { return real_rect_; }
 
     static bool is_in_bound(const Vector2D<double>& pos);
 
     // position is the world coordinate system
     bool plant(const std::string& name, Entity entity, const Vector2D<double>& position);
+
+    bool is_planted(int i, int j) const;
+    bool is_collision(const Rect<double>& rect) const;
+    bool is_collision(const Rect<int>& rect) const;
 
     SDL_Texture* texture() { return texture_; }
 
@@ -43,7 +50,8 @@ private:
     SDL_Texture* texture_;
     std::vector<std::vector<bool>> planted_structure_;
     std::vector<std::vector<bool>> planted_floor_;
-    Rect<double> rect_;
+    Rect<int> game_rect_;
+    Rect<int> real_rect_;
 };
 
 }  // namespace wheel

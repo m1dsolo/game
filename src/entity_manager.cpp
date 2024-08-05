@@ -57,14 +57,14 @@ EntityManager::EntityManager() {
 }
 
 Entity EntityManager::create_player(const std::string& name, bool self) {
-    auto [map_pos, map_size] = Map::instance().rect();
+    auto [x0, y0, x1, y1] = Map::instance().game_rect();
 
     EntityTemplate t;
     t[typeid(PlayerComponent)] = PlayerComponent{};
     t[typeid(PerkComponent)] = PerkComponent{};
     t[typeid(AnimationComponent)] = AnimationComponent{name};
     t[typeid(TextureComponent)] = TextureComponent{};
-    t[typeid(PositionComponent)] = PositionComponent{map_pos + map_size / 2};
+    t[typeid(PositionComponent)] = PositionComponent{(x0 + x1) / 2., (y0 + y1) / 2.};
     t[typeid(SizeComponent)] = SizeComponent{48, 48};
     t[typeid(VelocityComponent)] = VelocityComponent{100, 100};
     t[typeid(DirectionComponent)] = DirectionComponent{};

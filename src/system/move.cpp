@@ -61,27 +61,32 @@ void MoveSystem::calc_direction_by_track_nearest_enemy() {
 
 void MoveSystem::move() {
     auto& map = Map::instance();
-    for (auto [position, velocity, direction] : ecs.get_components<PositionComponent, VelocityComponent, DirectionComponent>()) {
-        // int x0 = position.vec.x;
-        // int y0 = position.vec.y;
-        // int x1 = x0 + velocity.speed * direction.vec.x;
-        // int y1 = y0 + velocity.speed * direction.vec.y;
-        // int w = map.pos2idx();
-
-        position.vec += direction.vec.normalize() * velocity.speed * timer_resource.delta / 1000000;
+    for (auto [position, size, velocity, direction] : ecs.get_components<PositionComponent, SizeComponent, VelocityComponent, DirectionComponent>()) {
+        auto delta = direction.vec.normalize() * velocity.speed * timer_resource.delta / 1000000;
+        position.vec.x += delta.x;
+        if (map.is_collision({position.vec, {(double)size.w, (double)size.h}})) {
+            position.vec.x -= delta.x;
+        }
+        position.vec.y += delta.y;
+        if (map.is_collision({position.vec, {(double)size.w, (double)size.h}})) {
+            position.vec.y -= delta.y;
+        }
+        if (map.is_collision({position.vec, {(double)size.w, (double)size.h}})) {
+            position.vec += delta;
+        }
     }
 }
 
 // TODO: cache
 void MoveSystem::clamp_player_position() {
     auto& map = Map::instance();
-    auto& [pos, map_size] = map.rect();
+    auto& [x0, y0, x1, y1] = map.game_rect();
     for (auto [player, position, size] : ecs.get_components<PlayerComponent, PositionComponent, SizeComponent>()) {
         position.vec.clamp(
-            pos.x + (float)size.w / 2,
-            pos.x + map_size.x - (float)size.w / 2,
-            pos.y + (float)size.h / 2,
-            pos.y + map_size.y - (float)size.h / 2
+            x0 + (float)size.w / 2,
+            x1 - (float)size.w / 2,
+            y0 + (float)size.h / 2,
+            y1 - (float)size.h / 2
         );
     }
 }

@@ -21,6 +21,7 @@
 #include <game/system/input.hpp>
 #include <game/system/continuous_action.hpp>
 #include <game/system/move.hpp>
+#include <game/system/camera.hpp>
 #include <game/system/tower.hpp>
 #include <game/system/collide.hpp>
 #include <game/system/animation.hpp>
@@ -62,6 +63,7 @@ void GameManager::run() {
     add_system<InputSystem>();
     add_system<ContinuousActionSystem>();
     add_system<MoveSystem>();
+    add_system<CameraSystem>();
     add_system<TowerSystem>();
     add_system<CollideSystem>();
     add_system<AnimationSystem>();
@@ -80,8 +82,6 @@ void GameManager::run() {
     ecs.startup();
 
     while (running_) {
-        camera.update_pos();
-
         ecs.update();
 
         // finish combat
