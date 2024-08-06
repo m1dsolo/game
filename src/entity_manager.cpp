@@ -41,6 +41,7 @@
 #include <game/component/health_bar.hpp>
 #include <game/component/perk.hpp>
 #include <game/component/aim_direction.hpp>
+#include <game/component/collider.hpp>
 
 #include <game/resource/enemy.hpp>
 
@@ -75,6 +76,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     t[typeid(MoveComponent)] = MoveComponent{};
     t[typeid(FriendComponent)] = FriendComponent{};
     t[typeid(InputComponent)] = InputComponent{};
+    t[typeid(ColliderComponent)] = ColliderComponent{};
     if (self) {
         t[typeid(SelfComponent)] = SelfComponent{};
     }
@@ -232,10 +234,12 @@ void EntityManager::parse_enemy_json() {
         t[typeid(HPComponent)] = HPComponent{hp};
         t[typeid(CollideComponent)] = CollideComponent{collide, -1, 30};
         t[typeid(RewardComponent)] = RewardComponent{exp, rewards};
-        t[typeid(TrackNearestPlayerTag)] = TrackNearestPlayerTag{};
+        // t[typeid(TrackNearestPlayerTag)] = TrackNearestPlayerTag{};
+        t[typeid(AStarTrackNearestPlayerTag)] = AStarTrackNearestPlayerTag{};
         std::string animation_name = enemy.count("animation_name") ? enemy["animation_name"] : name;
         t[typeid(AnimationComponent)] = AnimationComponent{animation_name};
         t[typeid(TextureComponent)] = TextureComponent{};
+        t[typeid(ColliderComponent)] = ColliderComponent{};
 
         if (enemy.count("size")) {
             int size = enemy["size"];

@@ -12,12 +12,14 @@
 #include <game/component/ai.hpp>
 #include <game/component/player.hpp>
 #include <game/component/continuous_action.hpp>
+#include <game/component/collider.hpp>
 
 namespace wheel {
 
 void MoveSystem::execute_impl() {
     calc_input_direction();
-    calc_direction_by_track_nearest_enemy();
+    calc_direction_by_track_nearest_player();
+    calc_direction_by_a_star_track_nearest_player();
     move();
     clamp_player_position();
 }
@@ -39,7 +41,7 @@ void MoveSystem::calc_input_direction() {
     }
 }
 
-void MoveSystem::calc_direction_by_track_nearest_enemy() {
+void MoveSystem::calc_direction_by_track_nearest_player() {
     for (auto [_, position0, velocity0, direction0]
         : ecs.get_components<TrackNearestPlayerTag, PositionComponent, VelocityComponent, DirectionComponent>()) {
         Vector2D<double> pos = {1000000, 1000000};
@@ -59,19 +61,56 @@ void MoveSystem::calc_direction_by_track_nearest_enemy() {
     }
 }
 
+
+void MoveSystem::calc_direction_by_a_star_track_nearest_player() {
+    static int counter = 0;
+    if (counter++ % 10) {
+        return;
+    }
+    auto& map = Map::instance();
+    for (auto [_, position0, velocity0, direction0]
+        : ecs.get_components<AStarTrackNearestPlayerTag, PositionComponent, VelocityComponent, DirectionComponent>()) {
+        Vector2D<double> pos = {1000000, 1000000};
+        auto& pos0 = position0.vec;
+        double min_distance = pos0.distance(pos);
+        for (auto [_, position1] : ecs.get_components<PlayerComponent, PositionComponent>()) {
+            auto& pos1 = position1.vec;
+            double distance = pos0.distance(pos1);
+            if (distance < min_distance) {
+                min_distance = distance;
+                pos = pos1;
+            }
+        }
+
+        auto s = map.pos2idx(position0.vec);
+        auto t = map.pos2idx(pos);
+        auto path = a_star(s, t);
+        if (path.size() >= 2) {
+            pos = map.idx2pos(path[1].first, path[1].second);
+        }
+        direction0.vec = (pos - pos0).normalize();
+    }
+}
+
 void MoveSystem::move() {
     auto& map = Map::instance();
-    for (auto [position, size, velocity, direction] : ecs.get_components<PositionComponent, SizeComponent, VelocityComponent, DirectionComponent>()) {
+    for (auto [entity, position, size, velocity, direction] : ecs.get_entity_and_components<PositionComponent, SizeComponent, VelocityComponent, DirectionComponent>()) {
         auto delta = direction.vec.normalize() * velocity.speed * timer_resource.delta / 1000000;
+        if (!ecs.has_components<ColliderComponent>(entity)) {
+            position.vec += delta;
+            continue;
+        }
+
+        auto collide_size = Vector2D<double>{size.w / 2., size.h / 2.};
         position.vec.x += delta.x;
-        if (map.is_collision({position.vec, {(double)size.w, (double)size.h}})) {
+        if (map.is_collision({position.vec, collide_size})) {
             position.vec.x -= delta.x;
         }
         position.vec.y += delta.y;
-        if (map.is_collision({position.vec, {(double)size.w, (double)size.h}})) {
+        if (map.is_collision({position.vec, collide_size})) {
             position.vec.y -= delta.y;
         }
-        if (map.is_collision({position.vec, {(double)size.w, (double)size.h}})) {
+        if (map.is_collision({position.vec, collide_size})) {
             position.vec += delta;
         }
     }
