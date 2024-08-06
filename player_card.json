@@ -1,6 +1,7 @@
 [
     {
         "name": "max_hp+1",
+        "rarity": 1,
         "buffs": [
             {
                 "name": "max_hp",
@@ -13,7 +14,64 @@
         ]
     },
     {
+        "name": "max_hp+2",
+        "rarity": 2,
+        "buffs": [
+            {
+                "name": "max_hp",
+                "value": 2
+            },
+            {
+                "name": "hp",
+                "value": 2
+            }
+        ]
+    },
+    {
+        "name": "max_hp+3",
+        "rarity": 3,
+        "buffs": [
+            {
+                "name": "max_hp",
+                "value": 3
+            },
+            {
+                "name": "hp",
+                "value": 3
+            }
+        ]
+    },
+    {
+        "name": "max_hp+4",
+        "rarity": 4,
+        "buffs": [
+            {
+                "name": "max_hp",
+                "value": 4
+            },
+            {
+                "name": "hp",
+                "value": 4
+            }
+        ]
+    },
+    {
+        "name": "max_hp+5",
+        "rarity": 5,
+        "buffs": [
+            {
+                "name": "max_hp",
+                "value": 5
+            },
+            {
+                "name": "hp",
+                "value": 5
+            }
+        ]
+    },
+    {
         "name": "restore_all_hp",
+        "rarity": 1,
         "buffs": [
             {
                 "name": "hp",
@@ -22,7 +80,48 @@
         ]
     },
     {
+        "name": "max_speed+10",
+        "rarity": 1,
+        "buffs": [
+            {
+                "name": "max_speed",
+                "value": 10
+            }
+        ]
+    },
+    {
+        "name": "max_speed+20",
+        "rarity": 2,
+        "buffs": [
+            {
+                "name": "max_speed",
+                "value": 20
+            }
+        ]
+    },
+    {
+        "name": "max_speed+30",
+        "rarity": 3,
+        "buffs": [
+            {
+                "name": "max_speed",
+                "value": 30
+            }
+        ]
+    },
+    {
+        "name": "max_speed+40",
+        "rarity": 4,
+        "buffs": [
+            {
+                "name": "max_speed",
+                "value": 40
+            }
+        ]
+    },
+    {
         "name": "max_speed+50",
+        "rarity": 5,
         "buffs": [
             {
                 "name": "max_speed",
@@ -31,16 +130,98 @@
         ]
     },
     {
-        "name": "atk_ratio+50%",
+        "name": "atk_ratio+10%",
+        "rarity": 1,
         "buffs": [
             {
                 "name": "atk_ratio",
-                "value": 50
+                "value": 10
+            }
+        ]
+    },
+    {
+        "name": "atk_ratio+20%",
+        "rarity": 2,
+        "buffs": [
+            {
+                "name": "atk_ratio",
+                "value": 20
+            }
+        ]
+    },
+    {
+        "name": "atk_ratio+30%",
+        "rarity": 3,
+        "buffs": [
+            {
+                "name": "atk_ratio",
+                "value": 30
+            }
+        ]
+    },
+    {
+        "name": "atk_ratio+40%",
+        "rarity": 4,
+        "buffs": [
+            {
+                "name": "atk_ratio",
+                "value": 40
+            }
+        ]
+    },
+    {
+        "name": "atk_ratio+10%",
+        "rarity": 1,
+        "buffs": [
+            {
+                "name": "atk_ratio",
+                "value": 10
+            }
+        ]
+    },
+    {
+        "name": "shoot_speed_ratio+10%",
+        "rarity": 1,
+        "buffs": [
+            {
+                "name": "shoot_speed_ratio",
+                "value": 10
+            }
+        ]
+    },
+    {
+        "name": "shoot_speed_ratio+20%",
+        "rarity": 2,
+        "buffs": [
+            {
+                "name": "shoot_speed_ratio",
+                "value": 20
+            }
+        ]
+    },
+    {
+        "name": "shoot_speed_ratio+30%",
+        "rarity": 3,
+        "buffs": [
+            {
+                "name": "shoot_speed_ratio",
+                "value": 30
+            }
+        ]
+    },
+    {
+        "name": "shoot_speed_ratio+40%",
+        "rarity": 4,
+        "buffs": [
+            {
+                "name": "shoot_speed_ratio",
+                "value": 40
             }
         ]
     },
     {
         "name": "shoot_speed_ratio+50%",
+        "rarity": 5,
         "buffs": [
             {
                 "name": "shoot_speed_ratio",
@@ -49,29 +230,152 @@
         ]
     },
     {
-        "name": "reload_speed_ratio+50%",
+        "name": "reload_speed_ratio+20%",
+        "rarity": 1,
         "buffs": [
             {
                 "name": "reload_speed_ratio",
-                "value": 50
+                "value": 20
             }
         ]
     },
     {
-        "name": "accuracy_ratio+50%",
+        "name": "reload_speed_ratio+40%",
+        "rarity": 2,
+        "buffs": [
+            {
+                "name": "reload_speed_ratio",
+                "value": 40
+            }
+        ]
+    },
+    {
+        "name": "reload_speed_ratio+60%",
+        "rarity": 3,
+        "buffs": [
+            {
+                "name": "reload_speed_ratio",
+                "value": 60
+            }
+        ]
+    },
+    {
+        "name": "reload_speed_ratio+80%",
+        "rarity": 4,
+        "buffs": [
+            {
+                "name": "reload_speed_ratio",
+                "value": 80
+            }
+        ]
+    },
+    {
+        "name": "reload_speed_ratio+100%",
+        "rarity": 5,
+        "buffs": [
+            {
+                "name": "reload_speed_ratio",
+                "value": 100
+            }
+        ]
+    },
+    {
+        "name": "accuracy_ratio+20%",
+        "rarity": 1,
         "buffs": [
             {
                 "name": "accuracy_ratio",
-                "value": 50
+                "value": 20
             }
         ]
     },
     {
-        "name": "pick_range+100",
+        "name": "accuracy_ratio+40%",
+        "rarity": 2,
+        "buffs": [
+            {
+                "name": "accuracy_ratio",
+                "value": 40
+            }
+        ]
+    },
+    {
+        "name": "accuracy_ratio+60%",
+        "rarity": 3,
+        "buffs": [
+            {
+                "name": "accuracy_ratio",
+                "value": 60
+            }
+        ]
+    },
+    {
+        "name": "accuracy_ratio+80%",
+        "rarity": 4,
+        "buffs": [
+            {
+                "name": "accuracy_ratio",
+                "value": 80
+            }
+        ]
+    },
+    {
+        "name": "accuracy_ratio+100%",
+        "rarity": 5,
+        "buffs": [
+            {
+                "name": "accuracy_ratio",
+                "value": 100
+            }
+        ]
+    },
+    {
+        "name": "pick_range+40",
+        "rarity": 1,
         "buffs": [
             {
                 "name": "pick_range",
-                "value": 100
+                "value": 40
+            }
+        ]
+    },
+    {
+        "name": "pick_range+80",
+        "rarity": 2,
+        "buffs": [
+            {
+                "name": "pick_range",
+                "value": 80
+            }
+        ]
+    },
+    {
+        "name": "pick_range+120",
+        "rarity": 3,
+        "buffs": [
+            {
+                "name": "pick_range",
+                "value": 120
+            }
+        ]
+    },
+    {
+        "name": "pick_range+160",
+        "rarity": 4,
+        "buffs": [
+            {
+                "name": "pick_range",
+                "value": 160
+            }
+        ]
+    },
+    {
+        "name": "pick_range+200",
+        "rarity": 5,
+        "buffs": [
+            {
+                "name": "pick_range",
+                "value": 200
             }
         ]
     }

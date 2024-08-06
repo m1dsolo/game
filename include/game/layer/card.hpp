@@ -13,7 +13,7 @@ namespace wheel {
 class CardLayer final : public Layer {
 public:
     CardLayer(bool player_cards = true);
-    ~CardLayer() = default;
+    ~CardLayer();
     CardLayer(const CardLayer&) = delete;
 
     void on_attach() override;
@@ -30,9 +30,9 @@ private:
     void choose(int idx);
 
     SDL_Texture* bg_texture_;
+    SDL_Texture* rarity_textures_[6];
     SDL_Texture* text_texture_;
 
-    std::vector<size_t> card_idxs;
     Vector2D<double> positions[3];
     SDL_FRect card_dsts[3];
 
@@ -41,8 +41,10 @@ private:
     int card_w_ = 300;
     int card_h_ = 500;
 
-    const std::vector<std::shared_ptr<Card>>& cards_;
+    std::vector<Card*> cards_;
     std::function<void()> detach_callback_;
+
+    bool player_cards_;
 };
 
 }  // namespace wheel

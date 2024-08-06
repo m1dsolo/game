@@ -3,34 +3,37 @@
 #include <game/global.hpp>
 #include <game/event.hpp>
 #include <game/game_manager.hpp>
+#include <game/card_manager.hpp>
 #include <game/ui.hpp>
 
 #include <game/component/animation.hpp>
 
 namespace wheel {
 
-CardLayer::CardLayer(bool player_cards)
-    : cards_(player_cards ? CardManager::instance().player_cards() : CardManager::instance().enemy_cards()) {
+CardLayer::CardLayer(bool player_cards) : player_cards_(player_cards) {
     bg_texture_ = sdl.create_texture(config_resource.w, config_resource.h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET, SDL_PIXELFORMAT_RGBA8888);
     sdl.set_blend_mode(bg_texture_, SDL_BLENDMODE_BLEND);
     sdl.set_alpha_mod(bg_texture_, 0);
 
-    auto color = player_cards ? sdl.PINK : sdl.BLUE;
-    SDL_Texture* card_bg_texture = sdl.create_texture(card_w_, card_h_, color);
+    for (int i = 0; i < 6; i++) {
+        rarity_textures_[i] = sdl.create_texture(card_w_, card_h_, CardManager::rarity2color(i));
+    }
 
     positions[1] = {(config_resource.w) / 2., (config_resource.h) / 2.};
     positions[0] = {positions[1].x - card_w_ - 200, positions[1].y};
     positions[2] = {positions[1].x + card_w_ + 200, positions[1].y};
 
-    sdl.set_target(bg_texture_);
-    sdl.set_alpha_mod(bg_texture_, 255);
     for (int i = 0; i < 3; i++) {
         card_dsts[i] = {(float)(positions[i].x - card_w_ / 2.), (float)(positions[i].y - card_h_ / 2.), (float)card_w_, (float)card_h_};
-        sdl.render(card_bg_texture, nullptr, &card_dsts[i]);
     }
     sdl.set_target(nullptr);
+}
 
-    sdl.destroy(card_bg_texture);
+CardLayer::~CardLayer() {
+    for (int i = 0; i < 6; i++) {
+        sdl.destroy(rarity_textures_[i]);
+    }
+    sdl.destroy(bg_texture_);
 }
 
 void CardLayer::on_attach() {
@@ -38,33 +41,18 @@ void CardLayer::on_attach() {
 
     text_texture_ = sdl.create_texture(config_resource.w, config_resource.h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET, SDL_PIXELFORMAT_RGBA8888);
     sdl.set_blend_mode(text_texture_, SDL_BLENDMODE_BLEND);
-    sdl.set_alpha_mod(text_texture_, 0);
-
-    card_idxs.clear();
-    sdl.set_target(text_texture_);
     sdl.set_alpha_mod(text_texture_, 255);
-    for (int i = 0; i < 3; i++) {
-        // get card idx
-        size_t idx;
-        while (true) {
-            idx = game_resource.random.uniform(0, (int)cards_.size() - 1);
-            bool found = false;
-            for (auto card_idx : card_idxs) {
-                if (card_idx == idx) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                continue;
-            }
 
-            card_idxs.emplace_back(idx);
-            break;
-        }
+    sdl.set_target(text_texture_);
+    // sdl.set_alpha_mod(text_texture_, 255);
+    cards_ = CardManager::instance().get_random_cards(player_cards_);
+    for (int i = 0; i < 3; i++) {
+        // add rarity color texture
+        int rarity = cards_[i]->rarity();
+        sdl.render(rarity_textures_[rarity], nullptr, &card_dsts[i]);
 
         // add card text texture
-        const std::string& name = cards_[idx]->name();
+        const std::string& name = cards_[i]->name();
         SDL_FRect text_dst = {(float)positions[i].x, (float)positions[i].y, 0, 0};
         sdl.draw_text(name, &text_dst, sdl.BLACK, true, 0, 0, card_w_ - 100);
     }
@@ -97,15 +85,15 @@ bool CardLayer::on_event(const SDL_Event& event) {
         case SDL_EVENT_KEY_DOWN: {
             switch (event.key.key) {
                 case SDLK_1: {
-                    choose(card_idxs[0]);
+                    choose(0);
                     break;
                 }
                 case SDLK_2: {
-                    choose(card_idxs[1]);
+                    choose(1);
                     break;
                 }
                 case SDLK_3: {
-                    choose(card_idxs[2]);
+                    choose(2);
                     break;
                 }
             }
@@ -126,7 +114,7 @@ bool CardLayer::on_event(const SDL_Event& event) {
             switch (event.button.button) {
                 case SDL_BUTTON_LEFT: {
                     if (selection_ != -1) {
-                        choose(card_idxs[selection_]);
+                        choose(selection_);
                     }
                     break;
                 }
