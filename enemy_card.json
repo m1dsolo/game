@@ -1,11 +1,11 @@
 [
     {
-        "name": "max_hp_ratio+50",
+        "name": "max_hp_ratio+50%",
         "key": "max_hp_ratio",
         "value": 50
     },
     {
-        "name": "max_speed_ratio+50",
+        "name": "max_speed_ratio+50%",
         "key": "max_speed_ratio",
         "value": 50
     },
@@ -18,5 +18,20 @@
         "name": "enemy_num+10",
         "key": "enemy_num",
         "value": 10
+    },
+    {
+        "name": "elite_chance+5%",
+        "key": "elite_chance",
+        "value": 5
+    },
+    {
+        "name": "elite_max_hp_ratio+500%",
+        "key": "elite_max_hp_ratio",
+        "value": 500
+    },
+    {
+        "name": "elite_extra_collide_damage+3",
+        "key": "elite_extra_collide_damage",
+        "value": 3
     }
 ]

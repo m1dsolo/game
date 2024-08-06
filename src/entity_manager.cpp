@@ -100,7 +100,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     inventory.pick("hp_potion", 1);
     inventory.pick("archer_tower", 1);
     inventory.pick("floor", 10);
-    inventory.pick("wall", 10);
+    inventory.pick("wall", 50);
     inventory.pick("door", 10);
     inventory.pick("coin", 10);
     inventory.select(1);
@@ -108,7 +108,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     return entity;
 }
 
-void EntityManager::create_enemy(const std::string& name, Vector2D<double> position) {
+void EntityManager::create_enemy(const std::string& name, Vector2D<double> position, bool random_elite) {
     if (position == Vector2D<double>{-1, -1}) {
         position = GameUtils::gen_spawn_boundary_position();
     }
@@ -119,13 +119,26 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<double> posit
     Entity entity = ecs.add_entity(t);
     create_health_bar(entity);
 
+
     auto& enemy_resource = ecs.get_resource<EnemyResource>();
+    bool elite = random.uniform(0, 99) < enemy_resource.elite_chance;
+
     auto& hp = ecs.get_component<HPComponent>(entity);
-    hp.max_hp = hp.hp = enemy_resource.max_hp_ratio * hp.max_hp / 100;
     auto& velocity = ecs.get_component<VelocityComponent>(entity);
-    velocity.max_speed = velocity.speed = enemy_resource.max_speed_ratio * velocity.speed / 100;
     auto& collide = ecs.get_component<CollideComponent>(entity);
+
+    hp.max_hp = hp.hp = hp.max_hp * enemy_resource.max_hp_ratio / 100;
+    velocity.max_speed = velocity.speed = velocity.speed * enemy_resource.max_speed_ratio / 100;
     collide.atk += enemy_resource.extra_collide_damage;
+
+    if (elite) {
+        hp.max_hp = hp.hp = hp.max_hp * enemy_resource.elite_max_hp_ratio / 100;
+        collide.atk += enemy_resource.elite_extra_collide_damage;
+
+        auto& size = ecs.get_component<SizeComponent>(entity);
+        size.w = size.w * enemy_resource.elite_size_ratio / 100;
+        size.h = size.h * enemy_resource.elite_size_ratio / 100;
+    }
 }
 
 void EntityManager::create_tower(const std::string& name, Entity master_entity, Vector2D<double> position) {

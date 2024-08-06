@@ -26,12 +26,17 @@ std::vector<Card*> CardManager::get_random_cards(bool player, int num) {
 std::vector<Card*> CardManager::get_random_player_cards(int num) {
     std::vector<Card*> cards(num);
     for (int i = 0; i < num; i++) {
-        int rand = random.uniform(0, rarity_distribution_[5]);
-        for (int rarity = 1; rarity <= 5; rarity++) {
-            if (rand >= rarity_distribution_[rarity - 1] && rand < rarity_distribution_[rarity]) {
-                int card_num = player_cards_[rarity].size();
-                int card_idx = random.uniform(0, card_num - 1);
-                cards[i] = player_cards_[rarity][card_idx].get();
+        while (true) {
+            int rand = random.uniform(0, rarity_distribution_[5]);
+            for (int rarity = 1; rarity <= 5; rarity++) {
+                if (rand >= rarity_distribution_[rarity - 1] && rand < rarity_distribution_[rarity]) {
+                    int card_num = player_cards_[rarity].size();
+                    int card_idx = random.uniform(0, card_num - 1);
+                    cards[i] = player_cards_[rarity][card_idx].get();
+                    break;
+                }
+            }
+            if (!i || std::find(cards.begin(), cards.begin() + i, cards[i]) == cards.begin() + i) {
                 break;
             }
         }
@@ -42,9 +47,14 @@ std::vector<Card*> CardManager::get_random_player_cards(int num) {
 std::vector<Card*> CardManager::get_random_enemy_cards(int num) {
     std::vector<Card*> cards(num);
     for (int i = 0; i < num; i++) {
-        int card_num = enemy_cards_.size();
-        int card_idx = random.uniform(0, card_num - 1);
-        cards[i] = enemy_cards_[card_idx].get();
+        while (true) {
+            int card_num = enemy_cards_.size();
+            int card_idx = random.uniform(0, card_num - 1);
+            cards[i] = enemy_cards_[card_idx].get();
+            if (!i || std::find(cards.begin(), cards.begin() + i, cards[i]) == cards.begin() + i) {
+                break;
+            }
+        }
     }
     return cards;
 }
@@ -81,6 +91,14 @@ void CardManager::parse_enemy_card(const std::string& path) {
             buff = [&enemy_resource, value](Entity) { enemy_resource.extra_collide_damage += value; };
         } else if (key == "enemy_num") {
             buff = [&enemy_resource, value](Entity) { enemy_resource.enemy_num += value; };
+        } else if (key == "elite_chance") {
+            buff = [&enemy_resource, value](Entity) { enemy_resource.elite_chance += value; };
+        } else if (key == "elite_max_hp_ratio") {
+            buff = [&enemy_resource, value](Entity) { enemy_resource.elite_max_hp_ratio += value; };
+        } else if (key == "elite_extra_collide_damage") {
+            buff = [&enemy_resource, value](Entity) { enemy_resource.elite_extra_collide_damage += value; };
+        } else {
+            throw std::runtime_error("Unknown key: " + key);
         }
         enemy_cards_.emplace_back(std::make_shared<Card>(name, 0, std::vector{buff}));
     }

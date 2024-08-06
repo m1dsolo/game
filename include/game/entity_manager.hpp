@@ -16,7 +16,7 @@ class EntityManager : public Singleton<EntityManager> {
 public:
     Entity create_player(const std::string& name, bool self = true);
 
-    void create_enemy(const std::string& name, Vector2D<double> position = {-1, -1});
+    void create_enemy(const std::string& name, Vector2D<double> position = {-1, -1}, bool random_elite = true);
 
     void create_tower(const std::string& name, Entity master_entity, Vector2D<double> position);
 
