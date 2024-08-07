@@ -138,4 +138,12 @@ public:
     CycleSelectedItemAction(Entity entity, bool right);
 };
 
+class SwitchInventoryAction : public OneShotAction {
+public:
+    SwitchInventoryAction(Entity entity);
+
+private:
+    bool inventory_opened_ = false;
+};
+
 }  // namespace wheel

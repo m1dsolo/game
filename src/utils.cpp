@@ -16,7 +16,7 @@ std::vector<SDL_Texture*> GameUtils::read_textures(std::string_view path) {
     int n = get_file_count(path);
     for (int i = 0; i < n; i++) {
         std::string s = std::format("{}/{}.png", path, i);
-        SDL_Texture* texture = IMG_LoadTexture(renderer, s.c_str());
+        auto texture = sdl.load_img(s.c_str());
         res.emplace_back(texture);
     }
 

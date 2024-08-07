@@ -15,8 +15,6 @@ namespace wheel {
 inline auto& ecs = ECS::instance();
 
 inline auto& sdl = SDL::instance();
-inline auto& renderer = sdl.renderer;
-inline auto& font = sdl.font;
 
 inline auto ecs_init_config_resource = ([]() {
     ecs.add_resource<ConfigResource>();

@@ -2,6 +2,10 @@
 
 #include <game/audio_manager.hpp>
 #include <game/game_manager.hpp>
+#include <game/layer_manager.hpp>
+#include <game/ui.hpp>
+
+#include <game/layer/slots.hpp>
 
 #include <game/component/move.hpp>
 #include <game/component/position.hpp>
@@ -184,6 +188,19 @@ CycleSelectedItemAction::CycleSelectedItemAction(Entity entity, bool right)
         int idx = inventory.selected_idx();
         idx = (idx + (right ? 1 : -1) + 10) % 10;
         inventory.select(idx == 0 ? 10 : idx);
+    };
+}
+
+SwitchInventoryAction::SwitchInventoryAction(Entity entity)
+    : OneShotAction("switch_inventory", 'i') {
+    start_func_ = [this, entity]() {
+        auto& ui = UI::instance();
+        if (inventory_opened_) {
+            ui.del<SlotsLayer>();
+        } else {
+            ui.push_back(LayerManager::instance().get("inventory"));
+        }
+        inventory_opened_ = !inventory_opened_;
     };
 }
 

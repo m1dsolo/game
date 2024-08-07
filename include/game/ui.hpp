@@ -40,10 +40,10 @@ public:
 
     template <typename T> requires std::derived_from<T, Layer>
     void del() {
-        for (auto it = layers_.begin(); it != layers_.end(); ++it) {
+        for (auto it = layers_.rbegin(); it != layers_.rend(); ++it) {
             if (dynamic_cast<T*>(*it)) {
                 (*it)->on_detach();
-                layers_.erase(it);
+                layers_.erase(it.base());
                 break;
             }
         }

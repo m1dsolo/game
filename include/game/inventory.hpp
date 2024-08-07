@@ -58,7 +58,7 @@ public:
     int selected_idx() const { return selected_idx_; }
 
 private:
-    static const inline int SIZE = 10;
+    static const inline int SIZE = 50;
 
     Entity entity_;
     std::shared_ptr<Slot> slots_[SIZE + 1];  // 0 is not used

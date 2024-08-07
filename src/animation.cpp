@@ -30,7 +30,7 @@ std::vector<SDL_Texture*> Animation::read_textures(std::string_view path) {
 
     std::vector<SDL_Texture*> res(entries.size());
     std::transform(entries.begin(), entries.end(), res.begin(), [this](const auto& entry){
-        return IMG_LoadTexture(renderer, entry.path().c_str());
+        return sdl.load_img(entry.path().c_str());
     });
 
     return res;

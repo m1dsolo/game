@@ -13,7 +13,6 @@
 #include <game/layer/game.hpp>
 #include <game/layer/status.hpp>
 #include <game/layer/card.hpp>
-#include <game/layer/hotbar.hpp>
 #include <game/layer/construction_stage.hpp>
 #include <game/layer/cursor.hpp>
 
@@ -76,7 +75,7 @@ void GameManager::run() {
     ui.push_back<MapLayer>();  // use SelfComponent
     ui.push_back<GameLayer>();
     ui.push_back<StatusLayer>();
-    ui.push_back<HotBarLayer>();
+    ui.push_back(LayerManager::instance().get("hotbar"));
     ui.push_back<ConstructionStageLayer>();
 
     ecs.startup();

@@ -1,4 +1,4 @@
-#include <game/layer/hotbar.hpp>
+#include <game/layer/slots.hpp>
 
 #include <game/global.hpp>
 #include <game/texture_manager.hpp>
@@ -8,43 +8,61 @@
 
 namespace wheel {
 
-HotBarLayer::HotBarLayer() {
-    w = SLOT_COUNT * (slot_w + slot_padding) + slot_padding;
-    h = slot_h + slot_padding * 2;
-    main_rect_ = {(float)(config_resource.w - w) / 2, (float)(config_resource.h - h), (float)w, (float)h};
+SlotsLayer::SlotsLayer(bool hotbar) {
+    m = 10;
+    n = hotbar ? 1 : 4;
 
-    texture_ = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
+    w = m * (slot_w + slot_padding) + slot_padding;
+    h = n * (slot_h + slot_padding) + slot_padding;
+    
+    // hotbar: mid bottom
+    if (hotbar) {
+        main_rect_ = {(float)(config_resource.w - w) / 2, (float)(config_resource.h - h), (float)w, (float)h};
+        base_idx = 1;
+    // inventory: mid center
+    } else {
+        main_rect_ = {(float)(config_resource.w - w) / 2, (float)(config_resource.h - h) / 2, (float)w, (float)h};
+        base_idx = 11;
+    }
+
+    slot_rects_.resize(n * m);
+    item_rects_.resize(n * m);
+
+    texture_ = sdl.create_texture(w, h, sdl.BLACK, SDL_TEXTUREACCESS_TARGET);
     sdl.set_target(texture_);
-    for (int i = 0; i < SLOT_COUNT; i++) {
-        SDL_FRect slot_rect = {
-            (float)slot_padding + i * (slot_w + slot_padding),
-            (float)slot_padding,
-            (float)slot_w,
-            (float)slot_h
-        };
-        sdl.draw_rect(&slot_rect, sdl.WHITE);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            SDL_FRect slot_rect = {
+                (float)j * (slot_w + slot_padding) + slot_padding,
+                (float)i * (slot_h + slot_padding) + slot_padding,
+                (float)slot_w,
+                (float)slot_h
+            };
+            sdl.draw_rect(&slot_rect, sdl.WHITE);
 
-        slot_rects_[i] = {main_rect_.x + slot_rect.x, main_rect_.y + slot_rect.y, slot_rect.w, slot_rect.h};
-        item_rects_[i] = {
-            main_rect_.x + slot_rect.x + (float)(slot_w - item_w) / 2,
-            main_rect_.y + slot_rect.y + (float)(slot_h - item_h) / 2,
-            (float)item_w,
-            (float)item_h
-        };
+            slot_rects_[i * m + j] = {main_rect_.x + slot_rect.x, main_rect_.y + slot_rect.y, slot_rect.w, slot_rect.h};
+            item_rects_[i * m + j] = {
+                main_rect_.x + slot_rect.x + (float)(slot_w - item_w) / 2,
+                main_rect_.y + slot_rect.y + (float)(slot_h - item_h) / 2,
+                (float)item_w,
+                (float)item_h
+            };
+        }
     }
     sdl.set_target(nullptr);
 }
 
-void HotBarLayer::on_attach() {
+void SlotsLayer::on_attach() {
 }
 
-void HotBarLayer::on_detach() {
+void SlotsLayer::on_detach() {
 }
 
-void HotBarLayer::on_update() {
+void SlotsLayer::on_update() {
 }
 
-void HotBarLayer::on_render() {
+// TODO: lazy calculation for performance
+void SlotsLayer::on_render() {
     // hotbar
     sdl.render(texture_, nullptr, &main_rect_);
 
@@ -53,8 +71,8 @@ void HotBarLayer::on_render() {
     int entity = ecs.get_entities<SelfComponent>()[0];
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
     int selected_idx = inventory.selected_idx();
-    for (int i = 0; i < SLOT_COUNT; i++) {
-        auto& slot = inventory.slot(i + 1);
+    for (int i = 0; i < n * m; i++) {
+        auto& slot = inventory.slot(base_idx + i);
         if (slot.empty()) {
             continue;
         }
@@ -89,15 +107,18 @@ void HotBarLayer::on_render() {
     }
 
     // draw selection
-    sdl.draw_border(&slot_rects_[inventory.selected_idx() - 1], 4, sdl.RED);
+    int idx = inventory.selected_idx() - base_idx;
+    if (idx >= 0 && idx < n * m) {
+        sdl.draw_border(&slot_rects_[idx], 4, sdl.RED);
+    }
 }
 
-bool HotBarLayer::on_event(const SDL_Event& event) {
+bool SlotsLayer::on_event(const SDL_Event& event) {
     switch (event.type) {
         case SDL_EVENT_MOUSE_MOTION: {
             float x = event.motion.x, y = event.motion.y;
             mouse_target_idx = -1;
-            for (int i = 0; i < SLOT_COUNT; i++) {
+            for (int i = 0; i < n * m; i++) {
                 auto [x, y, w, h] = slot_rects_[i];
                 if (event.motion.x >= x && event.motion.x <= x + w && event.motion.y >= y && event.motion.y <= y + h) {
                     mouse_target_idx = i;
@@ -110,7 +131,7 @@ bool HotBarLayer::on_event(const SDL_Event& event) {
             if (mouse_target_idx != -1) {
                 int entity = ecs.get_entities<SelfComponent>()[0];
                 auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
-                inventory.select(mouse_target_idx + 1);
+                inventory.select(mouse_target_idx + base_idx);
                 return true;
             }
             break;
