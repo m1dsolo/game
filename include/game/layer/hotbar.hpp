@@ -21,9 +21,13 @@ private:
     ~HotBarLayer() = default;
     HotBarLayer(const HotBarLayer&) = delete;
 
-    SDL_Texture* texture_;
+    static const int SLOT_COUNT = 10;
 
-    int slot_count = 10;
+    SDL_Texture* texture_;
+    SDL_FRect main_rect_;
+    SDL_FRect slot_rects_[SLOT_COUNT];
+    SDL_FRect item_rects_[SLOT_COUNT];
+
     int slot_w = 80;
     int slot_h = 80;
     int slot_padding = 5;
@@ -31,6 +35,7 @@ private:
     int item_h = 48;
     int w;
     int h;
+    int mouse_target_idx = -1;
 };
 
 }  // namespace wheel

@@ -177,4 +177,14 @@ SwitchSelectedItemAction::SwitchSelectedItemAction(Entity entity, int idx)
     };
 }
 
+CycleSelectedItemAction::CycleSelectedItemAction(Entity entity, bool right)
+    : OneShotAction(std::format("cycle_item_{}", right ? "right" : "left"), right ? 'e' : 'q') {
+    start_func_ = [entity, right]() {
+        auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
+        int idx = inventory.selected_idx();
+        idx = (idx + (right ? 1 : -1) + 10) % 10;
+        inventory.select(idx == 0 ? 10 : idx);
+    };
+}
+
 }  // namespace wheel

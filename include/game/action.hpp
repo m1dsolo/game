@@ -133,4 +133,9 @@ public:
     SwitchSelectedItemAction(Entity entity, int idx);
 };
 
+class CycleSelectedItemAction : public OneShotAction {
+public:
+    CycleSelectedItemAction(Entity entity, bool right);
+};
+
 }  // namespace wheel

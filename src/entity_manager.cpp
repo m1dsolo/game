@@ -92,6 +92,8 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     for (int i = 1; i <= 10; i++) {
         GameUtils::emplace_action<SwitchSelectedItemAction>(entity, i);
     }
+    GameUtils::emplace_action<CycleSelectedItemAction>(entity, true);
+    GameUtils::emplace_action<CycleSelectedItemAction>(entity, false);
 
     ecs.add_components(entity, InventoryComponent{{entity}});
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
