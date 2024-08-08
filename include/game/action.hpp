@@ -146,4 +146,10 @@ private:
     bool inventory_opened_ = false;
 };
 
+// 5s can't pick up
+class DropSelectedAction : public OneShotAction {
+public:
+    DropSelectedAction(Entity entity);
+};
+
 }  // namespace wheel

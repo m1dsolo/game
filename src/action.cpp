@@ -3,6 +3,7 @@
 #include <game/audio_manager.hpp>
 #include <game/game_manager.hpp>
 #include <game/layer_manager.hpp>
+#include <game/entity_manager.hpp>
 #include <game/ui.hpp>
 
 #include <game/layer/slots.hpp>
@@ -201,6 +202,18 @@ SwitchInventoryAction::SwitchInventoryAction(Entity entity)
             ui.push_back(LayerManager::instance().get("inventory"));
         }
         inventory_opened_ = !inventory_opened_;
+    };
+}
+
+DropSelectedAction::DropSelectedAction(Entity entity)
+    : OneShotAction("drop_selected", 'g') {
+    start_func_ = [entity]() {
+        auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
+        auto position = ecs.get_component<PositionComponent>(entity).vec;
+        auto [item, count] = inventory.drop(inventory.selected_idx());
+        if (item != nullptr) {
+            EntityManager::instance().create_item(item, position, count, 5);
+        }
     };
 }
 

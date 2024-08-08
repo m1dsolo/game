@@ -1,7 +1,5 @@
 #pragma once
 
-#include <game/component/item.hpp>
-
 namespace wheel {
 
 struct PlayerResource {

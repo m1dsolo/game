@@ -95,6 +95,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     GameUtils::emplace_action<CycleSelectedItemAction>(entity, true);
     GameUtils::emplace_action<CycleSelectedItemAction>(entity, false);
     GameUtils::emplace_action<SwitchInventoryAction>(entity);
+    GameUtils::emplace_action<DropSelectedAction>(entity);
 
     ecs.add_components(entity, InventoryComponent{{entity}});
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
@@ -178,16 +179,32 @@ void EntityManager::create_bullet(const std::string& name, Vector2D<double> posi
     ecs.add_entity(t);
 }
 
-void EntityManager::create_item(const std::string& name, Vector2D<double> position, int count) {
+void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<double> position, int count, int unpickable_seconds) {
     EntityTemplate t;
-    t[typeid(ItemComponent)] = ItemComponent{name, count};
+
+    SDL_Texture* texture;
+    std::visit([&](const auto& data) {
+        if constexpr (std::is_same_v<std::decay_t<decltype(data)>, std::string>) {
+            texture = TextureManager::instance().get_texture(data);
+        } else if constexpr (std::is_same_v<std::decay_t<decltype(data)>, std::shared_ptr<Item>>) {
+            texture = TextureManager::instance().get_texture(data->data().name);
+        }
+        t[typeid(TextureComponent)] = TextureComponent{texture};
+    }, data);
+
     t[typeid(PositionComponent)] = PositionComponent{std::move(position)};
-    SDL_Texture* texture = TextureManager::instance().get_texture(name);
-    t[typeid(TextureComponent)] = TextureComponent{texture};
     auto [w, h] = sdl.get_texture_size(texture);
     t[typeid(SizeComponent)] = SizeComponent{(int)w, (int)h};
 
-    ecs.add_entity(t);
+    Entity entity = ecs.add_entity(t);
+    auto item = ItemComponent{data, count};
+    if (unpickable_seconds) {
+        timer_resource.add(config_resource.fps * 5, 1, [entity, item]() {
+            ecs.add_components(entity, std::move(item));
+        });
+    } else {
+        ecs.add_components(entity, std::move(item));
+    }
 }
 
 Entity EntityManager::create_health_bar(Entity master) {

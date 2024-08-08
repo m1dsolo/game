@@ -19,6 +19,7 @@ public:
 
     Item& item() { return *item_; }
     const Item& item() const { return *item_; }
+    std::shared_ptr<Item> item_ptr() { return item_; }
     int& count() { return count_; }
     const int& count() const { return count_; }
 
@@ -42,8 +43,9 @@ public:
     Inventory(Entity entity);
 
     bool pick(const std::string& name, int count = 1);
+    bool pick(std::shared_ptr<Item> item, int count = 1);
 
-    void drop(int idx);
+    std::pair<std::shared_ptr<Item>, int> drop(int idx, int count = 1);
 
     Slot& slot(int idx);
 
@@ -59,6 +61,9 @@ public:
 
 private:
     static const inline int SIZE = 50;
+
+    bool pick_stackable(const std::string& name, int count);
+    bool pick_unstackable(std::shared_ptr<Item> item, int count);
 
     Entity entity_;
     std::shared_ptr<Slot> slots_[SIZE + 1];  // 0 is not used

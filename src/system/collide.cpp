@@ -130,14 +130,12 @@ void CollideSystem::pick_range() {
                     continue;
                 }
                 if (position0.vec.distance(position1.vec) <= perk.pick_range) {
-                    if (inventory.inventory.pick(item.name, item.count)) {
-                        ecs.add_components(
-                            entity,
-                            TrackNearestPlayerTag{},
-                            DirectionComponent{},
-                            VelocityComponent{perk.pick_range + 100.}
-                        );
-                    }
+                    ecs.add_components(
+                        entity,
+                        TrackNearestPlayerTag{},
+                        DirectionComponent{},
+                        VelocityComponent{perk.pick_range + 100.}
+                    );
                 }
             }
         }
@@ -150,9 +148,11 @@ void CollideSystem::auto_pickup() {
         for (auto [_, inventory, position1, size1] : ecs.get_components<PlayerComponent, InventoryComponent, PositionComponent, SizeComponent>()) {
             Rect<double> rect1 = {position1.vec, {(double)size1.w / 2, (double)size1.h / 2}};
             if (rect0.is_overlapping(rect1)) {
-                if (inventory.inventory.pick(item.name, item.count)) {
-                    ecs.add_components<DelEntityTag>(entity0, {});
-                }
+                std::visit([&](const auto& data) {
+                    if (inventory.inventory.pick(data, item.count)) {
+                        ecs.add_components<DelEntityTag>(entity0, {});
+                    }
+                }, item.data);
             }
         }
     }

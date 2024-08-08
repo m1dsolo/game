@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
+#include <variant>
 #include <unordered_map>
 
 #include <wheel/singleton.hpp>
 #include <wheel/geometry.hpp>
 
 #include <game/global.hpp>
+#include <game/item/item.hpp>
 
 namespace wheel {
 
@@ -24,7 +26,7 @@ public:
 
     void create_bullet(const std::string& name, Vector2D<double> position, Vector2D<double> direction, int atk, int penetration, Entity master_entity);
 
-    void create_item(const std::string& name, Vector2D<double> position, int count = 1);
+    void create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<double> position, int count = 1, int unpickable_seconds = 0);
 
     Entity create_health_bar(Entity master);
 

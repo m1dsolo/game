@@ -32,21 +32,23 @@ Inventory::Inventory(Entity entity) : entity_(entity) {
 }
 
 bool Inventory::pick(const std::string& name, int count) {
-    auto* data = ItemManager::instance().get_data(name);
-    // stack
-    if (data->stackable) {
-        for (int i = 1; i <= SIZE; i++) {
-            if (!slots_[i]->empty() && slots_[i]->item().data().name == name) {
-                slots_[i]->count() += count;
-                return true;
-            }
-        }
+    if (ItemManager::instance().get_data(name)->stackable && pick_stackable(name, count)) {
+        return true;
     }
+    return pick_unstackable(ItemManager::instance().create_item(name, entity_), count);
+}
 
-    // find empty slot
+bool Inventory::pick(std::shared_ptr<Item> item, int count) {
+    if (item->data().stackable && pick_stackable(item->data().name, count)) {
+        return true;
+    }
+    return pick_unstackable(item, count);
+}
+
+bool Inventory::pick_stackable(const std::string& name, int count) {
     for (int i = 1; i <= SIZE; i++) {
-        if (slots_[i]->empty()) {
-            slots_[i]->set(ItemManager::instance().create_item(name, entity_, slots_[i].get()), count);
+        if (!slots_[i]->empty() && slots_[i]->item().data().name == name) {
+            slots_[i]->count() += count;
             return true;
         }
     }
@@ -54,8 +56,24 @@ bool Inventory::pick(const std::string& name, int count) {
     return false;
 }
 
-void Inventory::drop(int idx) {
-    slots_[idx]->clear();
+bool Inventory::pick_unstackable(std::shared_ptr<Item> item, int count) {
+    for (int i = 1; i <= SIZE; i++) {
+        if (slots_[i]->empty()) {
+            slots_[i]->set(item, count);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::pair<std::shared_ptr<Item>, int> Inventory::drop(int idx, int count) {
+    auto& slot = *slots_[idx];
+    count = std::min(slot.count(), count);
+    auto item_ptr = slot.item_ptr();
+    slot.reduce(count);
+
+    return {item_ptr, count};
 }
 
 Slot& Inventory::slot(int idx) {
