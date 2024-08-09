@@ -18,8 +18,8 @@ public:
 
     const Item::Data* get_data(const std::string& name) const { return item_data_map.at(name).get(); }
 
-    // entity for weapon, slot for consumable
-    std::shared_ptr<Item> create_item(const std::string& name, Entity entity = EntityNone, Slot* slot = nullptr);
+    // entity for weapon
+    std::shared_ptr<Item> create_item(const std::string& name, Entity entity = EntityNone);
 
     void parse_item_json();
 

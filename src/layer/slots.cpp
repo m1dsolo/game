@@ -2,13 +2,15 @@
 
 #include <game/global.hpp>
 #include <game/texture_manager.hpp>
+#include <game/ui.hpp>
 
 #include <game/component/self.hpp>
 #include <game/component/inventory.hpp>
 
 namespace wheel {
 
-SlotsLayer::SlotsLayer(bool hotbar) {
+SlotsLayer::SlotsLayer(bool hotbar)
+    : inventory_(ecs.get_component<InventoryComponent>(ecs.get_entities<SelfComponent>()[0]).inventory) {
     m = 10;
     n = hotbar ? 1 : 4;
 
@@ -59,6 +61,14 @@ void SlotsLayer::on_detach() {
 }
 
 void SlotsLayer::on_update() {
+    if (mouse_down_time && SDL_GetTicks() - mouse_down_time > 300) {
+        moving = true;
+        auto cursor_layer = UI::instance().cursor_layer();
+        auto& slot = inventory_.selected_slot();
+        if (!slot.empty()) {
+            cursor_layer->set_texture(TextureManager::instance().get_texture(slot.item().data().name));
+        }
+    }
 }
 
 // TODO: lazy calculation for performance
@@ -68,11 +78,9 @@ void SlotsLayer::on_render() {
 
     // items
     auto& texture_manager = TextureManager::instance();
-    int entity = ecs.get_entities<SelfComponent>()[0];
-    auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
-    int selected_idx = inventory.selected_idx();
+    int selected_idx = inventory_.selected_idx();
     for (int i = 0; i < n * m; i++) {
-        auto& slot = inventory.slot(base_idx + i);
+        auto& slot = inventory_.slot(base_idx + i);
         if (slot.empty()) {
             continue;
         }
@@ -107,7 +115,7 @@ void SlotsLayer::on_render() {
     }
 
     // draw selection
-    int idx = inventory.selected_idx() - base_idx;
+    int idx = inventory_.selected_idx() - base_idx;
     if (idx >= 0 && idx < n * m) {
         sdl.draw_border(&slot_rects_[idx], 4, sdl.RED);
     }
@@ -115,29 +123,63 @@ void SlotsLayer::on_render() {
 
 bool SlotsLayer::on_event(const SDL_Event& event) {
     switch (event.type) {
-        case SDL_EVENT_MOUSE_MOTION: {
-            float x = event.motion.x, y = event.motion.y;
-            mouse_target_idx = -1;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+            float mouse_x = event.motion.x, mouse_y = event.motion.y;
+
             for (int i = 0; i < n * m; i++) {
                 auto [x, y, w, h] = slot_rects_[i];
-                if (event.motion.x >= x && event.motion.x <= x + w && event.motion.y >= y && event.motion.y <= y + h) {
-                    mouse_target_idx = i;
+                if (mouse_x >= x && mouse_x <= x + w && mouse_y >= y && mouse_y <= y + h) {
+                    inventory_.select(i + base_idx);
+                    mouse_down_time = SDL_GetTicks();
                     break;
                 }
             }
-            break;
-        }
-        case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-            if (mouse_target_idx != -1) {
-                int entity = ecs.get_entities<SelfComponent>()[0];
-                auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
-                inventory.select(mouse_target_idx + base_idx);
+
+            if (mouse_x >= main_rect_.x && mouse_x <= main_rect_.x + main_rect_.w &&
+                mouse_y >= main_rect_.y && mouse_y <= main_rect_.y + main_rect_.h) {
+                mouse_down_event = true;
                 return true;
             }
+
+            break;
+        }
+        case SDL_EVENT_MOUSE_BUTTON_UP: {
+            float mouse_x = event.motion.x, mouse_y = event.motion.y;
+            if (moving) {
+                moving = false;
+                for (auto layer : UI::instance().layers()) {
+                    if (auto slots_layer = dynamic_cast<SlotsLayer*>(layer)) {
+                        int idx = slots_layer->mouse_pos2slot_idx(mouse_x, mouse_y);
+                        if (idx != -1) {
+                            inventory_.swap(inventory_.selected_idx(), idx);
+                            inventory_.select(idx);
+                            break;
+                        }
+                    }
+                }
+            }
+            mouse_down_time = 0;
+
+            if (mouse_down_event) {
+                mouse_down_event = false;
+                UI::instance().cursor_layer()->set_texture(nullptr);
+                return true;
+            }
+
             break;
         }
     }
     return false;
+}
+
+int SlotsLayer::mouse_pos2slot_idx(float mouse_x, float mouse_y) {
+    for (int i = 0; i < slot_rects_.size(); i++) {
+        auto [x, y, w, h] = slot_rects_[i];
+        if (mouse_x >= x && mouse_x <= x + w && mouse_y >= y && mouse_y <= y + h) {
+            return i + base_idx;
+        }
+    }
+    return -1;
 }
 
 }  // namespace wheel

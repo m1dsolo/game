@@ -16,7 +16,7 @@ public:
         std::vector<Buff> buffs;
     };
 
-    Potion(Data* data, Entity entity, Slot& slot) : Consumable(data, entity, slot, "drink_potion", []() { return 90; }) {}
+    Potion(Data* data, Entity entity) : Consumable(data, entity, "drink_potion", []() { return 90; }) {}
 
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }

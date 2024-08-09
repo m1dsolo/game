@@ -10,7 +10,6 @@ UI::~UI() {
         delete layer;
     }
     cursor_layer_->on_detach();
-    delete cursor_layer_;
 }
 
 void UI::update() {

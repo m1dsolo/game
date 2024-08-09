@@ -23,7 +23,10 @@ void CursorLayer::on_update() {
 
 void CursorLayer::on_render() {
     auto& slot = inventory_->selected_slot();
-    auto texture = slot.empty() ? TextureManager::instance().get_texture("circle_cursor") : slot.item().get_cursor_texture();
+    auto texture = texture_;
+    if (!texture) {
+        texture = slot.empty() ? TextureManager::instance().get_texture("circle_cursor") : slot.item().get_cursor_texture();
+    }
     auto [w, h] = sdl.get_texture_size(texture);
     cursor_dst_.w = w;
     cursor_dst_.h = h;
@@ -33,12 +36,17 @@ void CursorLayer::on_render() {
 bool CursorLayer::on_event(const SDL_Event& event) {
     switch (event.type) {
         case SDL_EVENT_MOUSE_MOTION: {
-            cursor_dst_.x = event.motion.x - cursor_dst_.w / 2;
-            cursor_dst_.y = event.motion.y - cursor_dst_.h / 2;
+            float mouse_x = event.motion.x, mouse_y = event.motion.y;
+            cursor_dst_.x = mouse_x - cursor_dst_.w / 2;
+            cursor_dst_.y = mouse_y - cursor_dst_.h / 2;
             break;
         }
     }
     return false;
+}
+
+void CursorLayer::set_texture(SDL_Texture* texture) {
+    texture_ = texture;
 }
 
 }  // namespace wheel

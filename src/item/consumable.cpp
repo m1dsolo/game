@@ -3,6 +3,7 @@
 #include <game/audio_manager.hpp>
 #include <game/texture_manager.hpp>
 #include <game/map.hpp>
+#include <game/slot.hpp>
 
 #include <game/component/position.hpp>
 #include <game/component/direction.hpp>
@@ -11,8 +12,8 @@
 
 namespace wheel {
 
-Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string& action_name, std::function<int()> get_cooldown, SDL_Keycode keycode)
-    : Item(data, entity), slot_(slot), uses_(data->max_uses) {
+Consumable::Consumable(Data* data, Entity entity, const std::string& action_name, std::function<int()> get_cooldown, SDL_Keycode keycode)
+    : Item(data, entity), uses_(data->max_uses) {
     action_map_[action_name] = std::make_shared<OneShotAction>(
         action_name,
         keycode,
@@ -25,7 +26,7 @@ Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string&
                 AudioManager::instance().play(action_name);
                 if (!--uses_) {
                     uses_ = this->data().max_uses;
-                    this->slot().reduce(1);
+                    this->slot_->reduce(1);
                 }
             }
         }
@@ -58,7 +59,7 @@ Consumable::Consumable(Data* data, Entity entity, Slot& slot, const std::string&
                     if (use()) {
                         AudioManager::instance().play(action_name);
                         if (!--uses_) {
-                            this->slot().reduce(1);
+                            this->slot_->reduce(1);
                             uses_ = this->data().max_uses;
                         }
                     }

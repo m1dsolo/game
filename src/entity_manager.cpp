@@ -109,6 +109,10 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     inventory.pick("wall", 50);
     inventory.pick("door", 10);
     inventory.pick("coin", 10);
+    inventory.pick("usp");
+    inventory.pick("m3");
+    inventory.pick("m4a1");
+    inventory.pick("awp");
     inventory.select(1);
 
     return entity;

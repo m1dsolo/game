@@ -8,21 +8,22 @@
 
 namespace wheel {
 
-class CursorLayer final : public Layer, public Singleton<CursorLayer> {
-    friend class Singleton<CursorLayer>;
-
+class CursorLayer final : public Layer {
 public:
+    CursorLayer();
+    ~CursorLayer() = default;
+    CursorLayer(const CursorLayer&) = delete;
+
     void on_attach() override;
     void on_detach() override;
     void on_update() override;
     void on_render() override;
     bool on_event(const SDL_Event& event) override;
 
-private:
-    CursorLayer();
-    ~CursorLayer() = default;
-    CursorLayer(const CursorLayer&) = delete;
+    void set_texture(SDL_Texture* texture);
 
+private:
+    SDL_Texture* texture_ = nullptr;
     SDL_FRect cursor_dst_ {0., 0., 0., 0.};
     Inventory* inventory_;
 };

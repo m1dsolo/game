@@ -7,6 +7,8 @@
 
 namespace wheel {
 
+class Slot;
+
 class Item {
     friend class Inventory;
 
@@ -46,10 +48,13 @@ public:
 
     virtual SDL_Texture* get_cursor_texture() const;
 
+    Slot* slot() const { return slot_; }
+    void set_slot(Slot* slot) { slot_ = slot; }
     bool empty() const { return !data_; }
 
 protected:
     Data* data_;
+    Slot* slot_;
     Entity entity_;
     std::unordered_map<std::string, std::shared_ptr<Action>> action_map_;
 };

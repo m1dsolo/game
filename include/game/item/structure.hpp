@@ -11,7 +11,7 @@ public:
             : Consumable::Data(name, description, Consumable::Type::STRUCTURE, true, max_uses) {}
     };
 
-    Structure(Data* data, Entity entity, Slot& slot) : Consumable(data, entity, slot, "plant_structure") {}
+    Structure(Data* data, Entity entity) : Consumable(data, entity, "plant_structure") {}
 
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }

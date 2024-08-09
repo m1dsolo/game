@@ -2,41 +2,12 @@
 
 #include <memory>
 
-#include <game/item/item.hpp>
+#include <game/slot.hpp>
 
 #include <game/component/actions.hpp>
 #include <game/component/input.hpp>
 
 namespace wheel {
-
-class Slot {
-    friend class Inventory;
-
-public:
-    Slot() : item_(null_item_) {}
-
-    bool empty() const { return item_->empty(); }
-
-    Item& item() { return *item_; }
-    const Item& item() const { return *item_; }
-    std::shared_ptr<Item> item_ptr() { return item_; }
-    int& count() { return count_; }
-    const int& count() const { return count_; }
-
-    void set(std::shared_ptr<Item> item, int count = 1);
-
-    void reduce(int count = 1);
-
-    void clear();
-
-private:
-    std::shared_ptr<Item> item_;
-    int count_ = 0;
-
-    static const std::shared_ptr<Item> null_item_;
-};
-
-inline const std::shared_ptr<Item> Slot::null_item_ = std::make_shared<Item>();
 
 class Inventory {
 public:
@@ -54,6 +25,8 @@ public:
     void select(int idx);
     
     void unselect(int idx);
+
+    void swap(int idx1, int idx2);
 
     bool have(int idx);
 

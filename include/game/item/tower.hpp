@@ -13,7 +13,7 @@ public:
         int power;
     };
 
-    Tower(Data* data, Entity entity, Slot& slot) : Consumable(data, entity, slot, "plant_tower") {}
+    Tower(Data* data, Entity entity) : Consumable(data, entity, "plant_tower") {}
 
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }

@@ -25,7 +25,7 @@ ItemManager::ItemManager() {
 }
 
 // TODO: reflection
-std::shared_ptr<Item> ItemManager::create_item(const std::string& name, Entity entity, Slot* slot) {
+std::shared_ptr<Item> ItemManager::create_item(const std::string& name, Entity entity) {
     auto data = item_data_map[name].get();
     switch (data->type) {
         case Item::Type::NONE: {
@@ -49,19 +49,19 @@ std::shared_ptr<Item> ItemManager::create_item(const std::string& name, Entity e
             switch (consumable_data->type) {
                 case Consumable::Type::POTION: {
                     auto potion_data = static_cast<Potion::Data*>(consumable_data);
-                    return std::make_shared<Potion>(potion_data, entity, *slot);
+                    return std::make_shared<Potion>(potion_data, entity);
                 }
                 case Consumable::Type::TOWER: {
                     auto tower_data = static_cast<Tower::Data*>(consumable_data);
-                    return std::make_shared<Tower>(tower_data, entity, *slot);
+                    return std::make_shared<Tower>(tower_data, entity);
                 }
                 case Consumable::Type::STRUCTURE: {
                     auto structure_data = static_cast<Structure::Data*>(consumable_data);
-                    return std::make_shared<Structure>(structure_data, entity, *slot);
+                    return std::make_shared<Structure>(structure_data, entity);
                 }
                 case Consumable::Type::FLOOR: {
                     auto floor_data = static_cast<Floor::Data*>(consumable_data);
-                    return std::make_shared<Floor>(floor_data, entity, *slot);
+                    return std::make_shared<Floor>(floor_data, entity);
                 }
             }
         }

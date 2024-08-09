@@ -2,6 +2,7 @@
 
 #include <concepts>
 #include <deque>
+#include <memory>
 
 #include <wheel/singleton.hpp>
 
@@ -49,18 +50,20 @@ public:
         }
     }
 
+    CursorLayer* cursor_layer() const { return cursor_layer_.get() ; }
+
     void pop_front();
     void pop_back();
 
     std::deque<Layer*>& layers() { return layers_; }
 
 private:
-    UI() : cursor_layer_(&CursorLayer::instance()) {}
+    UI() : cursor_layer_(std::make_shared<CursorLayer>()) {}
     ~UI();
     UI(const UI&) = delete;
 
     std::deque<Layer*> layers_;
-    Layer* cursor_layer_;
+    std::shared_ptr<CursorLayer> cursor_layer_;
 };
 
 }  // namespace wheel

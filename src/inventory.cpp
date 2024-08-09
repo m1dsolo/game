@@ -1,29 +1,11 @@
 #include <game/inventory.hpp>
 
 #include <game/utils.hpp>
+#include <game/item/item.hpp>
+#include <game/slot.hpp>
 #include <game/item_manager.hpp>
 
 namespace wheel {
-
-void Slot::set(std::shared_ptr<Item> item, int count) {
-    item_ = item;
-    count_ = count;
-}
-
-void Slot::reduce(int count) {
-    count_ -= count;
-    if (count_ <= 0) {
-        clear();
-    }
-}
-
-void Slot::clear() {
-    if (!item_->empty()) {
-        item_->unselect();
-    }
-    item_ = null_item_;
-    count_ = 0;
-}
 
 Inventory::Inventory(Entity entity) : entity_(entity) {
     for (int i = 0; i <= SIZE; i++) {
@@ -100,6 +82,13 @@ void Inventory::select(int idx) {
     }
 
     selected_idx_ = idx;
+}
+
+void Inventory::swap(int idx1, int idx2) {
+    if (idx1 == idx2) {
+        return;
+    }
+    std::swap(slots_[idx1], slots_[idx2]);
 }
 
 bool Inventory::have(int idx) {

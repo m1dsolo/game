@@ -27,7 +27,6 @@ public:
     Data& data() override { return *static_cast<Data*>(data_); }
     const Data& data() const override { return *static_cast<Data*>(data_); }
 
-    Slot& slot() { return slot_; }
     int& uses() { return uses_; }
 
     std::string info() const override {
@@ -45,13 +44,11 @@ protected:
     Consumable(
         Data* data,
         Entity entity,
-        Slot& slot,
         const std::string& action_name,
         std::function<int()> get_cooldown = [] { return 0; },
         SDL_Keycode keycode = ' '
     );
 
-    Slot& slot_;
     int uses_;
 };
 
