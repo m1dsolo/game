@@ -18,6 +18,7 @@ private:
 
     void collide();
     void bullet_out_of_boundary();
+    void bullet_collide_structure();
     void pick_range();
     void auto_pickup();
 };

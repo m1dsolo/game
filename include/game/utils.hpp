@@ -20,6 +20,7 @@ public:
     static Vector2D<double> gen_spawn_boundary_position();
     static Vector2D<double> gen_spawn_internal_position(int margin = 0);
     static int direction2orientation(const Vector2D<double>& direction);
+    static bool ray_collision_check(const Vector2D<double>& src, const Vector2D<double>& dst, int w, int h);
 
     template <typename ActionType, typename... Args> requires std::derived_from<ActionType, Action>
     static void emplace_action(Entity entity, Args&&... args) {

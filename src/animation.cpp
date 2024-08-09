@@ -52,19 +52,18 @@ Animations::Animations(std::string_view name) {
 
 SDL_Texture* Animations::get_texture(int idx, int orient, bool sketch) {
     if (sketch) {
-        if (sketch_animations_[orient]) {
+        if (!sketch_animations_[orient]->empty()) {
             return sketch_animations_[orient]->get_texture(idx);
-        } else {
+        } else if (!sketch_animations_[1]->empty()) {
             return sketch_animations_[1]->get_texture(idx);
         }
     } else {
-        if (animations_[orient]) {
+        if (!animations_[orient]->empty()) {
             return animations_[orient]->get_texture(idx);
-        } else {
-            return animations_[1]->get_texture(idx);
         }
-
     }
+
+    return animations_[1]->get_texture(idx);
 }
 
 }  // namespace wheel

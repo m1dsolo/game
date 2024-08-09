@@ -239,6 +239,7 @@ void EntityManager::parse_enemy_json() {
         int hp = enemy["hp"];
         int velocity = enemy["velocity"];
         int collide = enemy["collide"];
+        bool flyable = enemy.count("flyable") ? enemy["flyable"] : false;
         int exp = enemy["exp"];
         JsonListType reward_list = enemy["reward"];
         std::vector<RewardItem> rewards;
@@ -258,12 +259,15 @@ void EntityManager::parse_enemy_json() {
         t[typeid(HPComponent)] = HPComponent{hp};
         t[typeid(CollideComponent)] = CollideComponent{collide, -1, 30};
         t[typeid(RewardComponent)] = RewardComponent{exp, rewards};
-        // t[typeid(TrackNearestPlayerTag)] = TrackNearestPlayerTag{};
-        t[typeid(AStarTrackNearestPlayerTag)] = AStarTrackNearestPlayerTag{};
         std::string animation_name = enemy.count("animation_name") ? enemy["animation_name"] : name;
         t[typeid(AnimationComponent)] = AnimationComponent{animation_name};
         t[typeid(TextureComponent)] = TextureComponent{};
-        t[typeid(ColliderComponent)] = ColliderComponent{};
+        if (!flyable) {
+            t[typeid(ColliderComponent)] = ColliderComponent{};
+            t[typeid(AStarTrackNearestPlayerTag)] = AStarTrackNearestPlayerTag{};
+        } else {
+            t[typeid(TrackNearestPlayerTag)] = TrackNearestPlayerTag{};
+        }
 
         if (enemy.count("size")) {
             int size = enemy["size"];

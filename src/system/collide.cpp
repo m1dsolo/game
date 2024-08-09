@@ -29,6 +29,7 @@ namespace wheel {
 void CollideSystem::execute_impl() {
     collide();
     bullet_out_of_boundary();
+    bullet_collide_structure();
     pick_range();
     auto_pickup();
 }
@@ -37,10 +38,10 @@ void CollideSystem::collide() {
     // friend collide enemy
     for (auto [entity0, _, collide0, position0, size0]
         : ecs.get_entity_and_components<FriendComponent, CollideComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect0 = {position0.vec, {(double)size0.w / 2, (double)size0.h / 2}};
+        Rect<double> rect0 = {position0.vec, {size0.w / 2., size0.h / 2.}};
         for (auto [entity1, _, hp, position1, size1]
             : ecs.get_entity_and_components<EnemyComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<double> rect1 = {position1.vec, {(double)size1.w / 2, (double)size1.h / 2}};
+            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
             if (rect0.is_overlapping(rect1)) {
                 // unique collide
                 if (ecs.has_components<UniqueCollideComponent>(entity0)) {
@@ -87,10 +88,10 @@ void CollideSystem::collide() {
     // enemy collide friend
     for (auto [entity0, _, collide0, position0, size0]
         : ecs.get_entity_and_components<EnemyComponent, CollideComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect0 = {position0.vec, {(double)size0.w / 2, (double)size0.h / 2}};
+        Rect<double> rect0 = {position0.vec, {size0.w / 2., size0.h / 2.}};
         for (auto [entity1, _, hp, position1, size1]
             : ecs.get_entity_and_components<FriendComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<double> rect1 = {position1.vec, {(double)size1.w / 2, (double)size1.h / 2}};
+            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
             if (rect0.is_overlapping(rect1)) {
                 // add damage
                 if (!ecs.has_components<DamageComponent>(entity1)) {
@@ -121,6 +122,16 @@ void CollideSystem::bullet_out_of_boundary() {
     }
 }
 
+void CollideSystem::bullet_collide_structure() {
+    auto& map = Map::instance();
+    for (auto [bullet_entity, bullet, position, size] : ecs.get_entity_and_components<BulletComponent, PositionComponent, SizeComponent>()) {
+        Rect<double> rect = {position.vec, {size.w / 2., size.h / 2.}};
+        if (map.is_collision(rect)) {
+            ecs.add_components<DelEntityTag>(bullet_entity, {});
+        }
+    }
+}
+
 // TODO: performance
 void CollideSystem::pick_range() {
     for (auto [perk, inventory, position0] : ecs.get_components<PerkComponent, InventoryComponent, PositionComponent>()) {
@@ -144,9 +155,9 @@ void CollideSystem::pick_range() {
 
 void CollideSystem::auto_pickup() {
     for (auto [entity0, item, position0, size0] : ecs.get_entity_and_components<ItemComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect0 = {position0.vec, {(double)size0.w / 2, (double)size0.h / 2}};
+        Rect<double> rect0 = {position0.vec, {size0.w / 2., size0.h / 2.}};
         for (auto [_, inventory, position1, size1] : ecs.get_components<PlayerComponent, InventoryComponent, PositionComponent, SizeComponent>()) {
-            Rect<double> rect1 = {position1.vec, {(double)size1.w / 2, (double)size1.h / 2}};
+            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
             if (rect0.is_overlapping(rect1)) {
                 std::visit([&](const auto& data) {
                     if (inventory.inventory.pick(data, item.count)) {

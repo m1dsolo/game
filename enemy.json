@@ -31,5 +31,21 @@
             "chance": 0.5
             }
         ]
+    },
+    {
+        "name": "skull",
+        "velocity": 70,
+        "hp": 3,
+        "collide": 1,
+        "flyable": true,
+        "size": 48,
+        "exp": 1,
+        "reward": [
+            {
+            "name": "coin",
+            "count": [1, 4],
+            "chance": 1.0
+            }
+        ]
     }
 ]

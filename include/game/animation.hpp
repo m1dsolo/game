@@ -16,6 +16,7 @@ public:
     SDL_Texture* get_texture(int idx);
 
     int frames() const { return textures_.size(); }
+    bool empty() const { return textures_.empty(); }
 
 private:
     std::vector<SDL_Texture*> read_textures(std::string_view path);

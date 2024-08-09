@@ -61,7 +61,6 @@ void MoveSystem::calc_direction_by_track_nearest_player() {
     }
 }
 
-
 void MoveSystem::calc_direction_by_a_star_track_nearest_player() {
     static int counter = 0;
     if (counter++ % 10) {

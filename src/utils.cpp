@@ -77,4 +77,9 @@ int GameUtils::direction2orientation(const Vector2D<double>& direction) {
     return 1;
 }
 
+bool ray_collision_check(const Vector2D<double>& src, const Vector2D<double>& dst, int w, int h) {
+    // auto& map = Map::instance();
+    // Rect<double> rect = {src.x - w / 2., src.y - h / 2., (double)w, (double)h};
+}
+
 }  // namespace wheel
