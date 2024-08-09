@@ -1,0 +1,46 @@
+[
+    {
+        "name": "usp",
+        "count": 1
+    },
+    {
+        "name": "m3",
+        "count": 1
+    },
+    {
+        "name": "m4a1",
+        "count": 1
+    },
+    {
+        "name": "awp",
+        "count": 1
+    },
+    {
+        "name": "hp_potion",
+        "count": 3
+    },
+    {
+        "name": "passwall_potion",
+        "count": 1
+    },
+    {
+        "name": "archer_tower",
+        "count": 1
+    },
+    {
+        "name": "floor",
+        "count": 10
+    },
+    {
+        "name": "wall",
+        "count": 50
+    },
+    {
+        "name": "coin",
+        "count": 10
+    },
+    {
+        "name": "door",
+        "count": 10
+    }
+]

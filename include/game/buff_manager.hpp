@@ -10,6 +10,7 @@
 #include <game/component/hp.hpp>
 #include <game/component/velocity.hpp>
 #include <game/component/perk.hpp>
+#include <game/component/collider.hpp>
 
 namespace wheel {
 
@@ -69,6 +70,17 @@ public:
             return [pick_range](Entity entity) {
                 auto& perk = ecs.get_component<PerkComponent>(entity);
                 perk.pick_range += pick_range;
+            };
+        } else if (name == "passwall") {
+            auto [seconds] = args_tuple;
+            return [seconds](Entity entity) {
+                if (!ecs.has_components<ColliderComponent>()) {
+                    return;
+                }
+                ecs.del_components<ColliderComponent>(entity);
+                timer_resource.add(config_resource.fps * seconds, 1, [entity]() {
+                    ecs.add_components(entity, ColliderComponent{});
+                });
             };
         }
         return nullptr;

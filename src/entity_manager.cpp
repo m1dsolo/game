@@ -99,21 +99,13 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
 
     ecs.add_components(entity, InventoryComponent{{entity}});
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
-    inventory.pick("usp");
-    inventory.pick("m3");
-    inventory.pick("m4a1");
-    inventory.pick("awp");
-    inventory.pick("hp_potion", 1);
-    inventory.pick("archer_tower", 1);
-    inventory.pick("floor", 10);
-    inventory.pick("wall", 50);
-    inventory.pick("door", 10);
-    inventory.pick("coin", 10);
-    inventory.pick("usp");
-    inventory.pick("m3");
-    inventory.pick("m4a1");
-    inventory.pick("awp");
-    inventory.select(1);
+
+    JsonListType obj = Json::parse_file(game_resource.path + "/inventory.json");
+    for (JsonDictType item : obj) {
+        std::string name = item["name"];
+        int count = item["count"];
+        inventory.pick(name, count);
+    }
 
     return entity;
 }

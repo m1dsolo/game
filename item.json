@@ -53,6 +53,17 @@
         ]
     },
     {
+        "name": "passwall_potion",
+        "type": "consumable.potion",
+        "max_uses": 1,
+        "buffs": [
+            {
+                "name": "passwall",
+                "value": 10
+            }
+        ]
+    },
+    {
         "name": "archer_tower",
         "type": "consumable.tower",
         "power": 30
