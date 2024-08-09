@@ -100,7 +100,11 @@ void ItemManager::parse_item_json() {
                 for (JsonDictType& buff_obj : static_cast<JsonListType&>(item["buffs"])) {
                     std::string buff_name = buff_obj["name"];
                     int value = buff_obj["value"];
-                    auto buff = BuffManager::instance().create(buff_name, value);
+                    int seconds = -1;
+                    if (buff_obj.count("seconds")) {
+                        seconds = buff_obj["seconds"];
+                    }
+                    Buff buff = BuffManager::instance().create(buff_name, value, seconds);
                     buffs.emplace_back(buff);
                 }
                 auto data = std::make_shared<Potion::Data>(name, "", max_uses, buffs);

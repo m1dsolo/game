@@ -20,6 +20,10 @@
         "count": 3
     },
     {
+        "name": "speed_potion",
+        "count": 1
+    },
+    {
         "name": "passwall_potion",
         "count": 1
     },

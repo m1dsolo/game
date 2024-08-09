@@ -53,6 +53,18 @@
         ]
     },
     {
+        "name": "speed_potion",
+        "type": "consumable.potion",
+        "max_uses": 1,
+        "buffs": [
+            {
+                "name": "max_speed",
+                "value": 100,
+                "seconds": 5
+            }
+        ]
+    },
+    {
         "name": "passwall_potion",
         "type": "consumable.potion",
         "max_uses": 1,

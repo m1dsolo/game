@@ -2,7 +2,6 @@
 
 #include <game/global.hpp>
 #include <game/map.hpp>
-#include <game/texture_manager.hpp>
 
 #include <game/component/position.hpp>
 
