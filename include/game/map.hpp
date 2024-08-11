@@ -51,6 +51,7 @@ private:
     TileMap tilemap_;
     SDL_Texture* texture_;
     std::vector<std::vector<bool>> planted_structure_;
+    std::vector<std::vector<bool>> planted_tower_;
     std::vector<std::vector<bool>> planted_floor_;
     Rect<int> game_rect_;
     Rect<int> real_rect_;

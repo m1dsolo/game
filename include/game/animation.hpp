@@ -1,6 +1,8 @@
 #pragma once
 
+#include <array>
 #include <vector>
+#include <unordered_map>
 #include <memory>
 #include <string_view>
 
@@ -26,18 +28,24 @@ private:
 
 class Animations {
 public:
+    enum class Type {
+        NORMAL,
+        SKETCH,
+        ATTACK
+    };
+
     Animations(std::string_view name);
     ~Animations() = default;
 
-    SDL_Texture* get_texture(int idx, int orient, bool sketch = false);
+    SDL_Texture* get_texture(int idx, int orient, Type type = Type::NORMAL);
 
     int frames() const { return frames_; }
 
 private:
+    static std::array<std::shared_ptr<Animation>, 4> read_animations(std::string_view path);
+
     int frames_ = 0;
-    // up, down, left, right
-    std::shared_ptr<Animation> animations_[4];
-    std::shared_ptr<Animation> sketch_animations_[4];
+    std::unordered_map<Type, std::array<std::shared_ptr<Animation>, 4>> type2animations_;
 };
 
 }  // namespace wheel

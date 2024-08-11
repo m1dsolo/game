@@ -17,6 +17,7 @@ namespace wheel {
 Map::Map() {
     generate_map_texture();
     planted_structure_ = std::vector<std::vector<bool>>(TILE_NUM_H, std::vector<bool>(TILE_NUM_W));
+    planted_tower_ = std::vector<std::vector<bool>>(TILE_NUM_H, std::vector<bool>(TILE_NUM_W));
     planted_floor_ = std::vector<std::vector<bool>>(TILE_NUM_H, std::vector<bool>(TILE_NUM_W));
 }
 
@@ -70,26 +71,31 @@ bool Map::plant(const std::string& name, Entity entity, const Vector2D<double>& 
     }
 
     auto pos = idx2pos(i, j);
-    if (name.find("floor") != std::string::npos) {
-        // if (planted_floor_[i][j]) {
-        //     return false;
-        // }
-        // planted_floor_[i][j] = true;
-        // sdl.set_target(texture_);
-        // auto texture = TextureManager::instance().get_texture(name);
-        // SDL_FRect dst = {(float)pos.x - (float)TILE_SIZE / 2, (float)pos.y - (float)TILE_SIZE / 2, TILE_SIZE, TILE_SIZE};
-        // sdl.render(texture, nullptr, &dst);
-        // sdl.set_target(nullptr);
+    if (name.find("floor") != std::string::npos || name == "peaks") {
+        if (planted_floor_[i][j]) {
+            return false;
+        }
+        planted_floor_[i][j] = true;
+
+        if (name == "peaks") {
+            EntityManager::instance().create_trap(name, entity, pos);
+        } else {
+            EntityManager::instance().create_floor(name, entity, pos);
+        }
+    } else if (name.find("tower") != std::string::npos) {
+        if (planted_tower_[i][j]) {
+            return false;
+        }
+        planted_tower_[i][j] = true;
+
+        EntityManager::instance().create_tower(name, entity, pos);
     } else {
         if (planted_structure_[i][j]) {
             return false;
         }
         planted_structure_[i][j] = true;
-        if (name.find("tower") != std::string::npos) {
-            EntityManager::instance().create_tower(name, entity, pos);
-        } else {
-            EntityManager::instance().create_structure(name, entity, pos);
-        }
+
+        EntityManager::instance().create_structure(name, entity, pos);
     }
 
     return true;

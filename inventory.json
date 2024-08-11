@@ -24,6 +24,10 @@
         "count": 1
     },
     {
+        "name": "peaks",
+        "count": 10
+    },
+    {
         "name": "passwall_potion",
         "count": 1
     },

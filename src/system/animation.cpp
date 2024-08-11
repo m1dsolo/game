@@ -17,6 +17,10 @@ void AnimationSystem::execute_impl() {
 
 void AnimationSystem::update_animation_counter() {
     for (auto [animation] : ecs.get_components<AnimationComponent>()) {
+        if (animation.type == Animations::Type::ATTACK) {
+            continue;
+        }
+
         // TODO: not only
         if (animation.counter < 30) {
             animation.counter++;
@@ -35,7 +39,7 @@ void AnimationSystem::update_texture() {
         if (ecs.has_components<DirectionComponent>(entity)) {
             direction = ecs.get_component<DirectionComponent>(entity).vec;
         }
-        texture.texture = animation.animations->get_texture(animation.idx, GameUtils::direction2orientation(direction), animation.sketch);
+        texture.texture = animation.animations->get_texture(animation.idx, GameUtils::direction2orientation(direction), animation.type);
     }
 }
 

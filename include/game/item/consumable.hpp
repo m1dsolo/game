@@ -12,6 +12,7 @@ public:
         TOWER,
         STRUCTURE,
         FLOOR,
+        TRAP,
     };
 
     virtual ~Consumable() = default;

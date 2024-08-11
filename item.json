@@ -81,6 +81,13 @@
         "power": 30
     },
     {
+        "name": "peaks",
+        "type": "consumable.trap",
+        "atk": 1,
+        "duration": 100,
+        "cooldown": 60
+    },
+    {
         "name": "floor",
         "type": "consumable.floor"
     },

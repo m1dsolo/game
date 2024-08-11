@@ -14,6 +14,7 @@
 
 #include <game/item/tower.hpp>
 #include <game/item/structure.hpp>
+#include <game/item/trap.hpp>
 
 #include <game/component/size.hpp>
 #include <game/component/position.hpp>
@@ -42,6 +43,8 @@
 #include <game/component/perk.hpp>
 #include <game/component/aim_direction.hpp>
 #include <game/component/collider.hpp>
+#include <game/component/trap.hpp>
+#include <game/component/floor.hpp>
 
 #include <game/resource/enemy.hpp>
 
@@ -55,6 +58,7 @@ EntityManager::EntityManager() {
     cache_structure("floor");
     cache_structure("wall");
     cache_structure("door");
+    cache_trap("peaks");
 }
 
 Entity EntityManager::create_player(const std::string& name, bool self) {
@@ -121,7 +125,6 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<double> posit
     Entity entity = ecs.add_entity(t);
     create_health_bar(entity);
 
-
     auto& enemy_resource = ecs.get_resource<EnemyResource>();
     bool elite = random.uniform(0, 99) < enemy_resource.elite_chance;
 
@@ -158,6 +161,20 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
 }
 
 void EntityManager::create_structure(const std::string& name, Entity master_entity, Vector2D<double> position) {
+    EntityTemplate t = template_map_[name];
+    t[typeid(PositionComponent)] = PositionComponent{position};
+    t[typeid(MasterComponent)] = MasterComponent{master_entity};
+    Entity entity = ecs.add_entity(t);
+}
+
+void EntityManager::create_trap(const std::string& name, Entity master_entity, Vector2D<double> position) {
+    EntityTemplate t = template_map_[name];
+    t[typeid(PositionComponent)] = PositionComponent{position};
+    t[typeid(MasterComponent)] = MasterComponent{master_entity};
+    Entity entity = ecs.add_entity(t);
+}
+
+void EntityManager::create_floor(const std::string& name, Entity master_entity, Vector2D<double> position) {
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
@@ -266,7 +283,7 @@ void EntityManager::parse_enemy_json() {
             t[typeid(SizeComponent)] = SizeComponent{size, size};
         } else {
             float w, h;
-            SDL_Texture* texture = AnimationManager::instance().get_animations(animation_name)->get_texture(0, 0, false);
+            SDL_Texture* texture = AnimationManager::instance().get_animations(animation_name)->get_texture(0, 0);
             SDL_GetTextureSize(texture, &w, &h);
             t[typeid(SizeComponent)] = SizeComponent{(int)w, (int)h};
         }
@@ -291,7 +308,6 @@ void EntityManager::cache_tower(const std::string& name) {
     t[typeid(AnimationComponent)] = AnimationComponent{name};
     t[typeid(TextureComponent)] = TextureComponent{};
     t[typeid(SizeComponent)] = SizeComponent{48, 48};
-    t[typeid(FriendComponent)] = FriendComponent{};
     t[typeid(TowerComponent)] = TowerComponent{300};
     t[typeid(ActionsComponent)] = ActionsComponent{};
     t[typeid(AimDirectionComponent)] = AimDirectionComponent{};
@@ -303,7 +319,28 @@ void EntityManager::cache_structure(const std::string& name) {
     EntityTemplate t;
     t[typeid(TextureComponent)] = TextureComponent{name};
     t[typeid(SizeComponent)] = SizeComponent{48, 48};
-    t[typeid(FriendComponent)] = FriendComponent{};
+
+    template_map_[name] = std::move(t);
+}
+
+void EntityManager::cache_trap(const std::string& name) {
+    auto data = static_cast<const Trap::Data*>(ItemManager::instance().get_data(name));
+
+    EntityTemplate t;
+    t[typeid(AnimationComponent)] = AnimationComponent{name};
+    t[typeid(TextureComponent)] = TextureComponent{};
+    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(TrapComponent)] = TrapComponent{data->atk, data->duration, data->cooldown};
+    t[typeid(FloorComponent)] = FloorComponent{};
+
+    template_map_[name] = std::move(t);
+}
+
+void EntityManager::cache_floor(const std::string& name) {
+    EntityTemplate t;
+    t[typeid(TextureComponent)] = TextureComponent{name};
+    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(FloorComponent)] = FloorComponent{};
 
     template_map_[name] = std::move(t);
 }

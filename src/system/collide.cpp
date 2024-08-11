@@ -23,6 +23,8 @@
 #include <game/component/perk.hpp>
 #include <game/component/ai.hpp>
 #include <game/component/player.hpp>
+#include <game/component/trap.hpp>
+#include <game/component/animation.hpp>
 
 namespace wheel {
 
@@ -30,6 +32,7 @@ void CollideSystem::execute_impl() {
     collide();
     bullet_out_of_boundary();
     bullet_collide_structure();
+    trap_collide_enemy();
     pick_range();
     auto_pickup();
 }
@@ -128,6 +131,62 @@ void CollideSystem::bullet_collide_structure() {
         Rect<double> rect = {position.vec, {size.w / 2., size.h / 2.}};
         if (map.is_collision(rect)) {
             ecs.add_components<DelEntityTag>(bullet_entity, {});
+        }
+    }
+}
+
+void CollideSystem::trap_collide_enemy() {
+    for (auto [trap_entity, trap, position0, size0] : ecs.get_entity_and_components<TrapComponent, PositionComponent, SizeComponent>()) {
+        Rect<double> rect0 = {position0.vec, {(double)size0.w, (double)size0.h}};
+        std::vector<Entity> enemies;
+        for (auto [enemy_entity, enemy, _, position1, size1] : ecs.get_entity_and_components<EnemyComponent, HPComponent, PositionComponent, SizeComponent>()) {
+            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
+            if (rect0.is_overlapping(rect1)) {
+                enemies.emplace_back(enemy_entity);
+                if (--trap.duration <= 0) {
+                    ecs.add_components(trap_entity, DelEntityTag{});
+                    break;
+                }
+            }
+        }
+
+        // add damage
+        for (auto enemy_entity : enemies) {
+            if (!ecs.has_components<DamageComponent>(enemy_entity)) {
+                ecs.add_components(enemy_entity, DamageComponent{});
+            }
+            auto& damage = ecs.get_component<DamageComponent>(enemy_entity);
+            damage.damages.emplace_back(trap.atk, trap_entity);
+        }
+
+        // cooldown
+        if (enemies.size() && trap.cooldown > 0) {
+            auto& animation = ecs.get_component<AnimationComponent>(trap_entity);
+            animation.idx = 0;
+            animation.counter = 0;
+            animation.type = Animations::Type::ATTACK;
+            int frames = animation.animations->frames();
+            int sep = trap.cooldown / frames;
+            timer_resource.add(sep + 1, frames, [trap_entity, &animation](int cnt) {
+                if (!ecs.has_entity(trap_entity)) {
+                    return;
+                }
+                if (cnt > 1) {
+                    animation.idx = (animation.idx + 1) % animation.animations->frames();
+                } else {
+                    animation.idx = 0;
+                    animation.counter = 0;
+                    animation.type = Animations::Type::NORMAL;
+                }
+            }, true);
+
+            auto trap = ecs.get_component<TrapComponent>(trap_entity);
+            ecs.del_components<TrapComponent>(trap_entity);
+            timer_resource.add(trap.cooldown, 1, [trap_entity, trap, &animation]() {
+                if (ecs.has_entity(trap_entity)) {
+                    ecs.add_components(trap_entity, trap);
+                }
+            });
         }
     }
 }

@@ -12,7 +12,7 @@ struct AnimationComponent {
 
     int idx = 0;  // current frame
     int counter = 0;
-    bool sketch = false;
+    Animations::Type type = Animations::Type::NORMAL;
 };
 
 }  // namespace wheel

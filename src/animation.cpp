@@ -38,32 +38,44 @@ std::vector<SDL_Texture*> Animation::read_textures(std::string_view path) {
 
 Animations::Animations(std::string_view name) {
     const std::string& path = std::format("{}/resources/animation/{}", game_resource.path, name);
-    animations_[0] = std::make_shared<Animation>(std::format("{}/normal/up", path));
-    animations_[1] = std::make_shared<Animation>(std::format("{}/normal/down", path));
-    animations_[2] = std::make_shared<Animation>(std::format("{}/normal/left", path));
-    animations_[3] = std::make_shared<Animation>(std::format("{}/normal/right", path));
-    sketch_animations_[0] = std::make_shared<Animation>(std::format("{}/sketch/up", path));
-    sketch_animations_[1] = std::make_shared<Animation>(std::format("{}/sketch/down", path));
-    sketch_animations_[2] = std::make_shared<Animation>(std::format("{}/sketch/left", path));
-    sketch_animations_[3] = std::make_shared<Animation>(std::format("{}/sketch/right", path));
-
-    frames_ = animations_[1]->frames();
+       
+    if (auto animations = read_animations(path + "/normal"); animations[1]) {
+        frames_ = animations[1]->frames();
+        type2animations_[Type::NORMAL] = std::move(animations);
+    }
+    if (auto animations = read_animations(path + "/sketch"); animations[1]) {
+        type2animations_[Type::SKETCH] = std::move(animations);
+    }
+    if (auto animations = read_animations(path + "/attack"); animations[1]) {
+        type2animations_[Type::ATTACK] = std::move(animations);
+    }
 }
 
-SDL_Texture* Animations::get_texture(int idx, int orient, bool sketch) {
-    if (sketch) {
-        if (!sketch_animations_[orient]->empty()) {
-            return sketch_animations_[orient]->get_texture(idx);
-        } else if (!sketch_animations_[1]->empty()) {
-            return sketch_animations_[1]->get_texture(idx);
-        }
-    } else {
-        if (!animations_[orient]->empty()) {
-            return animations_[orient]->get_texture(idx);
+SDL_Texture* Animations::get_texture(int idx, int orient, Type type) {
+    if (type2animations_.count(type)) {
+        auto& animations = type2animations_[type];
+        if (!animations[orient]->empty()) {
+            return animations[orient]->get_texture(idx);
+        } else if (!animations[1]->empty()) {
+            return animations[1]->get_texture(idx);
         }
     }
 
-    return animations_[1]->get_texture(idx);
+    return type2animations_[Type::NORMAL][1]->get_texture(idx);
+}
+
+std::array<std::shared_ptr<Animation>, 4> Animations::read_animations(std::string_view path) {
+    if (!std::filesystem::is_directory(std::format("{}/down", path))) {
+        return {};
+    }
+
+    auto res = std::array<std::shared_ptr<Animation>, 4>();
+    res[0] = std::make_shared<Animation>(std::format("{}/up", path));
+    res[1] = std::make_shared<Animation>(std::format("{}/down", path));
+    res[2] = std::make_shared<Animation>(std::format("{}/left", path));
+    res[3] = std::make_shared<Animation>(std::format("{}/right", path));
+
+    return res;
 }
 
 }  // namespace wheel

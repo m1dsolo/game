@@ -17,6 +17,7 @@
 #include <game/component/tag.hpp>
 #include <game/component/aim_direction.hpp>
 #include <game/component/continuous_action.hpp>
+#include <game/component/floor.hpp>
 
 namespace wheel {
 
@@ -148,8 +149,17 @@ bool GameLayer::on_event(const SDL_Event& event) {
 
 void GameLayer::render_texture() {
     // animation(TODO: bad performance now)
-    for (auto [position, size, texture] : ecs.get_components<PositionComponent, SizeComponent, TextureComponent>()) {
+    for (auto [_, position, size, texture] : ecs.get_components<FloorComponent, PositionComponent, SizeComponent, TextureComponent>()) {
         if (!texture.texture) {
+            continue;
+        }
+        auto left_top = position.vec - Vector2D<double>{size.w / 2., size.h / 2.} - camera.pos();
+        SDL_FRect dst_frect = {(float)left_top.x, (float)left_top.y, (float)size.w, (float)size.h};
+        sdl.render(texture.texture, nullptr, &dst_frect);
+    }
+
+    for (auto [entity, position, size, texture] : ecs.get_entity_and_components<PositionComponent, SizeComponent, TextureComponent>()) {
+        if (ecs.has_components<FloorComponent>(entity) || !texture.texture) {
             continue;
         }
         auto left_top = position.vec - Vector2D<double>{size.w / 2., size.h / 2.} - camera.pos();

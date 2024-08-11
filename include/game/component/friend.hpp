@@ -2,6 +2,7 @@
 
 namespace wheel {
 
+// friend collide enemy
 struct FriendComponent {
 };
 

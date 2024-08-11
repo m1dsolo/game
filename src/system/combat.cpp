@@ -80,11 +80,11 @@ void CombatSystem::player_get_damage_add_invincible() {
 
 void CombatSystem::get_damage_add_sketch() {
     for (auto [entity, damage, animation] : ecs.get_entity_and_components<DamageComponent, AnimationComponent>()) {
-        animation.sketch = true;
+        animation.type = Animations::Type::SKETCH;
         timer_resource.add(10, 1, [entity]() {
             if (ecs.has_components<AnimationComponent>(entity)) {
                 auto& animation = ecs.get_component<AnimationComponent>(entity);
-                animation.sketch = false;
+                animation.type = Animations::Type::NORMAL;
             }
         });
     }

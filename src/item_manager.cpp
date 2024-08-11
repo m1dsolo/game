@@ -17,6 +17,7 @@
 #include <game/item/tower.hpp>
 #include <game/item/structure.hpp>
 #include <game/item/floor.hpp>
+#include <game/item/trap.hpp>
 
 namespace wheel {
 
@@ -62,6 +63,10 @@ std::shared_ptr<Item> ItemManager::create_item(const std::string& name, Entity e
                 case Consumable::Type::FLOOR: {
                     auto floor_data = static_cast<Floor::Data*>(consumable_data);
                     return std::make_shared<Floor>(floor_data, entity);
+                }
+                case Consumable::Type::TRAP: {
+                    auto trap_data = static_cast<Trap::Data*>(consumable_data);
+                    return std::make_shared<Trap>(trap_data, entity);
                 }
             }
         }
@@ -118,6 +123,12 @@ void ItemManager::parse_item_json() {
                 item_data_map[name] = data;
             } else if (sub_types[1] == "floor") {
                 auto data = std::make_shared<Floor::Data>(name, "", max_uses);
+                item_data_map[name] = data;
+            } else if (sub_types[1] == "trap") {
+                int atk = item["atk"];
+                int duration = item["duration"];
+                int cooldown = item["cooldown"];
+                auto data = std::make_shared<Trap::Data>(name, "", max_uses, atk, duration, cooldown);
                 item_data_map[name] = data;
             }
         }
