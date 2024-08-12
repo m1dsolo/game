@@ -152,7 +152,7 @@ void CombatSystem::dead() {
                 if (random.uniform(0., 1.) < reward_item.chance) {
                     int count = random.uniform(reward_item.count.first, reward_item.count.second);
                     // position random offset
-                    auto pos = Vector2D<double>{position.vec.x + random.uniform(-5., 5.), position.vec.y + random.uniform(-5., 5.)};
+                    auto pos = Vector2D<float>{position.vec.x + random.uniform<float>(-5, 5), position.vec.y + random.uniform<float>(-5, 5)};
                     EntityManager::instance().create_item(reward_item.name, pos, count);
                 }
             }
@@ -202,8 +202,8 @@ void CombatSystem::update_health_bar_position() {
         auto& position = ecs.get_component<PositionComponent>(entity);
         auto& size = ecs.get_component<SizeComponent>(entity);
 
-        bar_position.vec.x = position.vec.x - bar_size.w / 2.;
-        bar_position.vec.y = position.vec.y - size.h / 2. - bar_size.h / 2.;
+        bar_position.vec.x = position.vec.x - bar_size.vec.x / 2.;
+        bar_position.vec.y = position.vec.y - size.vec.y / 2. - bar_size.vec.y / 2.;
     }
 }
 

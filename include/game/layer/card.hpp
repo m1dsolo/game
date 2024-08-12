@@ -33,7 +33,7 @@ private:
     SDL_Texture* rarity_textures_[6];
     SDL_Texture* text_texture_;
 
-    Vector2D<double> positions[3];
+    Vector2D<float> positions[3];
     SDL_FRect card_dsts[3];
 
     int selection_ = -1;

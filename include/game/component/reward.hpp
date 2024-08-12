@@ -8,7 +8,7 @@ namespace wheel {
 struct RewardItem {
     std::string name;
     std::pair<int, int> count;
-    double chance;
+    float chance;
 };
 
 struct RewardComponent {

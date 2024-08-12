@@ -10,23 +10,23 @@ class Camera : public Singleton<Camera> {
 
 public:
     void update_pos();
-    void shake(double strenth, int frequence, int duration);  // duration frames
+    void shake(float strenth, int frequence, int duration);  // duration frames
 
-    Vector2D<double> world2screen(const Vector2D<double>& position) { return position - pos_; }
-    Vector2D<double> screen2world(const Vector2D<double>& position) { return position + pos_; }
+    Vector2D<float> world2screen(const Vector2D<float>& position) { return position - pos_; }
+    Vector2D<float> screen2world(const Vector2D<float>& position) { return position + pos_; }
 
-    Vector2D<double>& pos() { return pos_; }
-    Vector2D<int>& size() { return size_; }
+    Vector2D<float>& pos() { return pos_; }
+    Vector2D<float>& size() { return size_; }
 
 private:
     Camera();
     ~Camera() = default;
     Camera(const Camera&) = delete;
 
-    Vector2D<double> stable_pos_ {0., 0.};
-    Vector2D<double> shake_pos_ {0., 0.};
-    Vector2D<double> pos_ {0., 0.};
-    Vector2D<int> size_;
+    Vector2D<float> stable_pos_ {0., 0.};
+    Vector2D<float> shake_pos_ {0., 0.};
+    Vector2D<float> pos_ {0., 0.};
+    Vector2D<float> size_;
     bool shaking_ = false;
 };
 

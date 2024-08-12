@@ -70,7 +70,7 @@ SDL_Surface* SDL::create_surface(const std::string& text, SDL_Color color, int m
         if (max_w) {
             int w, h;
             TTF_SizeText(font, text.c_str(), &w, &h);
-            double scale = std::max((double)w / max_w, (double)h / max_h);
+            float scale = std::max((float)w / max_w, (float)h / max_h);
             if (scale > 1.) {
                 TTF_SetFontSize(font, int(default_font_size_ / scale));
             }

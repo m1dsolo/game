@@ -17,10 +17,9 @@ class GameUtils {
 public:
     static int get_file_count(std::string_view path);
     static std::vector<SDL_Texture*> read_textures(std::string_view path);
-    static Vector2D<double> gen_spawn_boundary_position();
-    static Vector2D<double> gen_spawn_internal_position(int margin = 0);
-    static int direction2orientation(const Vector2D<double>& direction);
-    static bool ray_collision_check(const Vector2D<double>& src, const Vector2D<double>& dst, int w, int h);
+    static Vector2D<float> gen_spawn_boundary_position();
+    static Vector2D<float> gen_spawn_internal_position(int margin = 0);
+    static int direction2orientation(const Vector2D<float>& direction);
 
     template <typename ActionType, typename... Args> requires std::derived_from<ActionType, Action>
     static void emplace_action(Entity entity, Args&&... args) {

@@ -77,8 +77,8 @@ bool GameLayer::on_event(const SDL_Event& event) {
         }
         case SDL_EVENT_MOUSE_MOTION: {
             float x = event.motion.x, y = event.motion.y;
-            auto [w, h] = camera.size();
-            *aim_direction_ = (Vector2D<double>{x, y} - Vector2D<double>{w / 2., h / 2.}).normalize();
+            auto& camera_size = camera.size();
+            *aim_direction_ = (Vector2D<float>{x, y} - camera_size / 2).normalize();
             return false;
         }
         case SDL_EVENT_MOUSE_BUTTON_DOWN: {
@@ -139,7 +139,7 @@ bool GameLayer::on_event(const SDL_Event& event) {
             return true;
         }
         case SDL_EVENT_WINDOW_RESIZED: {
-            camera.size() = {event.window.data1, event.window.data2};
+            camera.size() = {(float)event.window.data1, (float)event.window.data2};
             return true;
         }
     }
@@ -153,18 +153,18 @@ void GameLayer::render_texture() {
         if (!texture.texture) {
             continue;
         }
-        auto left_top = position.vec - Vector2D<double>{size.w / 2., size.h / 2.} - camera.pos();
-        SDL_FRect dst_frect = {(float)left_top.x, (float)left_top.y, (float)size.w, (float)size.h};
-        sdl.render(texture.texture, nullptr, &dst_frect);
+        auto left_top = position.vec - size.vec / 2 - camera.pos();
+        SDL_FRect dst = {left_top.x, left_top.y, size.vec.x, size.vec.y};
+        sdl.render(texture.texture, nullptr, &dst);
     }
 
     for (auto [entity, position, size, texture] : ecs.get_entity_and_components<PositionComponent, SizeComponent, TextureComponent>()) {
         if (ecs.has_components<FloorComponent>(entity) || !texture.texture) {
             continue;
         }
-        auto left_top = position.vec - Vector2D<double>{size.w / 2., size.h / 2.} - camera.pos();
-        SDL_FRect dst_frect = {(float)left_top.x, (float)left_top.y, (float)size.w, (float)size.h};
-        sdl.render(texture.texture, nullptr, &dst_frect);
+        auto left_top = position.vec - size.vec / 2 - camera.pos();
+        SDL_FRect dst = {left_top.x, left_top.y, size.vec.x, size.vec.y};
+        sdl.render(texture.texture, nullptr, &dst);
     }
 }
 
@@ -174,9 +174,9 @@ void GameLayer::render_health_bar() {
         auto& hp = ecs.get_component<HPComponent>(health_bar.master);
 
         auto left_top = position.vec - camera.pos();
-        SDL_FRect dst = {(float)left_top.x, (float)left_top.y, (float)size.w, (float)size.h};
+        SDL_FRect dst = {left_top.x, left_top.y, size.vec.x, size.vec.y};
         sdl.draw_rect(&dst, sdl.RED);
-        dst.w = (float)size.w * hp.hp / hp.max_hp;
+        dst.w = (float)size.vec.x * hp.hp / hp.max_hp;
         sdl.draw_rect(&dst, sdl.GREEN);
     }
 }

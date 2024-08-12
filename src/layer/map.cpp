@@ -30,10 +30,10 @@ void MapLayer::on_render() {
     auto& item = inventory_->selected_slot().item();
     if (!item.empty() && item.data().show_selected_tile) {
         if (tile_pos_.first != -1 && tile_pos_.second != -1) {
-            Vector2D<double> pos = map.idx2pos(tile_pos_.first, tile_pos_.second);
+            auto pos = map.idx2pos(tile_pos_.first, tile_pos_.second);
             float tile_size = map.TILE_SIZE;
             pos = camera.world2screen(pos);
-            SDL_FRect dst = {(float)pos.x - tile_size / 2, (float)pos.y - tile_size / 2, tile_size, tile_size};
+            SDL_FRect dst = {pos.x - tile_size / 2, pos.y - tile_size / 2, tile_size, tile_size};
             sdl.draw_border(&dst, 4, sdl.GREEN);
         }
     }

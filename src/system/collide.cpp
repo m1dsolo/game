@@ -41,10 +41,10 @@ void CollideSystem::collide() {
     // friend collide enemy
     for (auto [entity0, _, collide0, position0, size0]
         : ecs.get_entity_and_components<FriendComponent, CollideComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect0 = {position0.vec, {size0.w / 2., size0.h / 2.}};
+        Rect<float> rect0 = {position0.vec, size0.vec / 2};
         for (auto [entity1, _, hp, position1, size1]
             : ecs.get_entity_and_components<EnemyComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
+            Rect<float> rect1 = {position1.vec, size1.vec / 2};
             if (rect0.is_overlapping(rect1)) {
                 // unique collide
                 if (ecs.has_components<UniqueCollideComponent>(entity0)) {
@@ -91,10 +91,10 @@ void CollideSystem::collide() {
     // enemy collide friend
     for (auto [entity0, _, collide0, position0, size0]
         : ecs.get_entity_and_components<EnemyComponent, CollideComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect0 = {position0.vec, {size0.w / 2., size0.h / 2.}};
+        Rect<float> rect0 = {position0.vec, size0.vec / 2};
         for (auto [entity1, _, hp, position1, size1]
             : ecs.get_entity_and_components<FriendComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
+            Rect<float> rect1 = {position1.vec, size1.vec / 2};
             if (rect0.is_overlapping(rect1)) {
                 // add damage
                 if (!ecs.has_components<DamageComponent>(entity1)) {
@@ -128,7 +128,7 @@ void CollideSystem::bullet_out_of_boundary() {
 void CollideSystem::bullet_collide_structure() {
     auto& map = Map::instance();
     for (auto [bullet_entity, bullet, position, size] : ecs.get_entity_and_components<BulletComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect = {position.vec, {size.w / 2., size.h / 2.}};
+        Rect<float> rect = {position.vec, size.vec / 2};
         if (map.is_collision(rect)) {
             ecs.add_components<DelEntityTag>(bullet_entity, {});
         }
@@ -137,10 +137,10 @@ void CollideSystem::bullet_collide_structure() {
 
 void CollideSystem::trap_collide_enemy() {
     for (auto [trap_entity, trap, position0, size0] : ecs.get_entity_and_components<TrapComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect0 = {position0.vec, {(double)size0.w, (double)size0.h}};
+        Rect<float> rect0 = {position0.vec, size0.vec / 2};
         std::vector<Entity> enemies;
         for (auto [enemy_entity, enemy, _, position1, size1] : ecs.get_entity_and_components<EnemyComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
+            Rect<float> rect1 = {position1.vec, size1.vec / 2};
             if (rect0.is_overlapping(rect1)) {
                 enemies.emplace_back(enemy_entity);
                 if (--trap.duration <= 0) {
@@ -204,7 +204,7 @@ void CollideSystem::pick_range() {
                         entity,
                         TrackNearestPlayerTag{},
                         DirectionComponent{},
-                        VelocityComponent{perk.pick_range + 100.}
+                        VelocityComponent{(float)perk.pick_range + 100}
                     );
                 }
             }
@@ -214,13 +214,13 @@ void CollideSystem::pick_range() {
 
 void CollideSystem::auto_pickup() {
     for (auto [entity0, item, position0, size0] : ecs.get_entity_and_components<ItemComponent, PositionComponent, SizeComponent>()) {
-        Rect<double> rect0 = {position0.vec, {size0.w / 2., size0.h / 2.}};
+        Rect<float> rect0 = {position0.vec, size0.vec / 2};
         for (auto [_, inventory, position1, size1] : ecs.get_components<PlayerComponent, InventoryComponent, PositionComponent, SizeComponent>()) {
-            Rect<double> rect1 = {position1.vec, {size1.w / 2., size1.h / 2.}};
+            Rect<float> rect1 = {position1.vec, size1.vec / 2};
             if (rect0.is_overlapping(rect1)) {
                 std::visit([&](const auto& data) {
                     if (inventory.inventory.pick(data, item.count)) {
-                        ecs.add_components<DelEntityTag>(entity0, {});
+                        ecs.add_components(entity0, DelEntityTag{});
                     }
                 }, item.data);
             }

@@ -25,14 +25,14 @@ Map::~Map() {
 
 }
 
-Vector2D<double> Map::idx2pos(int i, int j) const {
+Vector2D<float> Map::idx2pos(int i, int j) const {
     return {
-        j * TILE_SIZE + TILE_SIZE / 2.,
-        i * TILE_SIZE + TILE_SIZE / 2.
+        j * TILE_SIZE + (float)TILE_SIZE / 2,
+        i * TILE_SIZE + (float)TILE_SIZE / 2
     };
 }
 
-std::pair<int, int> Map::pos2idx(const Vector2D<double>& pos) const {
+std::pair<int, int> Map::pos2idx(const Vector2D<float>& pos) const {
     int i = pos.y / TILE_SIZE, j = pos.x / TILE_SIZE;
     if (i < 0 || i >= tilemap_.size() || j < 0 || j >= tilemap_[0].size()) {
         return {-1, -1};
@@ -57,14 +57,14 @@ std::pair<int, int> Map::pixel_size() const {
     return {TILE_NUM_W * TILE_SIZE, TILE_NUM_H * TILE_SIZE};
 }
 
-bool Map::is_in_bound(const Vector2D<double>& pos) {
+bool Map::is_in_bound(const Vector2D<float>& pos) {
     return pos.x >= 0 &&
         pos.x <= TILE_NUM_W * TILE_SIZE &&
         pos.y >= 0 &&
         pos.y <= TILE_NUM_H * TILE_SIZE;
 }
 
-bool Map::plant(const std::string& name, Entity entity, const Vector2D<double>& position) {
+bool Map::plant(const std::string& name, Entity entity, const Vector2D<float>& position) {
     auto [i, j] = pos2idx(position);
     if (i < 0 || i >= TILE_NUM_H || j < 0 || j >= TILE_NUM_W) {
         return false;
@@ -108,7 +108,7 @@ bool Map::is_planted(int i, int j) const {
     return planted_structure_[i][j];
 }
 
-bool Map::is_collision(const Rect<double>& rect) const {
+bool Map::is_collision(const Rect<float>& rect) const {
     return is_collision(Rect<int>(rect));
 }
 
@@ -117,7 +117,7 @@ bool Map::is_collision(const Rect<int>& rect) const {
         i = std::min(i, rect.y1 - 1);
         for (int j = rect.x0; j < rect.x1 + TILE_SIZE - 1; j += TILE_SIZE) {
             j = std::min(j, rect.x1 - 1);
-            auto idx = pos2idx({(double)j, (double)i});
+            auto idx = pos2idx({(float)j, (float)i});
             auto tile_rect = idx2tile_rect(idx.first, idx.second);
             if (is_planted(idx.first, idx.second) && rect.is_overlapping(tile_rect)) {
                 return true;
@@ -138,7 +138,7 @@ void Map::generate_map_texture() {
     for (int i = 0; i < TILE_NUM_H; i++) {
         for (int j = 0; j < TILE_NUM_W; j++) {
             float x = (j + PADDING_TILE_NUM) * TILE_SIZE, y = (i + PADDING_TILE_NUM) * TILE_SIZE;
-			const double noise = perlin.octave2D_01((x * 0.01), (y * 0.01), 8);
+			const float noise = perlin.octave2D_01((x * 0.01), (y * 0.01), 8);
             std::string tile_name = "";
             Tile::Type type = Tile::Type::NONE;
             if (noise <= 0.2) {

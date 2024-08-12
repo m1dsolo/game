@@ -17,15 +17,15 @@ class EntityManager : public Singleton<EntityManager> {
 
 public:
     Entity create_player(const std::string& name, bool self = true);
-    void create_enemy(const std::string& name, Vector2D<double> position = {-1, -1}, bool random_elite = true);
-    void create_tower(const std::string& name, Entity master_entity, Vector2D<double> position);
-    void create_structure(const std::string& name, Entity master_entity, Vector2D<double> position);
-    void create_trap(const std::string& name, Entity master_entity, Vector2D<double> position);
-    void create_floor(const std::string& name, Entity master_entity, Vector2D<double> position);
-    void create_bullet(const std::string& name, Vector2D<double> position, Vector2D<double> direction, int atk, int penetration, Entity master_entity);
-    void create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<double> position, int count = 1, int unpickable_seconds = 0);
+    void create_enemy(const std::string& name, Vector2D<float> position = {-1, -1}, bool random_elite = true);
+    void create_tower(const std::string& name, Entity master_entity, Vector2D<float> position);
+    void create_structure(const std::string& name, Entity master_entity, Vector2D<float> position);
+    void create_trap(const std::string& name, Entity master_entity, Vector2D<float> position);
+    void create_floor(const std::string& name, Entity master_entity, Vector2D<float> position);
+    void create_bullet(const std::string& name, Vector2D<float> position, Vector2D<float> direction, int atk, int penetration, Entity master_entity);
+    void create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<float> position, int count = 1, int unpickable_seconds = 0);
     Entity create_health_bar(Entity master);
-    Entity create_text(const std::string& text, SDL_Color color, const Vector2D<double>& pos);
+    Entity create_text(const std::string& text, SDL_Color color, const Vector2D<float>& pos);
 
 private:
     void parse_enemy_json();

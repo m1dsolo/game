@@ -14,8 +14,8 @@ class Map : public Singleton<Map> {
     friend class Singleton<Map>;
 
 public:
-    Vector2D<double> idx2pos(int i, int j) const;
-    std::pair<int, int> pos2idx(const Vector2D<double>& pos) const;
+    Vector2D<float> idx2pos(int i, int j) const;
+    std::pair<int, int> pos2idx(const Vector2D<float>& pos) const;
     Rect<int> idx2tile_rect(int i, int j) const;
 
     // [w, h]
@@ -24,13 +24,13 @@ public:
     const Rect<int>& game_rect() const { return game_rect_; }
     const Rect<int>& real_rect() const { return real_rect_; }
 
-    static bool is_in_bound(const Vector2D<double>& pos);
+    static bool is_in_bound(const Vector2D<float>& pos);
 
     // position is the world coordinate system
-    bool plant(const std::string& name, Entity entity, const Vector2D<double>& position);
+    bool plant(const std::string& name, Entity entity, const Vector2D<float>& position);
 
     bool is_planted(int i, int j) const;
-    bool is_collision(const Rect<double>& rect) const;
+    bool is_collision(const Rect<float>& rect) const;
     bool is_collision(const Rect<int>& rect) const;
 
     SDL_Texture* texture() { return texture_; }

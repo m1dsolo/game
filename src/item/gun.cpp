@@ -23,7 +23,7 @@ Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
         "shoot",
         SDLK_MOUSE_LEFT,
         [shoot_interval, &entity = entity_]() {
-            double cooldown = shoot_interval;
+            float cooldown = shoot_interval;
             if (ecs.has_components<PerkComponent>(entity)) {
                 auto& perk = ecs.get_component<PerkComponent>(entity);
                 cooldown = cooldown * 100 / perk.shoot_speed_ratio;
@@ -39,7 +39,7 @@ Gun::Gun(Data* data, Entity entity) : Weapon(data, entity) {
         "reload",
         'r',
         [reload_interval, &entity = entity_]() {
-            double cooldown = reload_interval;
+            float cooldown = reload_interval;
             if (ecs.has_components<PerkComponent>(entity)) {
                 auto& perk = ecs.get_component<PerkComponent>(entity);
                 cooldown = cooldown * 100 / perk.reload_speed_ratio;
@@ -73,12 +73,12 @@ void Gun::shoot() {
     int atk = data().atk;
     if (ecs.has_components<PerkComponent>(entity_)) {
         auto& perk = ecs.get_component<PerkComponent>(entity_);
-        a = (double)a * 100 / perk.accuracy_ratio;
-        atk = std::ceil((double)atk * perk.atk_ratio / 100);
+        a = (float)a * 100 / perk.accuracy_ratio;
+        atk = std::ceil((float)atk * perk.atk_ratio / 100);
     }
     for (int i = 0; i < data().count; ++i) {
-        double angle = random.uniform(-a, a) * M_PI / 180;
-        auto dir = Vector2D<double>{direction.x * std::cos(angle) - direction.y * std::sin(angle),
+        float angle = random.uniform<float>(-a, a) * M_PI / 180;
+        auto dir = Vector2D<float>{direction.x * std::cos(angle) - direction.y * std::sin(angle),
                           direction.x * std::sin(angle) + direction.y * std::cos(angle)};
         EntityManager::instance().create_bullet(
             "bullet_shell",

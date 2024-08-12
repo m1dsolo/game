@@ -35,7 +35,7 @@ void AnimationSystem::update_animation_counter() {
 
 void AnimationSystem::update_texture() {
     for (auto [entity, animation, texture] : ecs.get_entity_and_components<AnimationComponent, TextureComponent>()) {
-        Vector2D<double> direction = {0, 1};
+        Vector2D<float> direction = {0, 1};
         if (ecs.has_components<DirectionComponent>(entity)) {
             direction = ecs.get_component<DirectionComponent>(entity).vec;
         }

@@ -69,8 +69,8 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     t[typeid(PerkComponent)] = PerkComponent{};
     t[typeid(AnimationComponent)] = AnimationComponent{name};
     t[typeid(TextureComponent)] = TextureComponent{};
-    t[typeid(PositionComponent)] = PositionComponent{(x0 + x1) / 2., (y0 + y1) / 2.};
-    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(PositionComponent)] = PositionComponent{(float)(x0 + x1) / 2, (float)(y0 + y1) / 2};
+    t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
     t[typeid(VelocityComponent)] = VelocityComponent{100, 100};
     t[typeid(DirectionComponent)] = DirectionComponent{};
     t[typeid(AimDirectionComponent)] = AimDirectionComponent{};
@@ -114,8 +114,8 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     return entity;
 }
 
-void EntityManager::create_enemy(const std::string& name, Vector2D<double> position, bool random_elite) {
-    if (position == Vector2D<double>{-1, -1}) {
+void EntityManager::create_enemy(const std::string& name, Vector2D<float> position, bool random_elite) {
+    if (position == Vector2D<float>{-1, -1}) {
         position = GameUtils::gen_spawn_boundary_position();
     }
 
@@ -140,13 +140,13 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<double> posit
         hp.max_hp = hp.hp = hp.max_hp * enemy_resource.elite_max_hp_ratio / 100;
         collide.atk += enemy_resource.elite_extra_collide_damage;
 
-        auto& size = ecs.get_component<SizeComponent>(entity);
-        size.w = size.w * enemy_resource.elite_size_ratio / 100;
-        size.h = size.h * enemy_resource.elite_size_ratio / 100;
+        auto& [w, h] = ecs.get_component<SizeComponent>(entity).vec;
+        w = w * enemy_resource.elite_size_ratio / 100;
+        h = h * enemy_resource.elite_size_ratio / 100;
     }
 }
 
-void EntityManager::create_tower(const std::string& name, Entity master_entity, Vector2D<double> position) {
+void EntityManager::create_tower(const std::string& name, Entity master_entity, Vector2D<float> position) {
     int power = static_cast<const Tower::Data*>(ItemManager::instance().get_data(name))->power;
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
@@ -160,28 +160,28 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
     inventory.select(1);
 }
 
-void EntityManager::create_structure(const std::string& name, Entity master_entity, Vector2D<double> position) {
+void EntityManager::create_structure(const std::string& name, Entity master_entity, Vector2D<float> position) {
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
     Entity entity = ecs.add_entity(t);
 }
 
-void EntityManager::create_trap(const std::string& name, Entity master_entity, Vector2D<double> position) {
+void EntityManager::create_trap(const std::string& name, Entity master_entity, Vector2D<float> position) {
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
     Entity entity = ecs.add_entity(t);
 }
 
-void EntityManager::create_floor(const std::string& name, Entity master_entity, Vector2D<double> position) {
+void EntityManager::create_floor(const std::string& name, Entity master_entity, Vector2D<float> position) {
     EntityTemplate t = template_map_[name];
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
     Entity entity = ecs.add_entity(t);
 }
 
-void EntityManager::create_bullet(const std::string& name, Vector2D<double> position, Vector2D<double> direction, int atk, int penetration, Entity master_entity) {
+void EntityManager::create_bullet(const std::string& name, Vector2D<float> position, Vector2D<float> direction, int atk, int penetration, Entity master_entity) {
     EntityTemplate t = template_map_[name];
 
     t[typeid(PositionComponent)] = PositionComponent{std::move(position)};
@@ -192,7 +192,7 @@ void EntityManager::create_bullet(const std::string& name, Vector2D<double> posi
     ecs.add_entity(t);
 }
 
-void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<double> position, int count, int unpickable_seconds) {
+void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<float> position, int count, int unpickable_seconds) {
     EntityTemplate t;
 
     SDL_Texture* texture;
@@ -207,7 +207,7 @@ void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<
 
     t[typeid(PositionComponent)] = PositionComponent{std::move(position)};
     auto [w, h] = sdl.get_texture_size(texture);
-    t[typeid(SizeComponent)] = SizeComponent{(int)w, (int)h};
+    t[typeid(SizeComponent)] = SizeComponent{{w, h}};
 
     Entity entity = ecs.add_entity(t);
     auto item = ItemComponent{data, count};
@@ -222,7 +222,7 @@ void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<
 
 Entity EntityManager::create_health_bar(Entity master) {
     auto size = ecs.get_component<SizeComponent>(master);
-    size.h = size.w / 8;
+    size.vec.y = size.vec.x / 8;
     return ecs.add_entity(
         HealthBarComponent{master},
         PositionComponent{},
@@ -230,13 +230,13 @@ Entity EntityManager::create_health_bar(Entity master) {
     );
 }
 
-Entity EntityManager::create_text(const std::string& text, SDL_Color color, const Vector2D<double>& pos) {
+Entity EntityManager::create_text(const std::string& text, SDL_Color color, const Vector2D<float>& pos) {
     auto texture = sdl.create_texture(text, color);
     auto [w, h] = sdl.get_texture_size(texture);
     return ecs.add_entity(
         TextureComponent{texture},
         PositionComponent{pos},
-        SizeComponent{(int)w, (int)h},
+        SizeComponent{{w, h}},
         VelocityComponent{10, 10}
     );
 }
@@ -256,14 +256,14 @@ void EntityManager::parse_enemy_json() {
             std::string reward_name = reward["name"];
             int count0 = reward["count"][0];
             int count1 = reward["count"][1];
-            double chance = reward["chance"];
+            float chance = (double)reward["chance"];
             rewards.emplace_back(reward_name, std::pair<int, int>(count0, count1), chance);
         }
 
         EntityTemplate t;
         t[typeid(EnemyComponent)] = EnemyComponent{};
         t[typeid(PositionComponent)] = PositionComponent{};
-        t[typeid(VelocityComponent)] = VelocityComponent{(double)velocity};
+        t[typeid(VelocityComponent)] = VelocityComponent{(float)velocity};
         t[typeid(DirectionComponent)] = DirectionComponent{};
         t[typeid(HPComponent)] = HPComponent{hp};
         t[typeid(CollideComponent)] = CollideComponent{collide, -1, 30};
@@ -280,12 +280,12 @@ void EntityManager::parse_enemy_json() {
 
         if (enemy.count("size")) {
             int size = enemy["size"];
-            t[typeid(SizeComponent)] = SizeComponent{size, size};
+            t[typeid(SizeComponent)] = SizeComponent{{(float)size, (float)size}};
         } else {
             float w, h;
             SDL_Texture* texture = AnimationManager::instance().get_animations(animation_name)->get_texture(0, 0);
             SDL_GetTextureSize(texture, &w, &h);
-            t[typeid(SizeComponent)] = SizeComponent{(int)w, (int)h};
+            t[typeid(SizeComponent)] = SizeComponent{{w, h}};
         }
 
         template_map_[name] = std::move(t);
@@ -294,7 +294,7 @@ void EntityManager::parse_enemy_json() {
 
 void EntityManager::cache_bullet(const std::string& name) {
     EntityTemplate t;
-    t[typeid(SizeComponent)] = SizeComponent{32, 32};
+    t[typeid(SizeComponent)] = SizeComponent{{32, 32}};
     t[typeid(TextureComponent)] = TextureComponent{name};
     t[typeid(FriendComponent)] = FriendComponent{};
     t[typeid(VelocityComponent)] = VelocityComponent{300};
@@ -307,7 +307,7 @@ void EntityManager::cache_tower(const std::string& name) {
     EntityTemplate t;
     t[typeid(AnimationComponent)] = AnimationComponent{name};
     t[typeid(TextureComponent)] = TextureComponent{};
-    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
     t[typeid(TowerComponent)] = TowerComponent{300};
     t[typeid(ActionsComponent)] = ActionsComponent{};
     t[typeid(AimDirectionComponent)] = AimDirectionComponent{};
@@ -318,7 +318,7 @@ void EntityManager::cache_tower(const std::string& name) {
 void EntityManager::cache_structure(const std::string& name) {
     EntityTemplate t;
     t[typeid(TextureComponent)] = TextureComponent{name};
-    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
 
     template_map_[name] = std::move(t);
 }
@@ -329,7 +329,7 @@ void EntityManager::cache_trap(const std::string& name) {
     EntityTemplate t;
     t[typeid(AnimationComponent)] = AnimationComponent{name};
     t[typeid(TextureComponent)] = TextureComponent{};
-    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
     t[typeid(TrapComponent)] = TrapComponent{data->atk, data->duration, data->cooldown};
     t[typeid(FloorComponent)] = FloorComponent{};
 
@@ -339,7 +339,7 @@ void EntityManager::cache_trap(const std::string& name) {
 void EntityManager::cache_floor(const std::string& name) {
     EntityTemplate t;
     t[typeid(TextureComponent)] = TextureComponent{name};
-    t[typeid(SizeComponent)] = SizeComponent{48, 48};
+    t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
     t[typeid(FloorComponent)] = FloorComponent{};
 
     template_map_[name] = std::move(t);

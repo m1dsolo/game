@@ -5,7 +5,7 @@
 namespace wheel {
 
 struct SizeComponent {
-    int w = -1, h = -1;
+    Vector2D<float> vec {0., 0.};
 };
 
 }  // namespace wheel

@@ -31,7 +31,7 @@ void MoveSystem::calc_input_direction() {
             continue;
         }
 
-        auto d = Vector2D<double>{(double)move.right - move.left, (double)move.down - move.up};
+        auto d = Vector2D<float>{(float)move.right - move.left, (float)move.down - move.up};
         if (d.is_zero()) {
             velocity.speed = 0;
         } else {
@@ -44,13 +44,13 @@ void MoveSystem::calc_input_direction() {
 void MoveSystem::calc_direction_by_track_nearest_player() {
     for (auto [_, position0, velocity0, direction0]
         : ecs.get_components<TrackNearestPlayerTag, PositionComponent, VelocityComponent, DirectionComponent>()) {
-        Vector2D<double> pos = {1000000, 1000000};
+        Vector2D<float> pos = {1000000, 1000000};
         auto& pos0 = position0.vec;
-        double min_distance = pos0.distance(pos);
+        float min_distance = pos0.distance(pos);
         // TODO: performance
         for (auto [_, position1] : ecs.get_components<PlayerComponent, PositionComponent>()) {
             auto& pos1 = position1.vec;
-            double distance = pos0.distance(pos1);
+            float distance = pos0.distance(pos1);
             if (distance < min_distance) {
                 min_distance = distance;
                 pos = pos1;
@@ -69,12 +69,12 @@ void MoveSystem::calc_direction_by_a_star_track_nearest_player() {
     auto& map = Map::instance();
     for (auto [_, position0, velocity0, direction0]
         : ecs.get_components<AStarTrackNearestPlayerTag, PositionComponent, VelocityComponent, DirectionComponent>()) {
-        Vector2D<double> pos = {1000000, 1000000};
+        Vector2D<float> pos = {1000000, 1000000};
         auto& pos0 = position0.vec;
-        double min_distance = pos0.distance(pos);
+        float min_distance = pos0.distance(pos);
         for (auto [_, position1] : ecs.get_components<PlayerComponent, PositionComponent>()) {
             auto& pos1 = position1.vec;
-            double distance = pos0.distance(pos1);
+            float distance = pos0.distance(pos1);
             if (distance < min_distance) {
                 min_distance = distance;
                 pos = pos1;
@@ -100,7 +100,7 @@ void MoveSystem::move() {
             continue;
         }
 
-        auto collide_size = Vector2D<double>{size.w / 2., size.h / 2.};
+        auto collide_size = size.vec / 2;
         position.vec.x += delta.x;
         if (map.is_collision({position.vec, collide_size})) {
             position.vec.x -= delta.x;
@@ -118,13 +118,14 @@ void MoveSystem::move() {
 // TODO: cache
 void MoveSystem::clamp_player_position() {
     auto& map = Map::instance();
-    auto& [x0, y0, x1, y1] = map.game_rect();
+    auto [x0, y0, x1, y1] = map.game_rect();
     for (auto [player, position, size] : ecs.get_components<PlayerComponent, PositionComponent, SizeComponent>()) {
+        auto [w, h] = size.vec;
         position.vec.clamp(
-            x0 + (float)size.w / 2,
-            x1 - (float)size.w / 2,
-            y0 + (float)size.h / 2,
-            y1 - (float)size.h / 2
+            x0 + w / 2,
+            x1 - w / 2,
+            y0 + h / 2,
+            y1 - h / 2
         );
     }
 }

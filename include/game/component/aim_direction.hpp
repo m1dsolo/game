@@ -5,7 +5,7 @@
 namespace wheel {
 
 struct AimDirectionComponent {
-    Vector2D<double> vec {0., 1.};
+    Vector2D<float> vec {0., 1.};
 };
 
 }  // namespace wheel

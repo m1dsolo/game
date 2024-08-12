@@ -141,7 +141,7 @@ MoveRightAction::MoveRightAction(Entity entity) : OneShotAction("move_right", 'd
 
 FlashAction::FlashAction(Entity entity) : OneShotAction("flash", 'f') {
     get_cooldown_ = [&, entity]() {
-        double cooldown = 300;
+        float cooldown = 300;
         // if (ecs.has_components<PerkComponent>(entity)) {
         //     auto& perk = ecs.get_component<PerkComponent>(entity);
         // }

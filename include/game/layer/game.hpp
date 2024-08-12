@@ -31,8 +31,8 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<Action>>* action_map_;
     std::unordered_map<SDL_Keycode, std::string>* key_bindings;
-    Vector2D<double>* position_;
-    Vector2D<double>* aim_direction_;
+    Vector2D<float>* position_;
+    Vector2D<float>* aim_direction_;
 };
 
 }  // namespace wheel

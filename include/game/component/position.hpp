@@ -5,7 +5,7 @@
 namespace wheel {
 
 struct PositionComponent {
-    Vector2D<double> vec {0., 0.};
+    Vector2D<float> vec {0., 0.};
 };
 
 }  // namespace wheel
