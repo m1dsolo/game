@@ -51,6 +51,7 @@ protected:
     );
 
     int uses_;
+    void reduce_uses();
 };
 
 }  // namespace wheel

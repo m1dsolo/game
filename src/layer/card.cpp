@@ -19,7 +19,7 @@ CardLayer::CardLayer(bool player_cards) : player_cards_(player_cards) {
         rarity_textures_[i] = sdl.create_texture(card_w_, card_h_, CardManager::rarity2color(i));
     }
 
-    positions[1] = {(config_resource.w) / 2., (config_resource.h) / 2.};
+    positions[1] = {(float)config_resource.w / 2, (float)config_resource.h / 2};
     positions[0] = {positions[1].x - card_w_ - 200, positions[1].y};
     positions[2] = {positions[1].x + card_w_ + 200, positions[1].y};
 

@@ -18,15 +18,16 @@
 #include <game/component/aim_direction.hpp>
 #include <game/component/continuous_action.hpp>
 #include <game/component/floor.hpp>
+#include <game/component/actions.hpp>
+#include <game/component/input.hpp>
+#include <game/component/position.hpp>
+#include <game/component/direction.hpp>
+
 
 namespace wheel {
 
 void GameLayer::on_attach() {
-    Entity entity = ecs.get_entities<SelfComponent>()[0];
-    action_map_ = &ecs.get_component<ActionsComponent>(entity).action_map;
-    key_bindings = &ecs.get_component<InputComponent>(entity).key_bindings;
-    position_ = &ecs.get_component<PositionComponent>(entity).vec;
-    aim_direction_ = &ecs.get_component<AimDirectionComponent>(entity).vec;
+    self_entity_ = ecs.get_entities<SelfComponent>()[0];
 }
 
 void GameLayer::on_detach() {
@@ -49,6 +50,8 @@ bool GameLayer::on_event(const SDL_Event& event) {
         }
     }
 
+    auto& action_map = ecs.get_component<ActionsComponent>(self_entity_).action_map;
+    auto& key_bindings = ecs.get_component<InputComponent>(self_entity_).key_bindings;
     switch (event.type) {
         case SDL_EVENT_QUIT: {
             GameManager::instance().quit();
@@ -61,50 +64,52 @@ bool GameLayer::on_event(const SDL_Event& event) {
                 break;
             }
 
-            if (key_bindings->count(keycode)) {
-                const std::string& action_name = key_bindings->at(keycode);
-                action_map_->at(action_name)->start();
+            if (key_bindings.count(keycode)) {
+                const std::string& action_name = key_bindings.at(keycode);
+                action_map.at(action_name)->start();
             }
             return true;
         }
         case SDL_EVENT_KEY_UP: {
             auto keycode = event.key.key;
-            if (key_bindings->count(keycode)) {
-                const std::string& action_name = key_bindings->at(keycode);
-                action_map_->at(action_name)->finish();
+            if (key_bindings.count(keycode)) {
+                const std::string& action_name = key_bindings.at(keycode);
+                action_map.at(action_name)->finish();
             }
             return true;
         }
         case SDL_EVENT_MOUSE_MOTION: {
             float x = event.motion.x, y = event.motion.y;
-            auto& camera_size = camera.size();
-            *aim_direction_ = (Vector2D<float>{x, y} - camera_size / 2).normalize();
+            auto& camera_size = camera.size();  // because player in middle of camera
+            Entity entity = ecs.get_entities<SelfComponent>()[0];
+            auto& aim_direction = ecs.get_component<AimDirectionComponent>(entity);
+            aim_direction.vec = (Vector2D<float>{x, y} - camera_size / 2).normalize();
             return false;
         }
         case SDL_EVENT_MOUSE_BUTTON_DOWN: {
             float x = event.motion.x, y = event.motion.y;
             switch (event.button.button) {
                 case SDL_BUTTON_LEFT: {
-                    if (key_bindings->count(SDLK_MOUSE_LEFT)) {
-                        const std::string& action_name = key_bindings->at(SDLK_MOUSE_LEFT);
-                        action_map_->at(action_name)->start();
-                        action_map_->at(action_name)->start(x, y);
+                    if (key_bindings.count(SDLK_MOUSE_LEFT)) {
+                        const std::string& action_name = key_bindings.at(SDLK_MOUSE_LEFT);
+                        action_map.at(action_name)->start();
+                        action_map.at(action_name)->start(x, y);
                     }
                     break;
                 }
                 case SDL_BUTTON_MIDDLE: {
-                    if (key_bindings->count(SDLK_MOUSE_MIDDLE)) {
-                        const std::string& action_name = key_bindings->at(SDLK_MOUSE_MIDDLE);
-                        action_map_->at(action_name)->start();
-                        action_map_->at(action_name)->start(x, y);
+                    if (key_bindings.count(SDLK_MOUSE_MIDDLE)) {
+                        const std::string& action_name = key_bindings.at(SDLK_MOUSE_MIDDLE);
+                        action_map.at(action_name)->start();
+                        action_map.at(action_name)->start(x, y);
                     }
                     break;
                 }
                 case SDL_BUTTON_RIGHT: {
-                    if (key_bindings->count(SDLK_MOUSE_RIGHT)) {
-                        const std::string& action_name = key_bindings->at(SDLK_MOUSE_RIGHT);
-                        action_map_->at(action_name)->start();
-                        action_map_->at(action_name)->start(x, y);
+                    if (key_bindings.count(SDLK_MOUSE_RIGHT)) {
+                        const std::string& action_name = key_bindings.at(SDLK_MOUSE_RIGHT);
+                        action_map.at(action_name)->start();
+                        action_map.at(action_name)->start(x, y);
                     }
                     break;
                 }
@@ -115,23 +120,23 @@ bool GameLayer::on_event(const SDL_Event& event) {
             float x = event.motion.x, y = event.motion.y;
             switch (event.button.button) {
                 case SDL_BUTTON_LEFT: {
-                    if (key_bindings->count(SDLK_MOUSE_LEFT)) {
-                        const std::string& action_name = key_bindings->at(SDLK_MOUSE_LEFT);
-                        action_map_->at(action_name)->finish();
+                    if (key_bindings.count(SDLK_MOUSE_LEFT)) {
+                        const std::string& action_name = key_bindings.at(SDLK_MOUSE_LEFT);
+                        action_map.at(action_name)->finish();
                     }
                     break;
                 }
                 case SDL_BUTTON_MIDDLE: {
-                    if (key_bindings->count(SDLK_MOUSE_MIDDLE)) {
-                        const std::string& action_name = key_bindings->at(SDLK_MOUSE_MIDDLE);
-                        action_map_->at(action_name)->finish();
+                    if (key_bindings.count(SDLK_MOUSE_MIDDLE)) {
+                        const std::string& action_name = key_bindings.at(SDLK_MOUSE_MIDDLE);
+                        action_map.at(action_name)->finish();
                     }
                     break;
                 }
                 case SDL_BUTTON_RIGHT: {
-                    if (key_bindings->count(SDLK_MOUSE_RIGHT)) {
-                        const std::string& action_name = key_bindings->at(SDLK_MOUSE_RIGHT);
-                        action_map_->at(action_name)->finish();
+                    if (key_bindings.count(SDLK_MOUSE_RIGHT)) {
+                        const std::string& action_name = key_bindings.at(SDLK_MOUSE_RIGHT);
+                        action_map.at(action_name)->finish();
                     }
                     break;
                 }

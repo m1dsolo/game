@@ -34,6 +34,7 @@
 #include <game/component/item.hpp>
 #include <game/component/tag.hpp>
 #include <game/component/ai.hpp>
+#include <game/component/direction.hpp>
 
 #include <game/resource/enemy.hpp>
 

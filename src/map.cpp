@@ -108,10 +108,6 @@ bool Map::is_planted(int i, int j) const {
     return planted_structure_[i][j];
 }
 
-bool Map::is_collision(const Rect<float>& rect) const {
-    return is_collision(Rect<int>(rect));
-}
-
 bool Map::is_collision(const Rect<int>& rect) const {
     for (int i = rect.y0; i < rect.y1 + TILE_SIZE - 1; i += TILE_SIZE) {
         i = std::min(i, rect.y1 - 1);

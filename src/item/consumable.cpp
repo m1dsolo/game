@@ -24,10 +24,7 @@ Consumable::Consumable(Data* data, Entity entity, const std::string& action_name
             }
             if (use()) {
                 AudioManager::instance().play(action_name);
-                if (!--uses_) {
-                    uses_ = this->data().max_uses;
-                    this->slot_->reduce(1);
-                }
+                reduce_uses();
             }
         }
     );
@@ -58,10 +55,7 @@ Consumable::Consumable(Data* data, Entity entity, const std::string& action_name
                     }
                     if (use()) {
                         AudioManager::instance().play(action_name);
-                        if (!--uses_) {
-                            this->slot_->reduce(1);
-                            uses_ = this->data().max_uses;
-                        }
+                        reduce_uses();
                     }
                     return true;
                 }
@@ -73,6 +67,13 @@ Consumable::Consumable(Data* data, Entity entity, const std::string& action_name
 
 SDL_Texture* Consumable::get_cursor_texture() const {
     return TextureManager::instance().get_texture(data().name);
+}
+
+void Consumable::reduce_uses() {
+    if (!--uses_) {
+        this->slot_->reduce(1);
+        uses_ = this->data().max_uses;
+    }
 }
 
 }  // namespace wheel

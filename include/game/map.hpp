@@ -30,7 +30,6 @@ public:
     bool plant(const std::string& name, Entity entity, const Vector2D<float>& position);
 
     bool is_planted(int i, int j) const;
-    bool is_collision(const Rect<float>& rect) const;
     bool is_collision(const Rect<int>& rect) const;
 
     SDL_Texture* texture() { return texture_; }
