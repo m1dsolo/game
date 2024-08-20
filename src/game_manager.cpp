@@ -8,6 +8,7 @@
 #include <game/event.hpp>
 #include <game/camera.hpp>
 #include <game/layer_manager.hpp>
+#include <game/behavior_tree_manager.hpp>
 
 #include <game/layer/map.hpp>
 #include <game/layer/game.hpp>
@@ -21,13 +22,13 @@
 #include <game/system/continuous_action.hpp>
 #include <game/system/move.hpp>
 #include <game/system/camera.hpp>
-#include <game/system/tower.hpp>
 #include <game/system/collide.hpp>
 #include <game/system/animation.hpp>
 #include <game/system/combat.hpp>
 #include <game/system/render.hpp>
 #include <game/system/game_event.hpp>
 #include <game/system/timer.hpp>
+#include <game/system/ai.hpp>
 
 #include <game/component/self.hpp>
 #include <game/component/inventory.hpp>
@@ -64,7 +65,7 @@ void GameManager::run() {
     add_system<ContinuousActionSystem>();
     add_system<MoveSystem>();
     add_system<CameraSystem>();
-    add_system<TowerSystem>();
+    add_system<AISystem>();
     add_system<CollideSystem>();
     add_system<AnimationSystem>();
     add_system<CombatSystem>();
@@ -78,6 +79,8 @@ void GameManager::run() {
     ui.push_back<StatusLayer>();
     ui.push_back(LayerManager::instance().get("hotbar"));
     ui.push_back<ConstructionStageLayer>();
+
+    BehaviorTreeManager::instance().load(game_resource.path / "behaviors.json");
 
     ecs.startup();
 

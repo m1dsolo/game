@@ -1,0 +1,32 @@
+{
+    "tower": {
+        "type": "selector",
+        "nodes": [
+            {
+                "type": "sequence",
+                "nodes": [
+                    {
+                        "type": "behavior",
+                        "name": "have_ammo"
+                    },
+                    {
+                        "type": "behavior",
+                        "name": "enemy_in_range"
+                    },
+                    {
+                        "type": "behavior",
+                        "name": "aim_nearest_enemy"
+                    },
+                    {
+                        "type": "behavior",
+                        "name": "shoot"
+                    }
+                ]
+            },
+            {
+                "type": "behavior",
+                "name": "reload"
+            }
+        ]
+    }
+}
