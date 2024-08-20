@@ -10,7 +10,7 @@ Animations* AnimationManager::get_animations(const std::string& name) {
 }
 
 AnimationManager::AnimationManager() {
-    const std::string& path = std::format("{}/resources/animation", game_resource.path);
+    const std::string& path = game_resource.path / "resources" / "animation";
     for (const auto& entry : std::filesystem::directory_iterator(path)) {
         const std::string& name = entry.path().stem().string();
         animations_map_[name] = std::make_shared<Animations>(name);

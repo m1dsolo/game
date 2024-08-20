@@ -76,7 +76,7 @@ std::shared_ptr<Item> ItemManager::create_item(const std::string& name, Entity e
 }
 
 void ItemManager::parse_item_json() {
-    JsonListType obj = Json::parse_file(std::format("{}/item.json", game_resource.path));
+    JsonListType obj = Json::parse_file(game_resource.path / "item.json");
     // TODO: id
     for (auto [id, a] : std::views::enumerate(obj)) {
         JsonDictType& item = a;

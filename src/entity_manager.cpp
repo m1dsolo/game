@@ -10,11 +10,13 @@
 #include <game/animation_manager.hpp>
 #include <game/texture_manager.hpp>
 #include <game/item_manager.hpp>
+#include <game/behavior_tree_manager.hpp>
 #include <game/map.hpp>
 
 #include <game/item/tower.hpp>
 #include <game/item/structure.hpp>
 #include <game/item/trap.hpp>
+#include <game/item/gun.hpp>
 
 #include <game/component/size.hpp>
 #include <game/component/position.hpp>
@@ -104,7 +106,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     ecs.add_components(entity, InventoryComponent{{entity}});
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
 
-    JsonListType obj = Json::parse_file(game_resource.path + "/inventory.json");
+    JsonListType obj = Json::parse_file(game_resource.path / "inventory.json");
     for (JsonDictType item : obj) {
         std::string name = item["name"];
         int count = item["count"];
@@ -158,6 +160,8 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
     auto& inventory = ecs.get_component<InventoryComponent>(entity).inventory;
     inventory.pick("usp");
     inventory.select(1);
+
+    ecs.add_components(entity, AIComponent{BehaviorTreeManager::instance().get("tower")});
 }
 
 void EntityManager::create_structure(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -242,7 +246,7 @@ Entity EntityManager::create_text(const std::string& text, SDL_Color color, cons
 }
 
 void EntityManager::parse_enemy_json() {
-    JsonListType obj = Json::parse_file(game_resource.path + "/enemy.json");
+    JsonListType obj = Json::parse_file(game_resource.path / "enemy.json");
     for (JsonDictType enemy : obj) {
         std::string name = enemy["name"];
         int hp = enemy["hp"];

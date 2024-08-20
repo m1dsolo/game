@@ -7,8 +7,8 @@
 namespace wheel {
 
 CardManager::CardManager() {
-    parse_player_card(game_resource.path + "/player_card.json");
-    parse_enemy_card(game_resource.path + "/enemy_card.json");
+    parse_player_card(game_resource.path / "player_card.json");
+    parse_enemy_card(game_resource.path / "enemy_card.json");
 
     for (int i = 1; i < 6; i++) {
         rarity_distribution_[i] += rarity_distribution_[i - 1];

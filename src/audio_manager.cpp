@@ -1,7 +1,6 @@
 #include <game/audio_manager.hpp>
 
 #include <filesystem>
-#include <format>
 
 #include <wheel/log.hpp>
 
@@ -13,14 +12,14 @@ namespace wheel {
 
 AudioManager::AudioManager() {
     // music
-    const std::string& music_path = std::format("{}/resources/music", game_resource.path);
+    const std::string& music_path = game_resource.path / "resources" / "music";
     for (const auto& entry : fs::directory_iterator(music_path)) {
         const std::string& name = entry.path().stem();
         load(name, entry.path());
     }
 
     // sound
-    const std::string& sound_path = std::format("{}/resources/sound", game_resource.path);
+    const std::string& sound_path = game_resource.path / "resources" / "sound";
     for (const auto& entry : fs::directory_iterator(sound_path)) {
         const std::string& name = entry.path().stem();
         load(name, entry.path());

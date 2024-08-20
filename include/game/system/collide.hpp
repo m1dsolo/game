@@ -1,7 +1,6 @@
 #pragma once
 
 #include <game/system/base.hpp>
-#include <wheel/geometry.hpp>
 
 namespace wheel {
 

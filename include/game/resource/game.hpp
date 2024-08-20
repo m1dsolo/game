@@ -15,7 +15,7 @@ struct GameResource {
 
     std::unordered_map<std::string, std::any> cache;
 
-    std::string path = std::filesystem::current_path();
+    std::filesystem::path path = std::filesystem::current_path();
 
     Random random;
 };

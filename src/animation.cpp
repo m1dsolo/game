@@ -37,7 +37,7 @@ std::vector<SDL_Texture*> Animation::read_textures(std::string_view path) {
 }
 
 Animations::Animations(std::string_view name) {
-    const std::string& path = std::format("{}/resources/animation/{}", game_resource.path, name);
+    const std::string& path = game_resource.path / "resources" / "animation" / name;
        
     if (auto animations = read_animations(path + "/normal"); animations[1]) {
         frames_ = animations[1]->frames();

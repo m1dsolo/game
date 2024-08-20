@@ -10,7 +10,7 @@ namespace wheel {
 
 TextureManager::TextureManager() {
     // load textures
-    const std::string& texture_path = std::format("{}/resources/texture", game_resource.path);
+    const std::string& texture_path = game_resource.path / "resources" / "texture";
     for (const auto& entry : std::filesystem::directory_iterator(texture_path)) {
         Log::debug("TextureManager: load texture {}", entry.path().stem().string());
         const std::string& name = entry.path().stem().string();
@@ -18,8 +18,8 @@ TextureManager::TextureManager() {
     }
 
     // crop sheets to textures
-    const std::string& sheet_path = std::format("{}/resources/sheet", game_resource.path);
-    JsonListType obj = Json::parse_file(game_resource.path + "/sheet.json");
+    const std::string& sheet_path = game_resource.path / "resources" / "sheet";
+    JsonListType obj = Json::parse_file(game_resource.path / "sheet.json");
     for (JsonDictType sheet : obj) {
         std::string name = sheet["name"];
         auto texture = sdl.load_img(std::format("{}/{}.png", sheet_path, name));
