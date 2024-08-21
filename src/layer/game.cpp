@@ -23,7 +23,6 @@
 #include <game/component/position.hpp>
 #include <game/component/direction.hpp>
 
-
 namespace wheel {
 
 void GameLayer::on_attach() {

@@ -84,7 +84,7 @@
         "name": "peaks",
         "type": "consumable.trap",
         "atk": 1,
-        "duration": 100,
+        "durability": 100,
         "cooldown": 60
     },
     {

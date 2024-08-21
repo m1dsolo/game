@@ -26,6 +26,7 @@ add_subdirectory(${SDL_ROOT} SDL.out)
 add_subdirectory(${SDL_IMAGE} SDL_image.out)
 add_subdirectory(${SDL_MIXER} SDL_mixer.out)
 add_subdirectory(${SDL_TTF} SDL_ttf.out)
+# add_subdirectory(server)
 
 file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "src/*.cpp")
 add_executable(${TARGET} ${SRC})
@@ -45,5 +46,3 @@ target_link_libraries(${TARGET}
     PRIVATE SDL3_mixer::SDL3_mixer
     PRIVATE SDL3_ttf::SDL3_ttf
 )
-
-# add_subdirectory(server)

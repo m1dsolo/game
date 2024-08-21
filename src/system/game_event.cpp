@@ -5,6 +5,7 @@
 #include <game/event.hpp>
 #include <game/entity_manager.hpp>
 #include <game/layer_manager.hpp>
+#include <game/collision_manager.hpp>
 
 #include <game/layer/card.hpp>
 #include <game/layer/cursor.hpp>
@@ -39,7 +40,9 @@ void GameEventSystem::execute_impl() {
     }
 
     // del entity
+    auto& collision_manager = CollisionManager::instance();
     for (auto [entity, _] : ecs.get_entity_and_components<DelEntityTag>()) {
+        collision_manager.remove(entity);
         ecs.del_entity(entity);
     }
 }

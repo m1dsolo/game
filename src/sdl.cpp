@@ -8,33 +8,33 @@
 namespace wheel {
 
 SDL::SDL() {
-    Log::assert(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) == 0, "SDL init failed");
+    Log::assert_(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) == 0, "SDL init failed");
 
     // no cursor
     SDL_HideCursor();
 
     // img
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG;
-    Log::assert(IMG_Init(img_flags) == img_flags, "SDL_image init failed");
+    Log::assert_(IMG_Init(img_flags) == img_flags, "SDL_image init failed");
 
     // audio
     int mix_flags = MIX_INIT_MP3;
-    Log::assert(Mix_Init(mix_flags) == mix_flags, "SDL_mixer init failed");
+    Log::assert_(Mix_Init(mix_flags) == mix_flags, "SDL_mixer init failed");
 
     SDL_AudioSpec audio_spec = {MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, MIX_DEFAULT_FREQUENCY};
     Mix_OpenAudio(0, &audio_spec);
 
     // ttf
-    Log::assert(TTF_Init() == 0, "SDL_ttf init failed");
+    Log::assert_(TTF_Init() == 0, "SDL_ttf init failed");
     const std::string& font_path = std::filesystem::current_path().string() + "/resources/font/SauceCodeProNerdFont-Medium.ttf";
     font = TTF_OpenFont(font_path.c_str(), default_font_size_);
 
     // window and renderer
     // window = SDL_CreateWindow("My Simple Game", config_resource.w, config_resource.h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     window_ = SDL_CreateWindow("My Simple Game", 1920, 1080, SDL_WINDOW_OPENGL);
-    Log::assert(window_, SDL_GetError);
+    Log::assert_(window_, SDL_GetError);
     renderer = SDL_CreateRenderer(window_, nullptr);
-    Log::assert(renderer, SDL_GetError);
+    Log::assert_(renderer, SDL_GetError);
 }
 
 SDL::~SDL() {
@@ -98,7 +98,7 @@ SDL_Texture* SDL::create_texture(int w, int h, SDL_Color color, SDL_TextureAcces
     }
 
     if (access != SDL_TEXTUREACCESS_STATIC) {
-        Log::assert(false, "create_texture: access must be SDL_TEXTUREACCESS_STATIC");
+        Log::assert_(false, "create_texture: access must be SDL_TEXTUREACCESS_STATIC");
         return nullptr;
     }
 

@@ -8,14 +8,14 @@
 namespace wheel {
 
 void Client::connect() {
-    Log::assert(socket_.init(), "socket init failed");
-    Log::assert(socket_.connect("127.0.0.1", 12345), "socket connect failed");
+    Log::assert_(socket_.init(), "socket init failed");
+    Log::assert_(socket_.connect("127.0.0.1", 12345), "socket connect failed");
     std::thread t([&]() {
         memset(buf_, 0, sizeof(buf_));  // TODO: need?
         while (socket_.recv(buf_)) {
             queue_.push(std::string(buf_));
         }
-        Log::assert(false, "socket recv failed");
+        Log::assert_(false, "socket recv failed");
     });
     t.detach();
 

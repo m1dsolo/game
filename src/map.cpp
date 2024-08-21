@@ -108,21 +108,6 @@ bool Map::is_planted(int i, int j) const {
     return planted_structure_[i][j];
 }
 
-bool Map::is_collision(const Rect<int>& rect) const {
-    for (int i = rect.y0; i < rect.y1 + TILE_SIZE - 1; i += TILE_SIZE) {
-        i = std::min(i, rect.y1 - 1);
-        for (int j = rect.x0; j < rect.x1 + TILE_SIZE - 1; j += TILE_SIZE) {
-            j = std::min(j, rect.x1 - 1);
-            auto idx = pos2idx({(float)j, (float)i});
-            auto tile_rect = idx2tile_rect(idx.first, idx.second);
-            if (is_planted(idx.first, idx.second) && rect.is_overlapping(tile_rect)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 void Map::generate_map_texture() {
 	const siv::PerlinNoise::seed_type seed = 123456u;
 	const siv::PerlinNoise perlin{seed};

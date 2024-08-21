@@ -29,8 +29,8 @@ public:
     // position is the world coordinate system
     bool plant(const std::string& name, Entity entity, const Vector2D<float>& position);
 
+    // TODO: using CollideManager instead
     bool is_planted(int i, int j) const;
-    bool is_collision(const Rect<int>& rect) const;
 
     SDL_Texture* texture() { return texture_; }
 

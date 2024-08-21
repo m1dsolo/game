@@ -126,9 +126,9 @@ void ItemManager::parse_item_json() {
                 item_data_map[name] = data;
             } else if (sub_types[1] == "trap") {
                 int atk = item["atk"];
-                int duration = item["duration"];
+                int durability = item["durability"];
                 int cooldown = item["cooldown"];
-                auto data = std::make_shared<Trap::Data>(name, "", max_uses, atk, duration, cooldown);
+                auto data = std::make_shared<Trap::Data>(name, "", max_uses, atk, durability, cooldown);
                 item_data_map[name] = data;
             }
         }

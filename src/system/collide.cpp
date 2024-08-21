@@ -3,6 +3,7 @@
 #include <game/global.hpp>
 #include <game/event.hpp>
 #include <game/game_manager.hpp>
+#include <game/collision_manager.hpp>
 #include <game/map.hpp>
 
 #include <game/component/position.hpp>
@@ -28,90 +29,48 @@
 
 namespace wheel {
 
+CollideSystem::CollideSystem()
+    : BaseSystem(false) {}
+
 void CollideSystem::execute_impl() {
+    update_collision_manager();
+    pick_range();
     collide();
     bullet_out_of_boundary();
     bullet_collide_structure();
-    trap_collide_enemy();
-    pick_range();
-    auto_pickup();
+}
+
+void CollideSystem::update_collision_manager() {
+    CollisionManager::instance().update();
 }
 
 void CollideSystem::collide() {
-    // friend collide enemy
-    for (auto [entity0, _, collide0, position0, size0]
-        : ecs.get_entity_and_components<FriendComponent, CollideComponent, PositionComponent, SizeComponent>()) {
-        Rect<float> rect0 = {position0.vec, size0.vec / 2};
-        for (auto [entity1, _, hp, position1, size1]
-            : ecs.get_entity_and_components<EnemyComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<float> rect1 = {position1.vec, size1.vec / 2};
-            if (rect0.is_overlapping(rect1)) {
-                // unique collide
-                if (ecs.has_components<UniqueCollideComponent>(entity0)) {
-                    auto& unique_collide = ecs.get_component<UniqueCollideComponent>(entity0);
-                    if (unique_collide.last == entity1) {
-                        continue;
-                    }
-                }
-
-                // add damage
-                if (!ecs.has_components<DamageComponent>(entity1)) {
-                    ecs.add_components<DamageComponent>(entity1, {});
-                }
-                auto& damage = ecs.get_component<DamageComponent>(entity1);
-                damage.damages.emplace_back(collide0.atk, entity0);
-
-                // out of durability
-                if (collide0.durability != -1 && !--collide0.durability) {
-                    if (!ecs.has_components<DelEntityTag>(entity0)) {
-                        ecs.add_components<DelEntityTag>(entity0, {});
-                    }
-                }
-
-                // collide cooldown
-                // TODO: delete CollideComponent may cause bugs
-                if (collide0.cooldown > 0) {
-                    auto collide = ecs.get_component<CollideComponent>(entity0);
-                    timer_resource.add(30, 1, [=]() {
-                        ecs.add_components(entity0, collide);
-                    });
-                    ecs.del_components<CollideComponent>(entity0);
-                }
-
-                // bullet unique collide
-                if (ecs.has_components<BulletComponent>(entity0)) {
-                    ecs.add_components<UniqueCollideComponent>(entity0, {entity1});
-                }
-
-                break;
+    auto& collision_manager = CollisionManager::instance();
+    for (auto [entity0, entity1] : collision_manager.find_all_dynamic_intersections()) {
+        // collide damage
+        bool f0 = ecs.has_components<FriendComponent>(entity0);
+        bool e0 = ecs.has_components<EnemyComponent>(entity0);
+        bool f1 = ecs.has_components<FriendComponent>(entity1);
+        bool e1 = ecs.has_components<EnemyComponent>(entity1);
+        bool hostile = f0 && e1 || f1 && e0;
+        if (hostile) {
+            if (ecs.has_components<CollideComponent>(entity0)) {
+                collide_damage(entity0, entity1);
+            }
+            if (ecs.has_components<CollideComponent>(entity1)) {
+                collide_damage(entity1, entity0);
             }
         }
-    }
 
-    // enemy collide friend
-    for (auto [entity0, _, collide0, position0, size0]
-        : ecs.get_entity_and_components<EnemyComponent, CollideComponent, PositionComponent, SizeComponent>()) {
-        Rect<float> rect0 = {position0.vec, size0.vec / 2};
-        for (auto [entity1, _, hp, position1, size1]
-            : ecs.get_entity_and_components<FriendComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<float> rect1 = {position1.vec, size1.vec / 2};
-            if (rect0.is_overlapping(rect1)) {
-                // add damage
-                if (!ecs.has_components<DamageComponent>(entity1)) {
-                    ecs.add_components<DamageComponent>(entity1, {});
-                }
-                auto& damage = ecs.get_component<DamageComponent>(entity1);
-                damage.damages.emplace_back(collide0.atk, entity0);
-
-                // out of durability
-                if (collide0.durability != -1 && !--collide0.durability) {
-                    if (!ecs.has_components<DelEntityTag>(entity0)) {
-                        ecs.add_components<DelEntityTag>(entity0, {});
-                    }
-                }
-
-                break;
-            }
+        // pick
+        bool p0 = ecs.has_components<PlayerComponent>(entity0);
+        bool i0 = ecs.has_components<ItemComponent>(entity0);
+        bool p1 = ecs.has_components<PlayerComponent>(entity1);
+        bool i1 = ecs.has_components<ItemComponent>(entity1);
+        if (p0 && i1) {
+            pick(entity0, entity1);
+        } else if (p1 && i0) {
+            pick(entity1, entity0);
         }
     }
 }
@@ -120,73 +79,16 @@ void CollideSystem::bullet_out_of_boundary() {
     auto& map = Map::instance();
     for (auto [bullet_entity, bullet, position] : ecs.get_entity_and_components<BulletComponent, PositionComponent>()) {
         if (!map.is_in_bound(position.vec)) {
-            ecs.add_components<DelEntityTag>(bullet_entity, {});
+            ecs.add_components(bullet_entity, DelEntityTag{});
         }
     }
 }
 
 void CollideSystem::bullet_collide_structure() {
-    auto& map = Map::instance();
-    for (auto [bullet_entity, bullet, position, size] : ecs.get_entity_and_components<BulletComponent, PositionComponent, SizeComponent>()) {
-        Rect<float> rect = {position.vec, size.vec / 2};
-        if (map.is_collision(rect)) {
-            ecs.add_components<DelEntityTag>(bullet_entity, {});
-        }
-    }
-}
-
-void CollideSystem::trap_collide_enemy() {
-    for (auto [trap_entity, trap, position0, size0] : ecs.get_entity_and_components<TrapComponent, PositionComponent, SizeComponent>()) {
-        Rect<float> rect0 = {position0.vec, size0.vec / 2};
-        std::vector<Entity> enemies;
-        for (auto [enemy_entity, enemy, _, position1, size1] : ecs.get_entity_and_components<EnemyComponent, HPComponent, PositionComponent, SizeComponent>()) {
-            Rect<float> rect1 = {position1.vec, size1.vec / 2};
-            if (rect0.is_overlapping(rect1)) {
-                enemies.emplace_back(enemy_entity);
-                if (--trap.duration <= 0) {
-                    ecs.add_components(trap_entity, DelEntityTag{});
-                    break;
-                }
-            }
-        }
-
-        // add damage
-        for (auto enemy_entity : enemies) {
-            if (!ecs.has_components<DamageComponent>(enemy_entity)) {
-                ecs.add_components(enemy_entity, DamageComponent{});
-            }
-            auto& damage = ecs.get_component<DamageComponent>(enemy_entity);
-            damage.damages.emplace_back(trap.atk, trap_entity);
-        }
-
-        // cooldown
-        if (enemies.size() && trap.cooldown > 0) {
-            auto& animation = ecs.get_component<AnimationComponent>(trap_entity);
-            animation.idx = 0;
-            animation.counter = 0;
-            animation.type = Animations::Type::ATTACK;
-            int frames = animation.animations->frames();
-            int sep = trap.cooldown / frames;
-            timer_resource.add(sep + 1, frames, [trap_entity, &animation](int cnt) {
-                if (!ecs.has_entity(trap_entity)) {
-                    return;
-                }
-                if (cnt > 1) {
-                    animation.idx = (animation.idx + 1) % animation.animations->frames();
-                } else {
-                    animation.idx = 0;
-                    animation.counter = 0;
-                    animation.type = Animations::Type::NORMAL;
-                }
-            }, true);
-
-            auto trap = ecs.get_component<TrapComponent>(trap_entity);
-            ecs.del_components<TrapComponent>(trap_entity);
-            timer_resource.add(trap.cooldown, 1, [trap_entity, trap, &animation]() {
-                if (ecs.has_entity(trap_entity)) {
-                    ecs.add_components(trap_entity, trap);
-                }
-            });
+    auto& collision_manager = CollisionManager::instance();
+    for (auto [entity, _] : ecs.get_entity_and_components<BulletComponent>()) {
+        if (collision_manager.is_collision_with_static(entity)) {
+            ecs.add_components(entity, DelEntityTag{});
         }
     }
 }
@@ -204,7 +106,7 @@ void CollideSystem::pick_range() {
                         entity,
                         TrackNearestPlayerTag{},
                         DirectionComponent{},
-                        VelocityComponent{(float)perk.pick_range + 100}
+                        VelocityComponent{(float)perk.pick_range + 200}
                     );
                 }
             }
@@ -212,20 +114,78 @@ void CollideSystem::pick_range() {
     }
 }
 
-void CollideSystem::auto_pickup() {
-    for (auto [entity0, item, position0, size0] : ecs.get_entity_and_components<ItemComponent, PositionComponent, SizeComponent>()) {
-        Rect<float> rect0 = {position0.vec, size0.vec / 2};
-        for (auto [_, inventory, position1, size1] : ecs.get_components<PlayerComponent, InventoryComponent, PositionComponent, SizeComponent>()) {
-            Rect<float> rect1 = {position1.vec, size1.vec / 2};
-            if (rect0.is_overlapping(rect1)) {
-                std::visit([&](const auto& data) {
-                    if (inventory.inventory.pick(data, item.count)) {
-                        ecs.add_components(entity0, DelEntityTag{});
-                    }
-                }, item.data);
-            }
+void CollideSystem::collide_damage(Entity entity0, Entity entity1) {
+    if (ecs.has_components<UniqueCollideComponent>(entity0)) {
+        auto& unique_collide = ecs.get_component<UniqueCollideComponent>(entity0);
+        if (unique_collide.last == entity1) {
+            return;
         }
     }
+
+    auto& collide = ecs.get_component<CollideComponent>(entity0);
+    // add damage
+    if (!ecs.has_components<DamageComponent>(entity1)) {
+        ecs.add_components(entity1, DamageComponent{});
+    }
+    auto& damage = ecs.get_component<DamageComponent>(entity1);
+    damage.damages.emplace_back(collide.atk, entity0);
+
+    // out of durability
+    if (collide.durability != -1 && !--collide.durability) {
+        if (!ecs.has_components<DelEntityTag>(entity0)) {
+            ecs.add_components(entity0, DelEntityTag{});
+            return;
+        }
+    }
+
+    // collide cooldown
+    if (collide.cooldown > 0) {
+        auto collide = ecs.get_component<CollideComponent>(entity0);
+        timer_resource.add(collide.cooldown, 1, [&, entity0, collide]() {
+            if (ecs.has_entity(entity0)) {
+                ecs.add_components(entity0, std::move(collide));
+            }
+        });
+        ecs.del_components<CollideComponent>(entity0);
+    }
+
+    // bullet unique collide
+    if (ecs.has_components<BulletComponent>(entity0)) {
+        ecs.add_components(entity0, UniqueCollideComponent{entity1});
+    }
+
+    // trap
+    // TODO: rewrite
+    if (ecs.has_components<TrapComponent>(entity0)) {
+        auto& animation = ecs.get_component<AnimationComponent>(entity0);
+        animation.idx = 0;
+        animation.counter = 0;
+        animation.type = Animations::Type::ATTACK;
+        int frames = animation.animations->frames();
+        int sep = collide.cooldown / frames;
+        timer_resource.add(sep + 1, frames, [entity0, &animation](int cnt) {
+            if (!ecs.has_entity(entity0)) {
+                return;
+            }
+            if (cnt > 1) {
+                animation.idx = (animation.idx + 1) % animation.animations->frames();
+            } else {
+                animation.idx = 0;
+                animation.counter = 0;
+                animation.type = Animations::Type::NORMAL;
+            }
+        }, true);
+    }
+}
+
+void CollideSystem::pick(Entity entity0, Entity entity1) {
+    auto& inventory = ecs.get_component<InventoryComponent>(entity0).inventory;
+    auto& item = ecs.get_component<ItemComponent>(entity1);
+    std::visit([&](const auto& data) {
+        if (inventory.pick(data, item.count)) {
+            ecs.add_components(entity1, DelEntityTag{});
+        }
+    }, item.data);
 }
 
 }  // namespace wheel

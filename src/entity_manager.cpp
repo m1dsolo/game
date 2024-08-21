@@ -11,6 +11,7 @@
 #include <game/texture_manager.hpp>
 #include <game/item_manager.hpp>
 #include <game/behavior_tree_manager.hpp>
+#include <game/collision_manager.hpp>
 #include <game/map.hpp>
 
 #include <game/item/tower.hpp>
@@ -113,6 +114,8 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
         inventory.pick(name, count);
     }
 
+    CollisionManager::instance().add(entity, true);
+
     return entity;
 }
 
@@ -146,6 +149,8 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<float> positi
         w = w * enemy_resource.elite_size_ratio / 100;
         h = h * enemy_resource.elite_size_ratio / 100;
     }
+
+    CollisionManager::instance().add(entity, true);
 }
 
 void EntityManager::create_tower(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -162,6 +167,9 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
     inventory.select(1);
 
     ecs.add_components(entity, AIComponent{BehaviorTreeManager::instance().get("tower")});
+
+    // invincible now
+    // CollisionManager::instance().add(entity, false);
 }
 
 void EntityManager::create_structure(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -169,6 +177,8 @@ void EntityManager::create_structure(const std::string& name, Entity master_enti
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
     Entity entity = ecs.add_entity(t);
+
+    CollisionManager::instance().add(entity, false);
 }
 
 void EntityManager::create_trap(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -176,6 +186,8 @@ void EntityManager::create_trap(const std::string& name, Entity master_entity, V
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
     Entity entity = ecs.add_entity(t);
+
+    CollisionManager::instance().add(entity, true);
 }
 
 void EntityManager::create_floor(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -193,7 +205,9 @@ void EntityManager::create_bullet(const std::string& name, Vector2D<float> posit
     t[typeid(CollideComponent)] = CollideComponent{atk, penetration};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
 
-    ecs.add_entity(t);
+    Entity entity = ecs.add_entity(t);
+
+    CollisionManager::instance().add(entity, true);
 }
 
 void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<float> position, int count, int unpickable_seconds) {
@@ -222,6 +236,8 @@ void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<
     } else {
         ecs.add_components(entity, std::move(item));
     }
+
+    CollisionManager::instance().add(entity, true);
 }
 
 Entity EntityManager::create_health_bar(Entity master) {
@@ -333,8 +349,10 @@ void EntityManager::cache_trap(const std::string& name) {
     EntityTemplate t;
     t[typeid(AnimationComponent)] = AnimationComponent{name};
     t[typeid(TextureComponent)] = TextureComponent{};
+    t[typeid(FriendComponent)] = FriendComponent{};
     t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
-    t[typeid(TrapComponent)] = TrapComponent{data->atk, data->duration, data->cooldown};
+    t[typeid(TrapComponent)] = TrapComponent{};
+    t[typeid(CollideComponent)] = CollideComponent{data->atk, data->durability, data->cooldown};
     t[typeid(FloorComponent)] = FloorComponent{};
 
     template_map_[name] = std::move(t);

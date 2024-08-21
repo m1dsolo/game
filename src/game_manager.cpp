@@ -8,6 +8,7 @@
 #include <game/event.hpp>
 #include <game/camera.hpp>
 #include <game/layer_manager.hpp>
+#include <game/map.hpp>
 #include <game/behavior_tree_manager.hpp>
 
 #include <game/layer/map.hpp>
@@ -81,6 +82,22 @@ void GameManager::run() {
     ui.push_back<ConstructionStageLayer>();
 
     BehaviorTreeManager::instance().load(game_resource.path / "behaviors.json");
+
+    // debug
+    auto& map = Map::instance();
+    for (int i = 5; i <= 15; i++) {
+        for (int j = 10; j <= 24; j++) {
+            if (i == 5 || i == 15 || j == 10 || j == 24) {
+                if ((i == 5 || i == 15) && j >= 16 && j <= 18) {
+                    map.plant("peaks", entity, map.idx2pos(i, j));
+                } else if ((j == 10 || j == 24) && i >= 9 && i <= 11) {
+                    map.plant("peaks", entity, map.idx2pos(i, j));
+                } else {
+                    map.plant("wall", entity, map.idx2pos(i, j));
+                }
+            }
+        }
+    }
 
     ecs.startup();
 

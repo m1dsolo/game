@@ -7,11 +7,11 @@ namespace wheel {
 class Trap : public Consumable {
 public:
     struct Data : Consumable::Data {
-        Data(const std::string& name, const std::string& description, int max_uses = 1, int atk = 1, int duration = 100, int cooldown = 30)
-            : Consumable::Data(name, description, Consumable::Type::TOWER, true, max_uses), atk(atk), duration(duration), cooldown(cooldown) {}
+        Data(const std::string& name, const std::string& description, int max_uses = 1, int atk = 1, int durability = 100, int cooldown = 30)
+            : Consumable::Data(name, description, Consumable::Type::TOWER, true, max_uses), atk(atk), durability(durability), cooldown(cooldown) {}
 
         int atk;
-        int duration;
+        int durability;
         int cooldown;
     };
 

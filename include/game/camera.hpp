@@ -9,7 +9,7 @@ class Camera : public Singleton<Camera> {
     friend class Singleton<Camera>;
 
 public:
-    void update_pos();
+    bool update_pos();
     void shake(float strenth, int frequence, int duration);  // duration frames
 
     Vector2D<float> world2screen(const Vector2D<float>& position) { return position - pos_; }
@@ -17,6 +17,7 @@ public:
 
     Vector2D<float>& pos() { return pos_; }
     Vector2D<float>& size() { return size_; }
+    Rect<float> rect() { return {pos_, size_}; }
 
 private:
     Camera();

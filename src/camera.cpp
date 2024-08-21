@@ -11,11 +11,16 @@ namespace wheel {
 
 Camera::Camera() : size_(config_resource.w, config_resource.h) {}
 
-void Camera::update_pos() {
+bool Camera::update_pos() {
     Entity entity = ecs.get_entities<SelfComponent>()[0];
     auto [x, y] = ecs.get_component<PositionComponent>(entity).vec;
     stable_pos_ = Vector2D<float>(x - size_.x / 2., y - size_.y / 2.);
-    pos_ = stable_pos_ + shake_pos_;
+    if (auto pos = stable_pos_ + shake_pos_; pos != pos_) {
+        pos_ = pos;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void Camera::shake(float strenth, int frequence, int duration) {
