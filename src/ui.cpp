@@ -7,7 +7,6 @@ namespace wheel {
 UI::~UI() {
     for (auto layer : layers_) {
         layer->on_detach();
-        delete layer;
     }
     cursor_layer_->on_detach();
 }

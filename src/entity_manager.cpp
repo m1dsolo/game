@@ -12,6 +12,7 @@
 #include <game/item_manager.hpp>
 #include <game/behavior_tree_manager.hpp>
 #include <game/collision_manager.hpp>
+#include <game/scene_manager.hpp>
 #include <game/map.hpp>
 
 #include <game/item/tower.hpp>
@@ -47,7 +48,6 @@
 #include <game/component/aim_direction.hpp>
 #include <game/component/collider.hpp>
 #include <game/component/trap.hpp>
-#include <game/component/floor.hpp>
 
 #include <game/resource/enemy.hpp>
 
@@ -62,6 +62,7 @@ EntityManager::EntityManager() {
     cache_structure("wall");
     cache_structure("door");
     cache_trap("peaks");
+    cache_health_bar();
 }
 
 Entity EntityManager::create_player(const std::string& name, bool self) {
@@ -115,6 +116,7 @@ Entity EntityManager::create_player(const std::string& name, bool self) {
     }
 
     CollisionManager::instance().add(entity, true);
+    SceneManager::instance().add(entity, 10);
 
     return entity;
 }
@@ -128,7 +130,6 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<float> positi
     t[typeid(PositionComponent)] = PositionComponent{position};
 
     Entity entity = ecs.add_entity(t);
-    create_health_bar(entity);
 
     auto& enemy_resource = ecs.get_resource<EnemyResource>();
     bool elite = random.uniform(0, 99) < enemy_resource.elite_chance;
@@ -151,6 +152,8 @@ void EntityManager::create_enemy(const std::string& name, Vector2D<float> positi
     }
 
     CollisionManager::instance().add(entity, true);
+    SceneManager::instance().add(entity, 10);
+    create_health_bar(entity);
 }
 
 void EntityManager::create_tower(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -170,6 +173,7 @@ void EntityManager::create_tower(const std::string& name, Entity master_entity, 
 
     // invincible now
     // CollisionManager::instance().add(entity, false);
+    SceneManager::instance().add(entity, 9);
 }
 
 void EntityManager::create_structure(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -179,6 +183,7 @@ void EntityManager::create_structure(const std::string& name, Entity master_enti
     Entity entity = ecs.add_entity(t);
 
     CollisionManager::instance().add(entity, false);
+    SceneManager::instance().add(entity, 10);
 }
 
 void EntityManager::create_trap(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -188,6 +193,7 @@ void EntityManager::create_trap(const std::string& name, Entity master_entity, V
     Entity entity = ecs.add_entity(t);
 
     CollisionManager::instance().add(entity, true);
+    SceneManager::instance().add(entity, 1);
 }
 
 void EntityManager::create_floor(const std::string& name, Entity master_entity, Vector2D<float> position) {
@@ -195,6 +201,7 @@ void EntityManager::create_floor(const std::string& name, Entity master_entity, 
     t[typeid(PositionComponent)] = PositionComponent{position};
     t[typeid(MasterComponent)] = MasterComponent{master_entity};
     Entity entity = ecs.add_entity(t);
+    SceneManager::instance().add(entity, 0);
 }
 
 void EntityManager::create_bullet(const std::string& name, Vector2D<float> position, Vector2D<float> direction, int atk, int penetration, Entity master_entity) {
@@ -208,6 +215,7 @@ void EntityManager::create_bullet(const std::string& name, Vector2D<float> posit
     Entity entity = ecs.add_entity(t);
 
     CollisionManager::instance().add(entity, true);
+    SceneManager::instance().add(entity, 11);
 }
 
 void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<float> position, int count, int unpickable_seconds) {
@@ -238,27 +246,37 @@ void EntityManager::create_item(const std::variant<std::string, std::shared_ptr<
     }
 
     CollisionManager::instance().add(entity, true);
+    SceneManager::instance().add(entity, 11);
 }
 
-Entity EntityManager::create_health_bar(Entity master) {
-    auto size = ecs.get_component<SizeComponent>(master);
-    size.vec.y = size.vec.x / 8;
-    return ecs.add_entity(
-        HealthBarComponent{master},
-        PositionComponent{},
-        size
-    );
+void EntityManager::create_health_bar(Entity master) {
+    EntityTemplate t = template_map_["health_bar"];
+    t[typeid(MasterComponent)] = MasterComponent{master};
+    const auto& size = ecs.get_component<SizeComponent>(master).vec;
+    t[typeid(SizeComponent)] = SizeComponent{size.x, size.x / 8};
+    const auto& pos = ecs.get_component<PositionComponent>(master).vec;
+    t[typeid(PositionComponent)] = PositionComponent{};
+    t[typeid(RelativePositionComponent)] = RelativePositionComponent{0, -size.y / 2};
+    t[typeid(TextureComponent)] = TextureComponent{sdl.create_texture(size.x, size.x / 8, sdl.BLACK, SDL_TEXTUREACCESS_TARGET)};
+
+    Entity entity = ecs.add_entity(t);
+
+    SceneManager::instance().add(entity, 20, master);
 }
 
 Entity EntityManager::create_text(const std::string& text, SDL_Color color, const Vector2D<float>& pos) {
     auto texture = sdl.create_texture(text, color);
     auto [w, h] = sdl.get_texture_size(texture);
-    return ecs.add_entity(
+    Entity entity = ecs.add_entity(
         TextureComponent{texture},
         PositionComponent{pos},
         SizeComponent{{w, h}},
         VelocityComponent{10, 10}
     );
+
+    SceneManager::instance().add(entity, 20);
+
+    return entity;
 }
 
 void EntityManager::parse_enemy_json() {
@@ -353,7 +371,6 @@ void EntityManager::cache_trap(const std::string& name) {
     t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
     t[typeid(TrapComponent)] = TrapComponent{};
     t[typeid(CollideComponent)] = CollideComponent{data->atk, data->durability, data->cooldown};
-    t[typeid(FloorComponent)] = FloorComponent{};
 
     template_map_[name] = std::move(t);
 }
@@ -362,9 +379,15 @@ void EntityManager::cache_floor(const std::string& name) {
     EntityTemplate t;
     t[typeid(TextureComponent)] = TextureComponent{name};
     t[typeid(SizeComponent)] = SizeComponent{{48, 48}};
-    t[typeid(FloorComponent)] = FloorComponent{};
 
     template_map_[name] = std::move(t);
+}
+
+void EntityManager::cache_health_bar() {
+    EntityTemplate t;
+    t[typeid(HealthBarComponent)] = HealthBarComponent{};
+
+    template_map_["health_bar"] = std::move(t);
 }
 
 }  // namespace wheel

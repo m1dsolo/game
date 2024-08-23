@@ -15,7 +15,7 @@
     },
     {
         "name": "goblin",
-        "velocity": 30,
+        "velocity": 40,
         "hp": 10,
         "collide": 2,
         "exp": 2,

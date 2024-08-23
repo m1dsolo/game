@@ -24,7 +24,7 @@ public:
     void create_floor(const std::string& name, Entity master_entity, Vector2D<float> position);
     void create_bullet(const std::string& name, Vector2D<float> position, Vector2D<float> direction, int atk, int penetration, Entity master_entity);
     void create_item(const std::variant<std::string, std::shared_ptr<Item>>& data, Vector2D<float> position, int count = 1, int unpickable_seconds = 0);
-    Entity create_health_bar(Entity master);
+    void create_health_bar(Entity master);
     Entity create_text(const std::string& text, SDL_Color color, const Vector2D<float>& pos);
 
 private:
@@ -35,6 +35,7 @@ private:
     void cache_structure(const std::string& name);
     void cache_trap(const std::string& name);
     void cache_floor(const std::string& name);
+    void cache_health_bar();
 
     EntityManager();
     ~EntityManager() = default;

@@ -15,6 +15,7 @@ public:
     Vector2D<float> world2screen(const Vector2D<float>& position) { return position - pos_; }
     Vector2D<float> screen2world(const Vector2D<float>& position) { return position + pos_; }
 
+    Vector2D<float> left_top() { return pos_ - size_ / 2.; }
     Vector2D<float>& pos() { return pos_; }
     Vector2D<float>& size() { return size_; }
     Rect<float> rect() { return {pos_, size_}; }

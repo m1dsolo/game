@@ -2,8 +2,6 @@
 
 #include <game/system/base.hpp>
 
-#include <game/ui.hpp>
-
 namespace wheel {
 
 class RenderSystem : public BaseSystem<RenderSystem> {
@@ -13,11 +11,11 @@ public:
     void execute_impl() override;
 
 private:
-    RenderSystem() : BaseSystem(true), ui_(UI::instance()) {}
+    RenderSystem() : BaseSystem(true) {}
     ~RenderSystem() = default;
     RenderSystem(const RenderSystem&) = delete;
 
-    UI& ui_;
+    void update_health_bar_texture();
 };
 
 }  // namespace wheel

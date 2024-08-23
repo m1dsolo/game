@@ -22,9 +22,6 @@ private:
     ~GameLayer() = default;
     GameLayer(const GameLayer&) = delete;
 
-    void render_texture();
-    void render_health_bar();
-
     Entity self_entity_;
 };
 

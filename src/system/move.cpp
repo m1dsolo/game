@@ -3,6 +3,7 @@
 #include <game/global.hpp>
 #include <game/map.hpp>
 #include <game/collision_manager.hpp>
+#include <game/scene_manager.hpp>
 
 #include <game/component/move.hpp>
 #include <game/component/position.hpp>
@@ -14,6 +15,8 @@
 #include <game/component/player.hpp>
 #include <game/component/continuous_action.hpp>
 #include <game/component/collider.hpp>
+#include <game/component/health_bar.hpp>
+#include <game/component/master.hpp>
 
 namespace wheel {
 
@@ -94,25 +97,27 @@ void MoveSystem::calc_direction_by_a_star_track_nearest_player() {
 
 void MoveSystem::move() {
     auto& collision_manager = CollisionManager::instance();
+    auto& scene_manager = SceneManager::instance();
     for (auto [entity, position, velocity, direction] : ecs.get_entity_and_components<PositionComponent, VelocityComponent, DirectionComponent>()) {
         auto delta = direction.vec.normalize() * velocity.speed * timer_resource.delta / 1000000;
         if (!ecs.has_components<ColliderComponent>(entity)) {
             position.vec += delta;
-            continue;
+        } else {
+            position.vec.x += delta.x;
+            if (collision_manager.is_collision_with_static(entity)) {
+                position.vec.x -= delta.x;
+            }
+            position.vec.y += delta.y;
+            if (collision_manager.is_collision_with_static(entity)) {
+                position.vec.y -= delta.y;
+            }
+            // if still collide, you can move
+            if (collision_manager.is_collision_with_static(entity)) {
+                position.vec += delta;
+            }
         }
 
-        position.vec.x += delta.x;
-        if (collision_manager.is_collision_with_static(entity)) {
-            position.vec.x -= delta.x;
-        }
-        position.vec.y += delta.y;
-        if (collision_manager.is_collision_with_static(entity)) {
-            position.vec.y -= delta.y;
-        }
-        // if still collide, you can move
-        if (collision_manager.is_collision_with_static(entity)) {
-            position.vec += delta;
-        }
+        scene_manager.update(entity);
     }
 }
 

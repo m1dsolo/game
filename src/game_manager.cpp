@@ -101,6 +101,7 @@ void GameManager::run() {
 
     ecs.startup();
 
+    int counter = 0;
     while (running_) {
         ecs.update();
 
@@ -108,6 +109,14 @@ void GameManager::run() {
         if (combat_time_over_ && !enemy_cnt_) {
             combat_time_over_ = false;
             swap_stage();
+        }
+
+        if (++counter == config_resource.fps) {
+            counter = 0;
+            game_resource.second_flag = true;
+            game_resource.seconds++;
+        } else {
+            game_resource.second_flag = false;
         }
     }
 }
@@ -120,6 +129,7 @@ void GameManager::pause() {
     if (paused_) {
         return;
     }
+    Log::debug("pause");
     paused_ = true;
     timer.pause();
 }
@@ -128,6 +138,7 @@ void GameManager::resume() {
     if (!paused_) {
         return;
     }
+    Log::debug("resume");
     paused_ = false;
     timer.resume();
 }

@@ -4,6 +4,7 @@
 #include <game/ui.hpp>
 #include <game/event.hpp>
 #include <game/game_manager.hpp>
+#include <game/scene_manager.hpp>
 #include <game/sdl.hpp>
 
 #include <game/layer/exit.hpp>
@@ -17,7 +18,6 @@
 #include <game/component/tag.hpp>
 #include <game/component/aim_direction.hpp>
 #include <game/component/continuous_action.hpp>
-#include <game/component/floor.hpp>
 #include <game/component/actions.hpp>
 #include <game/component/input.hpp>
 #include <game/component/position.hpp>
@@ -36,8 +36,15 @@ void GameLayer::on_update() {
 }
 
 void GameLayer::on_render() {
-    render_texture();
-    render_health_bar();
+    auto& scene_manager = SceneManager::instance();
+    for (Entity entity : scene_manager.query()) {
+        auto& texture = ecs.get_component<TextureComponent>(entity).texture;
+        const auto& pos = ecs.get_component<PositionComponent>(entity).vec;
+        const auto& size = ecs.get_component<SizeComponent>(entity).vec;
+        auto left_top = pos - size / 2 - camera.left_top();
+        SDL_FRect dst = {left_top.x, left_top.y, size.x, size.y};
+        sdl.render(texture, nullptr, &dst);
+    }
 }
 
 bool GameLayer::on_event(const SDL_Event& event) {
@@ -149,40 +156,6 @@ bool GameLayer::on_event(const SDL_Event& event) {
     }
 
     return false;
-}
-
-void GameLayer::render_texture() {
-    // animation(TODO: bad performance now)
-    for (auto [_, position, size, texture] : ecs.get_components<FloorComponent, PositionComponent, SizeComponent, TextureComponent>()) {
-        if (!texture.texture) {
-            continue;
-        }
-        auto left_top = position.vec - size.vec / 2 - camera.pos();
-        SDL_FRect dst = {left_top.x, left_top.y, size.vec.x, size.vec.y};
-        sdl.render(texture.texture, nullptr, &dst);
-    }
-
-    for (auto [entity, position, size, texture] : ecs.get_entity_and_components<PositionComponent, SizeComponent, TextureComponent>()) {
-        if (ecs.has_components<FloorComponent>(entity) || !texture.texture) {
-            continue;
-        }
-        auto left_top = position.vec - size.vec / 2 - camera.pos();
-        SDL_FRect dst = {left_top.x, left_top.y, size.vec.x, size.vec.y};
-        sdl.render(texture.texture, nullptr, &dst);
-    }
-}
-
-// TODO: merge to render_texture
-void GameLayer::render_health_bar() {
-    for (auto [health_bar, position, size] : ecs.get_components<HealthBarComponent, PositionComponent, SizeComponent>()) {
-        auto& hp = ecs.get_component<HPComponent>(health_bar.master);
-
-        auto left_top = position.vec - camera.pos();
-        SDL_FRect dst = {left_top.x, left_top.y, size.vec.x, size.vec.y};
-        sdl.draw_rect(&dst, sdl.RED);
-        dst.w = (float)size.vec.x * hp.hp / hp.max_hp;
-        sdl.draw_rect(&dst, sdl.GREEN);
-    }
 }
 
 }  // namespace wheel

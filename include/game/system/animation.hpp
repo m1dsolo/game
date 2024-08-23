@@ -17,6 +17,7 @@ private:
 
     void update_animation_counter();
     void update_texture();
+    void switch_animation_state();
 };
 
 }  // namespace wheel

@@ -13,10 +13,9 @@ Camera::Camera() : size_(config_resource.w, config_resource.h) {}
 
 bool Camera::update_pos() {
     Entity entity = ecs.get_entities<SelfComponent>()[0];
-    auto [x, y] = ecs.get_component<PositionComponent>(entity).vec;
-    stable_pos_ = Vector2D<float>(x - size_.x / 2., y - size_.y / 2.);
-    if (auto pos = stable_pos_ + shake_pos_; pos != pos_) {
-        pos_ = pos;
+    stable_pos_ = ecs.get_component<PositionComponent>(entity).vec;
+    if (auto new_pos = stable_pos_ + shake_pos_; new_pos != pos_) {
+        pos_ = new_pos;
         return true;
     } else {
         return false;

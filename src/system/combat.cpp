@@ -41,9 +41,7 @@ void CombatSystem::execute_impl() {
     del_damage_components();
     del_exp_components();
     del_heal_buff_components();
-
     del_useless_health_bar();
-    update_health_bar_position();
 }
 
 void CombatSystem::damage() {
@@ -80,13 +78,7 @@ void CombatSystem::player_get_damage_add_invincible() {
 
 void CombatSystem::get_damage_add_sketch() {
     for (auto [entity, damage, animation] : ecs.get_entity_and_components<DamageComponent, AnimationComponent>()) {
-        animation.type = Animations::Type::SKETCH;
-        timer_resource.add(10, 1, [entity]() {
-            if (ecs.has_components<AnimationComponent>(entity)) {
-                auto& animation = ecs.get_component<AnimationComponent>(entity);
-                animation.type = Animations::Type::NORMAL;
-            }
-        });
+        ecs.add_components(entity, SwitchAnimationStateComponent{Animations::State::SKETCH, 30, 10});
     }
 }
 
@@ -189,21 +181,10 @@ void CombatSystem::del_heal_buff_components() {
 }
 
 void CombatSystem::del_useless_health_bar() {
-    for (auto [entity, health_bar] : ecs.get_entity_and_components<HealthBarComponent>()) {
-        if (ecs.has_components<DelEntityTag>(health_bar.master)) {
+    for (auto [entity, health_bar, master] : ecs.get_entity_and_components<HealthBarComponent, MasterComponent>()) {
+        if (ecs.has_components<DelEntityTag>(master.entity)) {
             ecs.add_components<DelEntityTag>(entity, {});
         }
-    }
-}
-
-void CombatSystem::update_health_bar_position() {
-    for (auto [health_bar, bar_position, bar_size] : ecs.get_components<HealthBarComponent, PositionComponent, SizeComponent>()) {
-        Entity entity = health_bar.master;
-        auto& position = ecs.get_component<PositionComponent>(entity);
-        auto& size = ecs.get_component<SizeComponent>(entity);
-
-        bar_position.vec.x = position.vec.x - bar_size.vec.x / 2.;
-        bar_position.vec.y = position.vec.y - size.vec.y / 2. - bar_size.vec.y / 2.;
     }
 }
 

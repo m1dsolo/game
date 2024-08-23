@@ -28,7 +28,7 @@ private:
 
 class Animations {
 public:
-    enum class Type {
+    enum class State {
         NORMAL,
         SKETCH,
         ATTACK
@@ -37,7 +37,7 @@ public:
     Animations(std::string_view name);
     ~Animations() = default;
 
-    SDL_Texture* get_texture(int idx, int orient, Type type = Type::NORMAL);
+    SDL_Texture* get_texture(int idx, int orient, State state = State::NORMAL);
 
     int frames() const { return frames_; }
 
@@ -45,7 +45,7 @@ private:
     static std::array<std::shared_ptr<Animation>, 4> read_animations(std::string_view path);
 
     int frames_ = 0;
-    std::unordered_map<Type, std::array<std::shared_ptr<Animation>, 4>> type2animations_;
+    std::unordered_map<State, std::array<std::shared_ptr<Animation>, 4>> state2animations_;
 };
 
 }  // namespace wheel

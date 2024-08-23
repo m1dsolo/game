@@ -20,7 +20,7 @@ void MapLayer::on_update() {
 
 void MapLayer::on_render() {
     // render map
-    auto& pos = camera.pos();
+    auto pos = camera.left_top();
     auto& [screen_w, screen_h] = camera.size();
     auto [real_x0, real_y0, real_x1, real_y1] = map.real_rect();
     SDL_FRect src = {(float)pos.x + real_x0, (float)pos.y + real_y0, (float)screen_w, (float)screen_h};

@@ -18,6 +18,8 @@ struct GameResource {
     std::filesystem::path path = std::filesystem::current_path();
 
     Random random;
+    bool second_flag = false;  // first frame of every second will set true
+    long long seconds = 0;
 };
 
 }  // namespace wheel

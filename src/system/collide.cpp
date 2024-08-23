@@ -115,6 +115,10 @@ void CollideSystem::pick_range() {
 }
 
 void CollideSystem::collide_damage(Entity entity0, Entity entity1) {
+    if (ecs.has_components<DelEntityTag>(entity0) || ecs.has_components<DelEntityTag>(entity1)) {
+        return;
+    }
+
     if (ecs.has_components<UniqueCollideComponent>(entity0)) {
         auto& unique_collide = ecs.get_component<UniqueCollideComponent>(entity0);
         if (unique_collide.last == entity1) {
@@ -138,6 +142,19 @@ void CollideSystem::collide_damage(Entity entity0, Entity entity1) {
         }
     }
 
+    // bullet unique collide
+    if (ecs.has_components<BulletComponent>(entity0)) {
+        ecs.add_components(entity0, UniqueCollideComponent{entity1});
+    }
+
+    // trap
+    if (ecs.has_components<TrapComponent>(entity0)) {
+        auto& animation = ecs.get_component<AnimationComponent>(entity0);
+        if (animation.state != Animations::State::ATTACK) {
+            ecs.add_components(entity0, SwitchAnimationStateComponent{Animations::State::ATTACK, collide.cooldown / animation.frames, collide.cooldown});
+        }
+    }
+
     // collide cooldown
     if (collide.cooldown > 0) {
         auto collide = ecs.get_component<CollideComponent>(entity0);
@@ -147,34 +164,6 @@ void CollideSystem::collide_damage(Entity entity0, Entity entity1) {
             }
         });
         ecs.del_components<CollideComponent>(entity0);
-    }
-
-    // bullet unique collide
-    if (ecs.has_components<BulletComponent>(entity0)) {
-        ecs.add_components(entity0, UniqueCollideComponent{entity1});
-    }
-
-    // trap
-    // TODO: rewrite
-    if (ecs.has_components<TrapComponent>(entity0)) {
-        auto& animation = ecs.get_component<AnimationComponent>(entity0);
-        animation.idx = 0;
-        animation.counter = 0;
-        animation.type = Animations::Type::ATTACK;
-        int frames = animation.animations->frames();
-        int sep = collide.cooldown / frames;
-        timer_resource.add(sep + 1, frames, [entity0, &animation](int cnt) {
-            if (!ecs.has_entity(entity0)) {
-                return;
-            }
-            if (cnt > 1) {
-                animation.idx = (animation.idx + 1) % animation.animations->frames();
-            } else {
-                animation.idx = 0;
-                animation.counter = 0;
-                animation.type = Animations::Type::NORMAL;
-            }
-        }, true);
     }
 }
 

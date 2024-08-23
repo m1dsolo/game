@@ -41,19 +41,19 @@ Animations::Animations(std::string_view name) {
        
     if (auto animations = read_animations(path + "/normal"); animations[1]) {
         frames_ = animations[1]->frames();
-        type2animations_[Type::NORMAL] = std::move(animations);
+        state2animations_[State::NORMAL] = std::move(animations);
     }
     if (auto animations = read_animations(path + "/sketch"); animations[1]) {
-        type2animations_[Type::SKETCH] = std::move(animations);
+        state2animations_[State::SKETCH] = std::move(animations);
     }
     if (auto animations = read_animations(path + "/attack"); animations[1]) {
-        type2animations_[Type::ATTACK] = std::move(animations);
+        state2animations_[State::ATTACK] = std::move(animations);
     }
 }
 
-SDL_Texture* Animations::get_texture(int idx, int orient, Type type) {
-    if (type2animations_.count(type)) {
-        auto& animations = type2animations_[type];
+SDL_Texture* Animations::get_texture(int idx, int orient, State state) {
+    if (state2animations_.count(state)) {
+        auto& animations = state2animations_[state];
         if (!animations[orient]->empty()) {
             return animations[orient]->get_texture(idx);
         } else if (!animations[1]->empty()) {
@@ -61,7 +61,7 @@ SDL_Texture* Animations::get_texture(int idx, int orient, Type type) {
         }
     }
 
-    return type2animations_[Type::NORMAL][1]->get_texture(idx);
+    return state2animations_[State::NORMAL][1]->get_texture(idx);
 }
 
 std::array<std::shared_ptr<Animation>, 4> Animations::read_animations(std::string_view path) {

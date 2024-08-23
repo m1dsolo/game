@@ -2,7 +2,6 @@
 
 #include <game/global.hpp>
 #include <game/map.hpp>
-#include <game/camera.hpp>
 
 #include <game/component/position.hpp>
 #include <game/component/size.hpp>

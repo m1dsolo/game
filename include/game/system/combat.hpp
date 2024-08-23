@@ -27,9 +27,7 @@ private:
     void del_damage_components();
     void del_exp_components();
     void del_heal_buff_components();
-
     void del_useless_health_bar();
-    void update_health_bar_position();
 };
 
 }  // namespace wheel
