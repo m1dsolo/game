@@ -78,7 +78,9 @@ void CombatSystem::player_get_damage_add_invincible() {
 
 void CombatSystem::get_damage_add_sketch() {
     for (auto [entity, damage, animation] : ecs.get_entity_and_components<DamageComponent, AnimationComponent>()) {
-        ecs.add_components(entity, SwitchAnimationStateComponent{Animations::State::SKETCH, 30, 10});
+        if (!ecs.has_components<SwitchAnimationStateComponent>(entity)) {
+            ecs.add_components(entity, SwitchAnimationStateComponent{Animations::State::SKETCH, 30, 10});
+        }
     }
 }
 

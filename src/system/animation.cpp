@@ -46,9 +46,10 @@ void AnimationSystem::switch_animation_state() {
         }
         if (switch_state.duration != -1) {
             timer_resource.add(switch_state.duration, 1, [&, entity, state = animation.state, max_counter = animation.max_counter]() {
-                if (ecs.has_entity(entity)) {
-                    ecs.add_components(entity, SwitchAnimationStateComponent{state, max_counter});
+                if (ecs.has_components<SwitchAnimationStateComponent>(entity)) {
+                    ecs.del_components<SwitchAnimationStateComponent>(entity);
                 }
+                ecs.add_components(entity, SwitchAnimationStateComponent{state, max_counter});
             });
         }
 

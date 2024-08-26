@@ -150,7 +150,7 @@ void CollideSystem::collide_damage(Entity entity0, Entity entity1) {
     // trap
     if (ecs.has_components<TrapComponent>(entity0)) {
         auto& animation = ecs.get_component<AnimationComponent>(entity0);
-        if (animation.state != Animations::State::ATTACK) {
+        if (animation.state != Animations::State::ATTACK && !ecs.has_components<SwitchAnimationStateComponent>(entity0)) {
             ecs.add_components(entity0, SwitchAnimationStateComponent{Animations::State::ATTACK, collide.cooldown / animation.frames, collide.cooldown});
         }
     }
@@ -159,7 +159,7 @@ void CollideSystem::collide_damage(Entity entity0, Entity entity1) {
     if (collide.cooldown > 0) {
         auto collide = ecs.get_component<CollideComponent>(entity0);
         timer_resource.add(collide.cooldown, 1, [&, entity0, collide]() {
-            if (ecs.has_entity(entity0)) {
+            if (!ecs.has_components<CollideComponent>(entity0)) {
                 ecs.add_components(entity0, std::move(collide));
             }
         });
