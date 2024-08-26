@@ -22,6 +22,8 @@ private:
     int n_, m_;
 
     int heuristic(PII u, PII v);
+    bool line_of_sight(const PII& from, const PII& to);
+    bool have_obstacle(int x, int y);
 };
 
 }  // namespace wheel

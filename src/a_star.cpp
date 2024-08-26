@@ -47,9 +47,17 @@ std::vector<PII> AStar::operator()(PII s, PII t) {
             if (ii < 0 || ii >= n_ || jj < 0 || jj >= m_ || map_[ii][jj]) continue;
             int dd = (i != ii && j != jj) ? 14 : 10;
             int v = ii * m_ + jj;
-            if (dis_[u] + dd < dis_[v]) {
+            int p = prev_[u];
+            if (p != -1 && line_of_sight({p / m_, p % m_}, {ii, jj})) {
+                int dp = dis_[p] + heuristic({p / m_, p % m_}, {ii, jj});
+                if (dp < dis_[v]) {
+                    dis_[v] = dp;
+                    pq.emplace(dis_[v] + heuristic({ii, jj}, t), v);
+                    prev_[v] = p;
+                }
+            } else if (dis_[u] + dd < dis_[v]) {
                 dis_[v] = dis_[u] + dd;
-                pq.emplace(dis_[v] + heuristic({i, j}, t), v);
+                pq.emplace(dis_[v] + heuristic({ii, jj}, t), v);
                 prev_[v] = u;
             }
         }
@@ -74,6 +82,60 @@ std::vector<PII> AStar::operator()(PII s, PII t) {
 
 int AStar::heuristic(PII u, PII v) {
     return std::abs(u.first - v.first) + std::abs(u.second - v.second);
+}
+
+// bool AStar::lineOfSight(const PII& from, const PII& to) {
+//     int x1 = from.first, y1 = from.second;
+//     int x2 = to.first, y2 = to.second;
+//     
+//     // Bresenham's line algorithm to check if there are any obstacles between the two points
+//     int dx = abs(x2 - x1), dy = abs(y2 - y1);
+//     int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
+//     int err = dx - dy;
+//     
+//     while (x1 != x2 || y1 != y2) {
+//         if (map_[x1][y1]) return false; // Obstacle found
+//         int e2 = 2 * err;
+//         if (e2 > -dy) { err -= dy; x1 += sx; }
+//         if (e2 < dx) { err += dx; y1 += sy; }
+//     }
+//     
+//     return true; // No obstacles found
+// }
+
+bool AStar::line_of_sight(const PII& from, const PII& to) {
+    std::vector<PII> result;
+    int x1 = from.first, y1 = from.second;
+    int x2 = to.first, y2 = to.second;
+
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    int steps = std::max(std::abs(dx), std::abs(dy));
+    dx = dx / static_cast<float>(steps);
+    dy = dy / static_cast<float>(steps);
+
+    float x = x1 + 0.5f, y = y1 + 0.5f;
+    result.emplace_back(x1, y1);
+
+    for (int i = 1; i <= steps; i++) {
+        x += dx;
+        y += dy;
+        if (std::abs(dx) == 1) {
+            if (have_obstacle(x, y)) return false;
+            if (have_obstacle(x, y + 1)) return false;
+            if (have_obstacle(x, y - 1)) return false;
+        } else {
+            if (have_obstacle(x, y)) return false;
+            if (have_obstacle(x + 1, y)) return false;
+            if (have_obstacle(x - 1, y)) return false;
+        }
+    }
+
+    return true;
+}
+
+bool AStar::have_obstacle(int x, int y) {
+    return x < 0 || x >= n_ || y < 0 || y >= m_ || map_[x][y];
 }
 
 }  // namespace wheel
