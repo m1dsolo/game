@@ -9,7 +9,7 @@
 
 namespace wheel {
 
-Camera::Camera() : size_(config_resource.w, config_resource.h) {}
+Camera::Camera() : size_(config_resource.w, config_resource.h), rect_(0, 0, config_resource.w, config_resource.h) {}
 
 bool Camera::update_pos() {
     Entity entity = ecs.get_entities<SelfComponent>()[0];

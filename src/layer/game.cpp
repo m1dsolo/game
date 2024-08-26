@@ -36,14 +36,17 @@ void GameLayer::on_update() {
 }
 
 void GameLayer::on_render() {
-    auto& scene_manager = SceneManager::instance();
+    const auto& scene_manager = SceneManager::instance();
+    const auto& camera_left_top = camera.left_top();
     for (Entity entity : scene_manager.query()) {
         auto& texture = ecs.get_component<TextureComponent>(entity).texture;
-        const auto& pos = ecs.get_component<PositionComponent>(entity).vec;
+        const auto& pos = camera.world2screen(ecs.get_component<PositionComponent>(entity).vec);
         const auto& size = ecs.get_component<SizeComponent>(entity).vec;
-        auto left_top = pos - size / 2 - camera.left_top();
-        SDL_FRect dst = {left_top.x, left_top.y, size.x, size.y};
-        sdl.render(texture, nullptr, &dst);
+        if (camera.visable({pos, size})) {
+            auto left_top = pos - size / 2;
+            SDL_FRect dst = {left_top.x, left_top.y, size.x, size.y};
+            sdl.render(texture, nullptr, &dst);
+        }
     }
 }
 

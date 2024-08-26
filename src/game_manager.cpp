@@ -156,12 +156,12 @@ void GameManager::swap_stage() {
             int enemy_num = enemy_resource.enemy_num;
             enemy_cnt_ = enemy_num;
             timer_resource.add(config_resource.fps * combat_seconds / enemy_num, enemy_num, [this](int cnt) {
-                int val = random.uniform(1, 4);
-                if (val <= 2) {
+                int val = random.uniform(1, 5);
+                if (val <= 3) {
                     EntityManager::instance().create_enemy("skeleton");
-                } else if (val <= 3){
+                } else if (val <= 4){
                     EntityManager::instance().create_enemy("goblin");
-                } else if (val <= 4) {
+                } else if (val <= 5) {
                     EntityManager::instance().create_enemy("skull");
                 }
 
