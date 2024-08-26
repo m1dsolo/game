@@ -14,7 +14,7 @@ public:
     void execute_impl() override;
 
 private:
-    MoveSystem() : BaseSystem(false), a_star(Map::instance().planted_structure()) {}
+    MoveSystem() : BaseSystem(false), a_star(Map::instance().planted_structure(), 8) {}
     ~MoveSystem() = default;
     MoveSystem(const MoveSystem&) = delete;
 

@@ -1,5 +1,6 @@
 #include <game/a_star.hpp>
 
+#include <iostream>
 #include <algorithm>
 #include <queue>
 
@@ -15,6 +16,9 @@ AStar::AStar(const std::vector<std::vector<bool>>& map, int direction) : map_(ma
     } else if (direction == 8) {
         adj_ = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
     }
+
+    dis_.resize(n_ * m_);
+    prev_.resize(n_ * m_);
 }
 
 std::vector<PII> AStar::operator()(PII s, PII t) {
@@ -24,44 +28,52 @@ std::vector<PII> AStar::operator()(PII s, PII t) {
         return {};
     }
 
-    std::vector<PII> path;
-    std::priority_queue<PII, std::vector<PII>, std::greater<PII>> open;
-    open.push({0, s.first * m_ + s.second});
-    std::vector<std::vector<bool>> vis(n_, std::vector<bool>(m_, false));
-    std::vector<std::vector<int>> dis(n_, std::vector<int>(m_, 1e9));
-    dis[s.first][s.second] = 0;
-    std::vector<std::vector<PII>> prev(n_, std::vector<PII>(m_, {-1, -1}));
-    while (open.size()) {
-        auto [d, u] = open.top(); open.pop();
+    int ss = s.first * m_ + s.second;
+    int tt = t.first * m_ + t.second;
+
+    // clear
+    std::fill(dis_.begin(), dis_.end(), 1e9);
+    dis_[ss] = 0;
+    std::fill(prev_.begin(), prev_.end(), -1);
+
+    std::priority_queue<PII, std::vector<PII>, std::greater<PII>> pq;
+    pq.emplace(0, ss);
+    while (pq.size()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (u == tt) break;
         int i = u / m_, j = u % m_;
-        if (i == t.first && j == t.second) break;
-        if (vis[i][j]) continue;
-        vis[i][j] = true;
         for (auto [di, dj] : adj_) {
             int ii = i + di, jj = j + dj;
             if (ii < 0 || ii >= n_ || jj < 0 || jj >= m_ || map_[ii][jj]) continue;
-            // int dd = d + ((i != ii && j != jj) ? 14 : 10);
             int dd = (i != ii && j != jj) ? 14 : 10;
-            if (dis[i][j] + dd < dis[ii][jj]) {
-                open.emplace(dis[ii][jj] = dis[i][j] + dd, ii * m_ + jj);
-                prev[ii][jj] = {i, j};
+            int v = ii * m_ + jj;
+            if (dis_[u] + dd < dis_[v]) {
+                dis_[v] = dis_[u] + dd;
+                pq.emplace(dis_[v] + heuristic({i, j}, t), v);
+                prev_[v] = u;
             }
         }
     }
 
-    int i = t.first, j = t.second;
-    if (prev[i][j].first == -1) {
+    if (prev_[tt] == -1) {
         return {};
     }
-    while (i != s.first || j != s.second) {
+
+    int cur = tt;
+    std::vector<PII> path;
+    while (cur != ss) {
+        int i = cur / m_, j = cur % m_;
         path.emplace_back(i, j);
-        auto [pi, pj] = prev[i][j];
-        i = pi, j = pj;
+        cur = prev_[cur];
     }
-    path.push_back(s);
+    path.emplace_back(s);
     std::reverse(path.begin(), path.end());
 
     return path;
+}
+
+int AStar::heuristic(PII u, PII v) {
+    return std::abs(u.first - v.first) + std::abs(u.second - v.second);
 }
 
 }  // namespace wheel

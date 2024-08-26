@@ -17,7 +17,11 @@ public:
 private:
     const std::vector<std::vector<bool>>& map_;
     std::vector<PII> adj_;
+    std::vector<int> dis_;
+    std::vector<int> prev_;
     int n_, m_;
+
+    int heuristic(PII u, PII v);
 };
 
 }  // namespace wheel
