@@ -1,3 +1,18 @@
+<div align="center">
+
+<h1>A Simple Rougelike Game</h1>
+
+<p>(I haven't thought of a name for this game yet.)</p>
+
+[![license](https://img.shields.io/badge/License-MIT%202.0-blue.svg)](https://github.com/Lightning-AI/lightning/blob/master/LICENSE)
+
+</div>
+
+## Language
+
+- [English](README.md)
+- [简体中文](README_zh_CN.md)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -10,39 +25,39 @@
 
 Demo:
 
-[demo](https://github.com/user-attachments/assets/c22e5a91-4854-4831-b469-1eb88cf598ba)
+[demo](https://github.com/user-attachments/assets/bb18c641-a574-485e-b261-53d6e00e250e)
 
-This is a simple game developed based on my [ECS](https://github.com/m1dsolo/wheel/blob/main/include/wheel/ecs.hpp) framework.
-The game mainly relies on SDL3 and uses on almost no other external libraries.
-In the process of making the game, I mainly rely on my wheel library.
-Please refer to the [wheel library](https://github.com/m1dsolo/wheel) for more details.
+This is a simple rougelike game developed based on [SDL3](https://github.com/libsdl-org/SDL) and my [ECS](https://github.com/m1dsolo/wheel/blob/main/include/wheel/ecs.hpp) framework.
 
-This game is currently a survivor-like game, but I will randomly add elements that I like.
-For example:
-1. Construction system
-2. Farming system
-3. Store system
-4. Multiplayer system
-5. etc...
+This game is a 2D top-down rougelike survivor roguelike.
+The objective is to survive through endless waves of enemies.
+Before each wave starts, you need to upgrade the enemies.
+Then you have half a minute to survive the relentless attacks of the enemies.
+During this time, you can upgrade yourself, collect resources, and establish powerful defensive structures.
 
-Update:
-1. consumable potion
-2. slot progress bar
-3. tower as a consumable
-4. mouse select tile and card
+Since the game is based on highly scalable `ECS` framework,
+and the main game information can be configured through `JSON`,
+you can easily add more monsters, items, and modify the AI, etc.
 
 ## Features
 
-- Entity-Component-System (ECS) architecture
-- Primarily uses the SDL3 library for graphics and input handling
-- No external libraries except SDL3
-- json configuration game information
+The project used the following technologies:
+
+- `ECS`(Entity-Component-System) architecture, providing highly reusable modules and efficient execution speed
+- `QuadTree` to accelerate collision detection
+- `SceneGraph` to manage the logical relationship between objects and the rendering order
+- `BehaviorTree` to manage the AI Logic of enemies and defense towers
+- `Lazy Theta*` pathfinding algorithm, providing smoother movement compared to `A*`
+- `JSON` is used to configure game settings, monster information, item information, upgrade rewards, monster upgrade information, AI, etc.
+
+`ECS`, `QuadTree` and other modules primarily rely on my [wheel library](https://github.com/m1dsolo/wheel).
+Refer to the library's documentation for more details.
 
 ## Install
 
-This project is written in c++23 and built using cmake.
-I have only tested it on my own computer (Arch Linux).
-If you use another operating systems, you may need to modify `CMakeLists.txt` to meet your needs.
+This project is written in `C++23` and built using `CMake`.
+It has only been tested on my own computer (Arch Linux).
+If you use another operating systems, you may need to modify `CMakeLists.txt` to meet your requirements.
 
 1. clone project
 
@@ -67,14 +82,25 @@ cmake --build build -j4
 
 ## Usage
 
-1. Use `WASD` to move the character
-2. Press `Space` to shoot if you have a gun selected
-3. Press `R` to reload the gun if you have one selected
-4. Press `ESC` to show the exit menu (then press `1` to quit, `2` to resume)
-5. Use the number keys `1`, `2`, `3`, etc. to select items
-6. Use the number keys `1`, `2`, `3` to select the levelup reward cards
-7. Use `Space` to use consumables if you have one selected
-8. Use 'F' to flash
+The game controls are as follows:
+- Movement
+    - `WASD` to move the character
+- Combat
+    - `LeftMouse` to shoot if you have a gun selected
+    - `R` to reload the gun if you have one selected
+    - `Space` to use consumables if you have one selected
+    - `F` to flash
+    - `G` to drop selected item
+- Hotbar
+    - `1`, `2`, `3`, etc. to select items
+    - `QE` to cycle through items
+    - hold `LeftMouse` to swap items
+- Menu
+    - `ESC` to show the exit menu
+        - `1` to quit
+        - `2` to resume
+    - `I` to switch inventory menu
+        - same as hotbar controls
 
 ## License
 
