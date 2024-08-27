@@ -48,7 +48,7 @@ The project used the following technologies:
 - `SceneGraph` to manage the logical relationship between objects and the rendering order
 - `BehaviorTree` to manage the AI Logic of enemies and defense towers
 - `Lazy Theta*` pathfinding algorithm, providing smoother movement compared to `A*`
-- `JSON` is used to configure game settings, monster information, item information, upgrade rewards, monster upgrade information, AI, etc.
+- `JSON` is used to configure game settings, monster information, item information, upgrade rewards, monster upgrade information, behavior tree, etc.
 
 `ECS`, `QuadTree` and other modules primarily rely on my [wheel library](https://github.com/m1dsolo/wheel).
 Refer to the library's documentation for more details.

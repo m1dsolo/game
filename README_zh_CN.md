@@ -48,7 +48,7 @@
 - `SceneGraph` 管理对象之间的逻辑关系和渲染顺序
 - `BehaviorTree` 管理敌人和防御塔的AI逻辑
 - `Lazy Theta*` 寻路算法，提供比 `A*` 更平滑的移动效果
-- 使用 `JSON` 配置游戏设置、怪物信息、物品信息、升级奖励、怪物升级信息、AI等
+- 使用 `JSON` 配置游戏设置、怪物信息、物品信息、升级奖励、怪物升级信息、行为树等
 
 `ECS`、`QuadTree` 和其他模块主要依赖我的 [wheel 库](https://github.com/m1dsolo/wheel)。
 更多细节请参考该库的文档。
