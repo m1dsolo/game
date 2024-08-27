@@ -21,6 +21,7 @@ AStar::AStar(const std::vector<std::vector<bool>>& map, int direction) : map_(ma
     prev_.resize(n_ * m_);
 }
 
+// Lazy Theta* algorithm
 std::vector<PII> AStar::operator()(PII s, PII t) {
     if (s.first < 0 || s.first >= n_ || s.second < 0 || s.second >= m_ ||
         t.first < 0 || t.first >= n_ || t.second < 0 || t.second >= m_ ||
@@ -49,15 +50,15 @@ std::vector<PII> AStar::operator()(PII s, PII t) {
             int v = ii * m_ + jj;
             int p = prev_[u];
             if (p != -1 && line_of_sight({p / m_, p % m_}, {ii, jj})) {
-                int dp = dis_[p] + heuristic({p / m_, p % m_}, {ii, jj});
+                int dp = dis_[p] + heuristic({ii, jj}, t);
                 if (dp < dis_[v]) {
                     dis_[v] = dp;
-                    pq.emplace(dis_[v] + heuristic({ii, jj}, t), v);
+                    pq.emplace(dis_[v], v);
                     prev_[v] = p;
                 }
             } else if (dis_[u] + dd < dis_[v]) {
                 dis_[v] = dis_[u] + dd;
-                pq.emplace(dis_[v] + heuristic({ii, jj}, t), v);
+                pq.emplace(dis_[v], v);
                 prev_[v] = u;
             }
         }
@@ -83,25 +84,6 @@ std::vector<PII> AStar::operator()(PII s, PII t) {
 int AStar::heuristic(PII u, PII v) {
     return std::abs(u.first - v.first) + std::abs(u.second - v.second);
 }
-
-// bool AStar::lineOfSight(const PII& from, const PII& to) {
-//     int x1 = from.first, y1 = from.second;
-//     int x2 = to.first, y2 = to.second;
-//     
-//     // Bresenham's line algorithm to check if there are any obstacles between the two points
-//     int dx = abs(x2 - x1), dy = abs(y2 - y1);
-//     int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
-//     int err = dx - dy;
-//     
-//     while (x1 != x2 || y1 != y2) {
-//         if (map_[x1][y1]) return false; // Obstacle found
-//         int e2 = 2 * err;
-//         if (e2 > -dy) { err -= dy; x1 += sx; }
-//         if (e2 < dx) { err += dx; y1 += sy; }
-//     }
-//     
-//     return true; // No obstacles found
-// }
 
 bool AStar::line_of_sight(const PII& from, const PII& to) {
     std::vector<PII> result;
