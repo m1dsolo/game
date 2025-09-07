@@ -1,0 +1,39 @@
+#pragma once
+
+#include <core/sprite.hpp>
+#include <wheel/singleton.hpp>
+#include <wheel/geometry.hpp>
+
+#include <string>
+#include <unordered_map>
+
+#include <iostream>
+
+namespace core {
+
+class SpriteManager : public wheel::Singleton<SpriteManager> {
+    friend wheel::Singleton<SpriteManager>;
+
+public:
+    void set(const std::string& name, const Sprite& sprite) {
+        std::cout << "sprite_set: " << name << " " << sprite.texture << " " << sprite.rect.x << " " << sprite.rect.y << " " << sprite.rect.w << " " << sprite.rect.h << std::endl;
+        name2sprites_[name] = sprite;
+    }
+
+    const Sprite& get(const std::string& name) const {
+        if (name2sprites_.find(name) == name2sprites_.end()) {
+            std::cout << "not found sprite: " << name << "!!!!!" << std::endl;
+            return name2sprites_.at("");
+        }
+        // std::cout << "sprite_get: " << name << std::endl;
+        return name2sprites_.at(name);
+    }
+
+private:
+    SpriteManager();
+    SpriteManager(const SpriteManager&) = delete;
+
+    std::unordered_map<std::string, Sprite> name2sprites_;
+};
+
+}  // namespace core

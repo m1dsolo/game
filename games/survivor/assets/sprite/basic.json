@@ -1,0 +1,23 @@
+{
+    "path": "sprite_sheet/basic.png",
+    "size": [
+        48,
+        48
+    ],
+    "sprites": [
+        {
+            "name": "grass",
+            "pos": [
+                0,
+                0
+            ]
+        },
+        {
+            "name": "house",
+            "pos": [
+                0,
+                144
+            ]
+        }
+    ]
+}

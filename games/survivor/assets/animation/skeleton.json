@@ -1,0 +1,60 @@
+{
+    "id": "skeleton",
+    "path": "sprite_sheet/skeleton/idle.png",
+    "duration": 0.25,
+    "loop": true,
+    "size": [
+        48,
+        48
+    ],
+    "range": {
+        "step": [
+            48,
+            0
+        ],
+        "count": 5
+    },
+    "animations": [
+        {
+            "name": "idle",
+            "clips": [
+                {
+                    "direction": "up",
+                    "range": {
+                        "start": [
+                            0,
+                            0
+                        ]
+                    }
+                },
+                {
+                    "direction": "down",
+                    "range": {
+                        "start": [
+                            0,
+                            48
+                        ]
+                    }
+                },
+                {
+                    "direction": "left",
+                    "range": {
+                        "start": [
+                            0,
+                            96
+                        ]
+                    }
+                },
+                {
+                    "direction": "right",
+                    "range": {
+                        "start": [
+                            0,
+                            144
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

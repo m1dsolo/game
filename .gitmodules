@@ -1,0 +1,12 @@
+[submodule "core/third_party/reflect-cpp"]
+	path = core/third_party/reflect-cpp
+	url = https://github.com/getml/reflect-cpp.git
+[submodule "core/third_party/wheel"]
+	path = core/third_party/wheel
+	url = https://github.com/m1dsolo/wheel.git
+[submodule "core/third_party/sdl"]
+	path = core/third_party/sdl
+	url = https://github.com/m1dsolo/sdl.git
+[submodule "core/third_party/ecs"]
+	path = core/third_party/ecs
+	url = https://github.com/m1dsolo/ecs.git

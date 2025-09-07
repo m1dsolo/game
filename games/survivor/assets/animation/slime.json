@@ -1,0 +1,60 @@
+{
+    "id": "slime",
+    "path": "sprite_sheet/slime/idle.png",
+    "duration": 0.25,
+    "loop": true,
+    "size": [
+        48,
+        48
+    ],
+    "range": {
+        "step": [
+            48,
+            0
+        ],
+        "count": 6
+    },
+    "animations": [
+        {
+            "name": "idle",
+            "clips": [
+                {
+                    "direction": "up",
+                    "range": {
+                        "start": [
+                            0,
+                            0
+                        ]
+                    }
+                },
+                {
+                    "direction": "down",
+                    "range": {
+                        "start": [
+                            0,
+                            48
+                        ]
+                    }
+                },
+                {
+                    "direction": "left",
+                    "range": {
+                        "start": [
+                            0,
+                            96
+                        ]
+                    }
+                },
+                {
+                    "direction": "right",
+                    "range": {
+                        "start": [
+                            0,
+                            144
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
