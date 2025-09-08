@@ -11,8 +11,10 @@
 #include <core/component/collider.hpp>
 #include <core/component/animation.hpp>
 #include <core/component/render.hpp>
+#include <core/component/track.hpp>
 #include <core/tag/input.hpp>
 #include <core/system/sdl_event.hpp>
+#include <core/system/track.hpp>
 #include <core/system/move.hpp>
 #include <core/system/transform.hpp>
 #include <core/system/animation.hpp>
@@ -26,6 +28,7 @@ namespace survivor {
 SurvivorGame::SurvivorGame() {
     core::SystemManager::instance().add_systems<
         core::SDLEventSystem,
+        core::TrackSystem,
         core::MoveSystem,
         core::TransformSystem,
         core::AnimationSystem,
@@ -76,10 +79,11 @@ SurvivorGame::SurvivorGame() {
         core::TransformComponent{{0.f, 100.f}, {48.f, 48.f}},
         core::SpriteComponent{},
         core::DirectionComponent{},
-        core::SpeedComponent{200.f},
+        core::SpeedComponent{150.f},
         core::ColliderComponent{{24.f, 24.f}},
         core::AnimationComponent{"skeleton-idle-down"},
         core::RenderComponent{1},
+        core::TrackComponent{slime},
         HPComponent{100}
     );
 
