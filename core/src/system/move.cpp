@@ -64,7 +64,7 @@ void MoveSystem::move_() {
         auto delta = direction.move * speed.speed * time;
 
         auto& collider_manager = ColliderManager::instance();
-        if (!ecs.has_components<ColliderComponent>(entity) || ecs.get_component<ColliderComponent>(entity).trigger) {
+        if (!ecs.has_components<ColliderComponent>(entity)) {
             transform.local.position += delta;
         } else {
             transform.global.position[0] += delta[0];

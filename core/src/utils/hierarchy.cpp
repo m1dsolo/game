@@ -27,4 +27,13 @@ wheel::Entity Hierarchy::detach_entity_from_parent(wheel::Entity entity) {
     return parent;
 }
 
+std::unordered_set<wheel::Entity> Hierarchy::get_all_parents(wheel::Entity entity) {
+    auto parents = std::unordered_set<wheel::Entity>{};
+    while (ecs.has_component<ParentComponent>(entity)) {
+        entity = ecs.get_component<ParentComponent>(entity).parent;
+        parents.emplace(entity);
+    }
+    return parents;
+}
+
 }  // namespace core

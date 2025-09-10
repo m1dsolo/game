@@ -1,0 +1,51 @@
+#include <survivor/system/event.hpp>
+#include <core/global.hpp>
+#include <core/manager/sprite.hpp>
+#include <core/component/children.hpp>
+#include <core/component/sprite.hpp>
+#include <core/event/del_entity.hpp>
+#include <survivor/component/hp.hpp>
+#include <survivor/event/hp_change.hpp>
+#include <survivor/event/death.hpp>
+#include <survivor/tag/hp_bar.hpp>
+
+using namespace core;
+
+namespace survivor {
+
+void EventSystem::update_impl() {
+    hp_change_event_();
+    death_event_();
+}
+
+void EventSystem::hp_change_event_() {
+    for (auto [source, target, value] : ecs.get_events<HPChangeEvent>()) {
+        if (ecs.has_component<HPComponent>(target)) {
+            // update HP
+            auto& hp = ecs.get_component<HPComponent>(target).hp;
+            hp += value;
+            if (hp <= 0) {
+                ecs.emplace_event<DeathEvent>(source, target);
+            }
+
+            // update HP bar
+            for (auto child : ecs.get_component<ChildrenComponent>(target).children) {
+                if (ecs.has_components<HPBarTag, SpriteComponent>(child)) {
+                    auto& hp_bar = ecs.get_component<HPComponent>(target);
+                    auto bar_id = std::clamp(static_cast<int>(48.f * hp_bar.hp / hp_bar.max_hp), 0, 48);
+                    ecs.get_component<SpriteComponent>(child).sprite = &SpriteManager::instance().get("hp_bar" + std::to_string(bar_id));
+                }
+            }
+        }
+    }
+}
+
+void EventSystem::death_event_() {
+    for (auto [source, target] : ecs.get_events<DeathEvent>()) {
+        if (ecs.has_entity(target)) {
+            ecs.emplace_event<DelEntityEvent>(target);
+        }
+    }
+}
+
+}  // namespace survivor

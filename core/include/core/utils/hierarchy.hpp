@@ -4,6 +4,7 @@
 #include <ecs/entity.hpp>
 
 #include <vector>
+#include <unordered_set>
 
 namespace core {
 
@@ -15,6 +16,7 @@ public:
     static std::vector<wheel::Entity> entities();
 
     static wheel::Entity detach_entity_from_parent(wheel::Entity entity);
+    static std::unordered_set<wheel::Entity> get_all_parents(wheel::Entity entity);
 };
 
 }  // namespace core

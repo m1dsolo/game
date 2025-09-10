@@ -17,12 +17,14 @@ public:
     void remove(wheel::Entity entity);
     void update();
     bool is_colliding(wheel::Entity entity);
+
     std::vector<wheel::Entity> query(wheel::Entity entity) const;
-    std::vector<wheel::Entity> query(const wheel::Rect<float>& rect) const;
 
 private:
     ColliderManager();
     ColliderManager(const ColliderManager&) = delete;
+
+    bool is_dynamic_(wheel::Entity entity) const;
 
     wheel::QuadTree<wheel::Entity, std::function<wheel::Rect<float>(wheel::Entity)>> static_quadtree_;
     wheel::QuadTree<wheel::Entity, std::function<wheel::Rect<float>(wheel::Entity)>> dynamic_quadtree_;

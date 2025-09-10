@@ -33,4 +33,12 @@ void EntityManager::del_entity(wheel::Entity entity) {
     ecs.del_entity(entity);
 }
 
+void EntityManager::add_child_(wheel::Entity parent, wheel::Entity child) {
+    if (!ecs.has_component<ChildrenComponent>(parent)) {
+        ecs.add_component(parent, ChildrenComponent{});
+    }
+    ecs.get_component<ChildrenComponent>(parent).children.emplace_back(child);
+    ecs.add_component(child, ParentComponent{parent});
+}
+
 }  // namespace core

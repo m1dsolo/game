@@ -6,6 +6,7 @@
 #include <core/component/children.hpp>
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
+#include <core/component/trigger.hpp>
 #include <wheel/singleton.hpp>
 
 #include <functional>
@@ -29,17 +30,10 @@ public:
     wheel::Entity add_entity(wheel::Entity parent, ComponentTypes&&... components) {
         auto entity = ecs.add_entity(std::forward<ComponentTypes>(components)...);
 
-        if (!ecs.has_component<ChildrenComponent>(parent)) {
-            ecs.add_component(parent, ChildrenComponent{});
-        }
-        ecs.get_component<ChildrenComponent>(parent).children.emplace_back(entity);
-        ecs.add_component(entity, ParentComponent{parent});
+        add_child_(parent, entity);
 
-        if (ecs.has_component<ColliderComponent>(entity)) {
-            const auto& collider = ecs.get_component<ColliderComponent>(entity);
-            if (!collider.trigger) {
-                ColliderManager::instance().add(entity);
-            }
+        if (ecs.has_component<ColliderComponent>(entity) || ecs.has_component<TriggerComponent>(entity)) {
+            ColliderManager::instance().add(entity);
         }
 
         if (add_entity_callback_) {
@@ -54,6 +48,8 @@ public:
 private:
     EntityManager();
     EntityManager(const EntityManager&) = delete;
+
+    void add_child_(wheel::Entity parent, wheel::Entity child);
 
     std::function<void(wheel::Entity)> add_entity_callback_;
 };
