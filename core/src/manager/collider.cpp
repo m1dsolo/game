@@ -9,7 +9,7 @@
 namespace core {
 
 ColliderManager::ColliderManager() {
-    init(1920.f, 1080.f);
+    init(config.map_width + 20.f, config.map_height + 20.f);
 }
 
 void ColliderManager::init(float w, float h) {

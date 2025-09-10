@@ -151,15 +151,42 @@ SurvivorGame::SurvivorGame() {
         RenderComponent{0}
     );
 
+    float map_width = config.map_width;
+    float map_height = config.map_height;
+
     SpriteManager::instance().set("map", Sprite{
-        sdl::SDL::create_texture(800, 600, sdl::SDL::WHITE),
-        {0.f, 0.f, 800.f, 600.f}
+        sdl::SDL::create_texture(map_width, map_height, sdl::SDL::WHITE),
+        {0.f, 0.f, map_width, map_height}
     });
     auto map = entity_manager.add_entity(
         NameComponent{"map"},
-        TransformComponent{{0.f, 0.f}, {800.f, 600.f}},
+        TransformComponent{{0.f, 0.f}, {map_width, map_height}},
         SpriteComponent{"map"},
         RenderComponent{0}
+    );
+
+    auto left_boundary = entity_manager.add_entity(
+        NameComponent{"left_boundary"},
+        TransformComponent{{-map_width / 2 - 5.f, 0.f}},
+        ColliderComponent{{10.f, map_height}, false}
+    );
+
+    auto right_boundary = entity_manager.add_entity(
+        NameComponent{"right_boundary"},
+        TransformComponent{{map_width / 2 + 5.f, 0.f}},
+        ColliderComponent{{10.f, map_height}, false}
+    );
+
+    auto top_boundary = entity_manager.add_entity(
+        NameComponent{"top_boundary"},
+        TransformComponent{{0, map_height / 2 + 5.f}},
+        ColliderComponent{{map_width, 10.f}, false}
+    );
+
+    auto bottom_boundary = entity_manager.add_entity(
+        NameComponent{"bottom_boundary"},
+        TransformComponent{{0, -map_height / 2 - 5.f}},
+        ColliderComponent{{map_width, 10.f}, false}
     );
 }
 
