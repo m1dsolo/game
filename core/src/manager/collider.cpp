@@ -4,7 +4,7 @@
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
 #include <core/component/trigger.hpp>
-#include <core/utils/hierarchy.hpp>
+#include <core/util/hierarchy.hpp>
 
 namespace core {
 

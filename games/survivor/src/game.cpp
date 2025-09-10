@@ -25,10 +25,13 @@
 #include <core/system/render.hpp>
 #include <core/system/time.hpp>
 #include <core/system/del_entity_event.hpp>
+#include <core/util/util.hpp>
 #include <survivor/system/event.hpp>
 #include <survivor/component/hp.hpp>
 #include <survivor/tag/hp_bar.hpp>
 #include <survivor/event/hp_change.hpp>
+
+#include <wheel/random.hpp>
 
 using namespace core;
 
@@ -96,7 +99,6 @@ SurvivorGame::SurvivorGame() {
             [](wheel::Entity entity, wheel::Entity other) {
                 if (!ecs.get_component<TriggerComponent>(entity).stay_entities.contains(other)
                         && ecs.has_component<HPComponent>(other)) {
-                    std::cout << ecs.get_component<NameComponent>(other).name << ecs.get_component<HPComponent>(other).hp << std::endl;;
                     auto timer_id = TimeManager::instance().timer().add(1000000, [entity, other]() {
                         if (!ecs.has_component<TriggerComponent>(entity)) {
                             return 0;
@@ -130,26 +132,13 @@ SurvivorGame::SurvivorGame() {
         }
     );
 
-    auto skeleton = entity_manager.add_entity(
-        NameComponent{"skeleton"},
-        TransformComponent{{0.f, 100.f}, {48.f, 48.f}},
-        SpriteComponent{},
-        DirectionComponent{},
-        SpeedComponent{150.f},
-        ColliderComponent{{24.f, 24.f}},
-        AnimationComponent{"skeleton-idle-down"},
-        RenderComponent{1},
-        TrackComponent{slime},
-        HPComponent{100}
-    );
-
-    auto house = entity_manager.add_entity(
-        NameComponent{"house"},
-        TransformComponent{{100.f, 0.f}, {48.f, 48.f}},
-        SpriteComponent{"house"},
-        ColliderComponent{{48.f, 48.f}, false},
-        RenderComponent{0}
-    );
+    // auto house = entity_manager.add_entity(
+    //     NameComponent{"house"},
+    //     TransformComponent{{100.f, 0.f}, {48.f, 48.f}},
+    //     SpriteComponent{"house"},
+    //     ColliderComponent{{48.f, 48.f}, false},
+    //     RenderComponent{0}
+    // );
 
     float map_width = config.map_width;
     float map_height = config.map_height;
@@ -167,27 +156,51 @@ SurvivorGame::SurvivorGame() {
 
     auto left_boundary = entity_manager.add_entity(
         NameComponent{"left_boundary"},
-        TransformComponent{{-map_width / 2 - 5.f, 0.f}},
+        TransformComponent{{-map_width / 2 - 5.f, 0.f}, {10.f, map_height}},
         ColliderComponent{{10.f, map_height}, false}
     );
 
     auto right_boundary = entity_manager.add_entity(
         NameComponent{"right_boundary"},
-        TransformComponent{{map_width / 2 + 5.f, 0.f}},
+        TransformComponent{{map_width / 2 + 5.f, 0.f}, {10.f, map_height}},
         ColliderComponent{{10.f, map_height}, false}
     );
 
     auto top_boundary = entity_manager.add_entity(
         NameComponent{"top_boundary"},
-        TransformComponent{{0, map_height / 2 + 5.f}},
+        TransformComponent{{0.f, map_height / 2 + 5.f}, {map_width, 10.f}},
         ColliderComponent{{map_width, 10.f}, false}
     );
 
     auto bottom_boundary = entity_manager.add_entity(
         NameComponent{"bottom_boundary"},
-        TransformComponent{{0, -map_height / 2 - 5.f}},
+        TransformComponent{{0.f, -map_height / 2 - 5.f}, {map_width, 10.f}},
         ColliderComponent{{map_width, 10.f}, false}
     );
+
+    std::vector<wheel::Entity> boundaries = {
+        left_boundary, right_boundary, top_boundary, bottom_boundary
+    };
+    TimeManager::instance().timer().add(1000000, [slime, boundaries = std::move(boundaries)]() {
+        auto boundary = boundaries[wheel::Random::instance().uniform(0, static_cast<int>(boundaries.size()) - 1)];
+
+        const auto& transform = ecs.get_component<TransformComponent>(boundary).global;
+        auto pos = Util::random_pick_point(wheel::Rect<float>{transform.position, transform.size});
+        EntityManager::instance().add_entity(
+            NameComponent{"skeleton"},
+            TransformComponent{pos, {48.f, 48.f}},
+            SpriteComponent{},
+            DirectionComponent{},
+            SpeedComponent{100.f},
+            ColliderComponent{{24.f, 24.f}},
+            AnimationComponent{"skeleton-idle-down"},
+            RenderComponent{1},
+            TrackComponent{slime},
+            HPComponent{100}
+        );
+
+        return 1000000;
+    });
 }
 
 }  // namespace survivor

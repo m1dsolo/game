@@ -1,6 +1,6 @@
 #include <core/system/transform.hpp>
 #include <core/global.hpp>
-#include <core/utils/hierarchy.hpp>
+#include <core/util/hierarchy.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/children.hpp>
 

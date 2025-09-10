@@ -1,4 +1,4 @@
-#include <core/utils/hierarchy.hpp>
+#include <core/util/hierarchy.hpp>
 #include <core/global.hpp>
 #include <core/component/children.hpp>
 #include <core/component/parent.hpp>

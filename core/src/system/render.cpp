@@ -1,6 +1,6 @@
 #include <core/system/render.hpp>
 #include <core/global.hpp>
-#include <core/utils/coordinate.hpp>
+#include <core/util/coordinate.hpp>
 #include <core/component/render.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>

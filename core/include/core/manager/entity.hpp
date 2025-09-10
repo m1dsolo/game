@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/global.hpp>
-#include <core/utils/hierarchy.hpp>
+#include <core/util/hierarchy.hpp>
 #include <core/manager/collider.hpp>
 #include <core/component/children.hpp>
 #include <core/component/parent.hpp>
