@@ -11,7 +11,7 @@ namespace core {
 
 struct TriggerComponent : ColliderComponent {
     TriggerComponent(
-        wheel::Vector2D<float> size = {0.f, 0.f},
+        std::variant<wheel::Rect<float>, wheel::Circle<float>> shape = wheel::Rect<float>{{0.f, 0.f}, {0.f, 0.f}},
         bool dynamic = true,
         std::function<void(wheel::Entity, wheel::Entity)> on_enter = nullptr,
         std::function<void(wheel::Entity, wheel::Entity)> on_stay = nullptr,

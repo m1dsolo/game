@@ -33,7 +33,7 @@ public:
 
         add_child_(parent, entity);
 
-        if (ecs.has_component<ColliderComponent>(entity) || ecs.has_component<TriggerComponent>(entity)) {
+        if (ecs.has_component<ColliderComponent>(entity)) {
             ColliderManager::instance().add(entity);
         }
 

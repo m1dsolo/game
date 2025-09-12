@@ -89,7 +89,7 @@ SurvivorGame::SurvivorGame() {
         SpriteComponent{},
         DirectionComponent{},
         SpeedComponent{200.f},
-        ColliderComponent{{24.f, 24.f}},
+        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {24.f, 24.f}}},
         AnimationComponent{"slime-idle-down"},
         RenderComponent{1},
         InputTag{},
@@ -102,7 +102,7 @@ SurvivorGame::SurvivorGame() {
         TransformComponent{{0.f, 0.f}},
         DataComponent{{{"entity2timer_id", std::unordered_map<wheel::Entity, wheel::timer_id_t>{}}}},
         TriggerComponent{
-            {300.f, 300.f},
+            wheel::Circle<float>{0.f, 0.f, 300.f},
             true,
             [](wheel::Entity entity, wheel::Entity other) {
                 if (!ecs.get_component<TriggerComponent>(entity).stay_entities.contains(other)
@@ -144,9 +144,9 @@ SurvivorGame::SurvivorGame() {
         NameComponent("auto_shoot"),
         MasterComponent{slime},
         TransformComponent{{0.f, 0.f}, {500.f, 500.f}},
+        TriggerComponent{wheel::Circle<float>{0.f, 0.f, 500.f}},
         RangeAttackComponent{
             .damage = 10,
-            .range = 500,
             .interval = 500000,
             .projectile_speed = 500.f,
             .projectile_sprite_name = "bullet"
@@ -178,25 +178,25 @@ SurvivorGame::SurvivorGame() {
     auto left_boundary = entity_manager.add_entity(
         NameComponent{"left_boundary"},
         TransformComponent{{-map_width / 2 - 5.f, 0.f}, {10.f, map_height}},
-        ColliderComponent{{10.f, map_height}, false}
+        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}}, false}
     );
 
     auto right_boundary = entity_manager.add_entity(
         NameComponent{"right_boundary"},
         TransformComponent{{map_width / 2 + 5.f, 0.f}, {10.f, map_height}},
-        ColliderComponent{{10.f, map_height}, false}
+        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}}, false}
     );
 
     auto top_boundary = entity_manager.add_entity(
         NameComponent{"top_boundary"},
         TransformComponent{{0.f, map_height / 2 + 5.f}, {map_width, 10.f}},
-        ColliderComponent{{map_width, 10.f}, false}
+        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}, false}
     );
 
     auto bottom_boundary = entity_manager.add_entity(
         NameComponent{"bottom_boundary"},
         TransformComponent{{0.f, -map_height / 2 - 5.f}, {map_width, 10.f}},
-        ColliderComponent{{map_width, 10.f}, false}
+        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}, false}
     );
 
     std::vector<wheel::Entity> boundaries = {
@@ -213,7 +213,7 @@ SurvivorGame::SurvivorGame() {
             SpriteComponent{},
             DirectionComponent{},
             SpeedComponent{100.f},
-            ColliderComponent{{24.f, 24.f}},
+            ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {24.f, 24.f}}},
             AnimationComponent{"skeleton-idle-down"},
             RenderComponent{1},
             TrackComponent{slime},

@@ -23,11 +23,9 @@ void ColliderManager::init(float w, float h) {
     auto get_rect = [](wheel::Entity entity) -> wheel::Rect<float> {
         wheel::Vector2D<float> size;
         if (ecs.has_component<ColliderComponent>(entity)) {
-            size = ecs.get_component<ColliderComponent>(entity).size;
+            size = ecs.get_component<ColliderComponent>(entity).size();
         } else if (ecs.has_component<TriggerComponent>(entity)) {
-            size = ecs.get_component<TriggerComponent>(entity).size;
-        } else if (ecs.has_component<TransformComponent>(entity)) {
-            size = ecs.get_component<TransformComponent>(entity).global.size;
+            size = ecs.get_component<TriggerComponent>(entity).size();
         }
 
         return {
@@ -72,12 +70,18 @@ std::vector<wheel::Entity> ColliderManager::query(wheel::Entity entity) const {
     entities.insert(entities.end(), static_entities.begin(), static_entities.end());
 
     // TODO: and filter children
+    const auto& component = ecs.has_component<ColliderComponent>(entity) ? 
+        ecs.get_component<ColliderComponent>(entity) : 
+        ecs.get_component<TriggerComponent>(entity);
     auto parents = Hierarchy::get_all_parents(entity);
     return entities | 
         std::views::filter([&](wheel::Entity target) {
             return target != entity &&
                 !parents.contains(target) &&
-                ecs.has_component<ColliderComponent>(target);
+                ecs.has_component<ColliderComponent>(target) &&
+                component.is_overlapping(
+                    ecs.get_component<ColliderComponent>(target)
+                );
         }) |
         std::ranges::to<std::vector<wheel::Entity>>();
 }

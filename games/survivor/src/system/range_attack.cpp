@@ -64,20 +64,19 @@ void RangeAttackSystem::shoot_() {
                return a.second < b.second;
            });
 
-        if (closest.second <= range_attack.range) {
-            EntityManager::instance().add_entity(
-                NameComponent{"bullet"},
-                ProjectileComponent{range_attack.damage},
-                TransformComponent{position, {16.f, 16.f}},
-                DirectionComponent{(ecs.get_component<TransformComponent>(closest.first).global.position - position).normalize()},
-                SpriteComponent{range_attack.projectile_sprite_name},
-                SpeedComponent{range_attack.projectile_speed},
-                RenderComponent{2},
-                TrackComponent{closest.first},
-                FractionComponent{fraction},
-                MasterComponent{entity}
-            );
-        }
+        EntityManager::instance().add_entity(
+            NameComponent{"bullet"},
+            ProjectileComponent{range_attack.damage},
+            TransformComponent{position, {16.f, 16.f}},
+            TriggerComponent{wheel::Circle<float>{0.f, 0.f, 8.f}},
+            DirectionComponent{(ecs.get_component<TransformComponent>(closest.first).global.position - position).normalize()},
+            SpriteComponent{range_attack.projectile_sprite_name},
+            SpeedComponent{range_attack.projectile_speed},
+            RenderComponent{2},
+            TrackComponent{closest.first},
+            FractionComponent{fraction},
+            MasterComponent{entity}
+        );
     }
 }
 
