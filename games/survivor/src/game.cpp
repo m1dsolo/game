@@ -62,7 +62,7 @@ SurvivorGame::SurvivorGame() {
         auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
         auto target = sdl::SDL::TargetGuard{texture};
         auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
-        sdl::SDL::render_fill_rect(&dst, sdl::SDL::GREEN);
+        sdl::SDL::render_filled_rect(&dst, sdl::SDL::GREEN);
         SpriteManager::instance().set("hp_bar" + std::to_string(i), {
             texture,
             {0.f, 0.f, 48.f, 12.f}
@@ -96,13 +96,19 @@ SurvivorGame::SurvivorGame() {
         HPComponent{100},
         FractionComponent{0}
     );
+    SpriteManager::instance().set("pink_filled_circle", Sprite{
+        sdl::SDL::create_filled_circle_texture(300.f, sdl::SDL::PINK),
+        {0.f, 0.f, 600.f, 600.f}
+    });
     auto damage_aura = entity_manager.add_entity(
         slime,
         NameComponent{"damage_aura"},
-        TransformComponent{{0.f, 0.f}},
+        TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
+        SpriteComponent{"pink_filled_circle"},
+        RenderComponent{1},
         DataComponent{{{"entity2timer_id", std::unordered_map<wheel::Entity, wheel::timer_id_t>{}}}},
         TriggerComponent{
-            wheel::Circle<float>{0.f, 0.f, 300.f},
+            wheel::Circle<float>{0.f, 0.f, 150.f},
             true,
             [](wheel::Entity entity, wheel::Entity other) {
                 if (!ecs.get_component<TriggerComponent>(entity).stay_entities.contains(other)
@@ -139,18 +145,24 @@ SurvivorGame::SurvivorGame() {
             }
         }
     );
+    SpriteManager::instance().set("auto_shoot", Sprite{
+        sdl::SDL::create_circle_texture(300.f, sdl::SDL::RED),
+        {0.f, 0.f, 600.f, 600.f}
+    });
     auto auto_shoot = entity_manager.add_entity(
         slime,
         NameComponent("auto_shoot"),
         MasterComponent{slime},
-        TransformComponent{{0.f, 0.f}, {500.f, 500.f}},
-        TriggerComponent{wheel::Circle<float>{0.f, 0.f, 500.f}},
+        TransformComponent{{0.f, 0.f}, {600.f, 600.f}},
+        TriggerComponent{wheel::Circle<float>{0.f, 0.f, 300.f}},
         RangeAttackComponent{
             .damage = 10,
             .interval = 500000,
             .projectile_speed = 500.f,
             .projectile_sprite_name = "bullet"
-        }
+        },
+        SpriteComponent{"auto_shoot"},
+        RenderComponent{1}
     );
 
     // auto house = entity_manager.add_entity(
