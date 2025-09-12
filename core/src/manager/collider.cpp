@@ -9,25 +9,30 @@
 namespace core {
 
 ColliderManager::ColliderManager() {
-    init(config.map_width + 20.f, config.map_height + 20.f);
+    init(config.map_width + 100.f, config.map_height + 100.f);
 }
 
 void ColliderManager::init(float w, float h) {
     static_quadtree_.clear();
     dynamic_quadtree_.clear();
 
-    auto rect = wheel::Rect<float>{0.f, 0.f, w, h};
+    auto rect = wheel::Rect<float>{-w / 2, -h / 2, w / 2, h / 2};
     static_quadtree_.set_rect(rect);
     dynamic_quadtree_.set_rect(rect);
 
     auto get_rect = [](wheel::Entity entity) -> wheel::Rect<float> {
-        const auto& size = ecs.has_component<ColliderComponent>(entity) ?
-            ecs.get_component<ColliderComponent>(entity).size :
-            ecs.get_component<TriggerComponent>(entity).size;
+        wheel::Vector2D<float> size;
+        if (ecs.has_component<ColliderComponent>(entity)) {
+            size = ecs.get_component<ColliderComponent>(entity).size;
+        } else if (ecs.has_component<TriggerComponent>(entity)) {
+            size = ecs.get_component<TriggerComponent>(entity).size;
+        } else if (ecs.has_component<TransformComponent>(entity)) {
+            size = ecs.get_component<TransformComponent>(entity).global.size;
+        }
 
         return {
             ecs.get_component<TransformComponent>(entity).global.position,
-            size
+            std::move(size)
         };
     };
     static_quadtree_.set_get_rect(get_rect);
@@ -66,6 +71,7 @@ std::vector<wheel::Entity> ColliderManager::query(wheel::Entity entity) const {
     auto static_entities = static_quadtree_.query(entity);
     entities.insert(entities.end(), static_entities.begin(), static_entities.end());
 
+    // TODO: and filter children
     auto parents = Hierarchy::get_all_parents(entity);
     return entities | 
         std::views::filter([&](wheel::Entity target) {

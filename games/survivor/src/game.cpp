@@ -25,9 +25,14 @@
 #include <core/system/render.hpp>
 #include <core/system/time.hpp>
 #include <core/system/del_entity_event.hpp>
+#include <core/system/collider.hpp>
 #include <core/util/util.hpp>
 #include <survivor/system/event.hpp>
+#include <survivor/system/range_attack.hpp>
 #include <survivor/component/hp.hpp>
+#include <survivor/component/master.hpp>
+#include <survivor/component/fraction.hpp>
+#include <survivor/component/range_attack.hpp>
 #include <survivor/tag/hp_bar.hpp>
 #include <survivor/event/hp_change.hpp>
 
@@ -42,13 +47,15 @@ SurvivorGame::SurvivorGame() {
         SDLEventSystem,
         TrackSystem,
         MoveSystem,
+        RangeAttackSystem,
         TriggerSystem,
         TransformSystem,
         AnimationSystem,
         RenderSystem,
         TimeSystem,
         EventSystem,
-        DelEntityEventSystem
+        DelEntityEventSystem,
+        ColliderSystem
     >(true);
 
     for (int i = 0; i <= 48; i++) {
@@ -86,7 +93,8 @@ SurvivorGame::SurvivorGame() {
         AnimationComponent{"slime-idle-down"},
         RenderComponent{1},
         InputTag{},
-        HPComponent{100}
+        HPComponent{100},
+        FractionComponent{0}
     );
     auto damage_aura = entity_manager.add_entity(
         slime,
@@ -94,7 +102,7 @@ SurvivorGame::SurvivorGame() {
         TransformComponent{{0.f, 0.f}},
         DataComponent{{{"entity2timer_id", std::unordered_map<wheel::Entity, wheel::timer_id_t>{}}}},
         TriggerComponent{
-            {100.f, 100.f},
+            {300.f, 300.f},
             true,
             [](wheel::Entity entity, wheel::Entity other) {
                 if (!ecs.get_component<TriggerComponent>(entity).stay_entities.contains(other)
@@ -129,6 +137,19 @@ SurvivorGame::SurvivorGame() {
                     entity2timer_id.erase(iter);
                 }
             }
+        }
+    );
+    auto auto_shoot = entity_manager.add_entity(
+        slime,
+        NameComponent("auto_shoot"),
+        MasterComponent{slime},
+        TransformComponent{{0.f, 0.f}, {500.f, 500.f}},
+        RangeAttackComponent{
+            .damage = 10,
+            .range = 500,
+            .interval = 500000,
+            .projectile_speed = 500.f,
+            .projectile_sprite_name = "bullet"
         }
     );
 
@@ -196,7 +217,8 @@ SurvivorGame::SurvivorGame() {
             AnimationComponent{"skeleton-idle-down"},
             RenderComponent{1},
             TrackComponent{slime},
-            HPComponent{100}
+            HPComponent{100},
+            FractionComponent{1}
         );
 
         return 1000000;

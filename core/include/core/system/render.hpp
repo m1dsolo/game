@@ -13,7 +13,10 @@ public:
 private:
     void render_texture_();
 
-    static const unsigned int MAX_LAYER = 2;  // begin from 0
+    // 0. map
+    // 1. player, enemy
+    // 2. hp_bar, bullet
+    static const unsigned int MAX_LAYER = 2;
 };
 
 }  // namespace core

@@ -4,15 +4,16 @@
 
 namespace survivor {
 
-class EventSystem : public core::BaseSystem {
+class RangeAttackSystem : public core::BaseSystem {
 public:
-    EventSystem() : BaseSystem("Event") {}
+    RangeAttackSystem() : BaseSystem("RangeAttack") {}
 
     void update_impl() override;
 
 private:
-    void hp_change_event_();
-    void death_event_();
+    void shoot_();
+    void collide_();
 };
 
 }  // namespace survivor
+

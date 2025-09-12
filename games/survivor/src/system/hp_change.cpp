@@ -22,17 +22,16 @@ void EventSystem::hp_change_event_() {
     for (auto [source, target, value] : ecs.get_events<HPChangeEvent>()) {
         if (ecs.has_component<HPComponent>(target)) {
             // update HP
-            auto& hp = ecs.get_component<HPComponent>(target).hp;
-            hp += value;
-            if (hp <= 0) {
+            auto& hp = ecs.get_component<HPComponent>(target);
+            hp.hp += value;
+            if (hp.hp <= 0) {
                 ecs.emplace_event<DeathEvent>(source, target);
             }
 
             // update HP bar
             for (auto child : ecs.get_component<ChildrenComponent>(target).children) {
                 if (ecs.has_components<HPBarTag, SpriteComponent>(child)) {
-                    auto& hp_bar = ecs.get_component<HPComponent>(target);
-                    auto bar_id = std::clamp(static_cast<int>(48.f * hp_bar.hp / hp_bar.max_hp), 0, 48);
+                    auto bar_id = std::clamp(static_cast<int>(std::round(48.f * hp.hp / hp.max_hp)), 0, 48);
                     ecs.get_component<SpriteComponent>(child).sprite = &SpriteManager::instance().get("hp_bar" + std::to_string(bar_id));
                 }
             }

@@ -3,6 +3,7 @@
 #include <core/global.hpp>
 #include <core/util/hierarchy.hpp>
 #include <core/manager/collider.hpp>
+#include <core/component/transform.hpp>
 #include <core/component/children.hpp>
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
@@ -35,6 +36,15 @@ public:
         if (ecs.has_component<ColliderComponent>(entity) || ecs.has_component<TriggerComponent>(entity)) {
             ColliderManager::instance().add(entity);
         }
+
+        // update transform
+        // TODO: encapsulation
+        auto& transform = ecs.get_component<TransformComponent>(entity);
+        const auto& parent_transform = ecs.get_component<TransformComponent>(parent);
+        transform.global.position = transform.local.position + parent_transform.global.position;
+        transform.global.size = transform.local.size * parent_transform.global.scale;
+        transform.global.scale = transform.local.scale * parent_transform.global.scale;
+        transform.global.angle = transform.local.angle + parent_transform.global.angle;
 
         if (add_entity_callback_) {
             add_entity_callback_(entity);

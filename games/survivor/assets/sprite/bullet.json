@@ -1,0 +1,16 @@
+{
+    "path": "sprite_sheet/bullet.png",
+    "size": [
+        48,
+        48
+    ],
+    "sprites": [
+        {
+            "name": "bullet",
+            "pos": [
+                0,
+                0
+            ]
+        }
+    ]
+}
