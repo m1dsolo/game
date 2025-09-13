@@ -29,6 +29,10 @@ public:
         return name2sprites_.at(name);
     }
 
+    bool has(const std::string& name) const {
+        return name2sprites_.find(name) != name2sprites_.end();
+    }
+
 private:
     SpriteManager();
     SpriteManager(const SpriteManager&) = delete;

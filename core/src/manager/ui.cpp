@@ -15,8 +15,8 @@ void UIManager::render() {
 }
 
 void UIManager::handle_event(const SDL_Event& event) {
-    for (auto& layer : layers_) {
-        if (layer->on_event(event)) {
+    for (auto iter = layers_.rbegin(); iter != layers_.rend(); iter++) {
+        if ((*iter)->on_event(event)) {
             break;
         }
     }

@@ -33,12 +33,13 @@
 #include <core/layer/game.hpp>
 #include <core/layer/menu.hpp>
 #include <core/util/util.hpp>
-#include <survivor/system/event.hpp>
-#include <survivor/system/range_attack.hpp>
 #include <survivor/component/hp.hpp>
 #include <survivor/component/master.hpp>
 #include <survivor/component/fraction.hpp>
 #include <survivor/component/range_attack.hpp>
+#include <survivor/system/event.hpp>
+#include <survivor/system/range_attack.hpp>
+#include <survivor/layer/ui.hpp>
 #include <survivor/tag/hp_bar.hpp>
 #include <survivor/event/hp_change.hpp>
 
@@ -254,7 +255,8 @@ SurvivorGame::SurvivorGame() {
 
     UIManager::instance().push<
         BackgroundLayer,
-        GameLayer
+        GameLayer,
+        UILayer
     >();
 }
 

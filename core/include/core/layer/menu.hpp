@@ -10,8 +10,6 @@ public:
     // void on_detach() override;
     void on_render() override;
     bool on_event(const SDL_Event& event) override;
-
-private:
 };
 
 }  // namespace core

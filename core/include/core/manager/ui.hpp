@@ -19,7 +19,7 @@ public:
 
     template <typename... Ts> requires (std::derived_from<Ts, Layer> && ...)
     void push() {
-        (push_front<Ts>(), ...);
+        (push_back<Ts>(), ...);
     }
 
     template <typename T> requires std::derived_from<T, Layer>

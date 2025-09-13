@@ -14,8 +14,8 @@ struct Sprite {
     ) : texture(texture), rect(rect), color(color) {
         if (rect.w == 0.f && rect.h == 0.f) {
             auto [w, h] = sdl::SDL::get_texture_size(texture);
-            rect.w = static_cast<float>(w);
-            rect.h = static_cast<float>(h);
+            this->rect.w = static_cast<float>(w);
+            this->rect.h = static_cast<float>(h);
         }
     }
 
