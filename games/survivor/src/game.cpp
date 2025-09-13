@@ -16,6 +16,7 @@
 #include <core/component/trigger.hpp>
 #include <core/component/data.hpp>
 #include <core/tag/input.hpp>
+#include <core/tag/camera.hpp>
 #include <core/system/sdl_event.hpp>
 #include <core/system/track.hpp>
 #include <core/system/move.hpp>
@@ -96,6 +97,13 @@ SurvivorGame::SurvivorGame() {
         HPComponent{100},
         FractionComponent{0}
     );
+    EntityManager::instance().add_entity(
+        slime,
+        NameComponent{"camera"},
+        TransformComponent{{0.f, 0.f}, {1920.f, 1080.f}},
+        CameraTag{}
+    );
+
     SpriteManager::instance().set("pink_filled_circle", Sprite{
         sdl::SDL::create_filled_circle_texture(300.f, sdl::SDL::PINK),
         {0.f, 0.f, 600.f, 600.f}

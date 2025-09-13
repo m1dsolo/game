@@ -15,11 +15,11 @@ EntityManager::EntityManager() {
         RootTag{}
     );
 
-    add_entity(
-        NameComponent{"camera"},
-        TransformComponent{{0.f, 0.f}, {1920.f, 1080.f}},
-        CameraTag{}
-    );
+    // add_entity(
+    //     NameComponent{"camera"},
+    //     TransformComponent{{0.f, 0.f}, {1920.f, 1080.f}},
+    //     CameraTag{}
+    // );
 }
 
 void EntityManager::del_entity(wheel::Entity entity) {
