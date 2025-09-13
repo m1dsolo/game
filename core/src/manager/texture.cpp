@@ -14,8 +14,14 @@ TextureManager::TextureManager() {
     // TODO: ugly code
     for (const auto& entry : fs::recursive_directory_iterator("assets/sprite_sheet")) {
         if (entry.is_regular_file() && entry.path().extension() == ".png") {
-            auto path = fs::relative(entry.path(), fs::read_symlink("assets/sprite_sheet"));
-            set("sprite_sheet" / path, sdl::SDL::load_image(entry.path()));
+            auto path = entry.path();
+            auto key = path;
+            if (fs::is_symlink(path)) {
+                key = fs::relative(path, fs::read_symlink("assets/sprite_sheet"));
+            } else {
+                key = fs::relative(path, "assets/sprite_sheet");
+            }
+            set("sprite_sheet" / key, sdl::SDL::load_image(path));
         }
     }
 }

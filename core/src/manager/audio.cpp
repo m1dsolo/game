@@ -42,7 +42,12 @@ AudioManager::AudioManager() : sound_tracks_(SOUND_TRACK_NUM, nullptr) {
             auto path = entry.path();
             if (path.extension() == ".wav" || path.extension() == ".ogg" || path.extension() == ".mp3") {
                 auto audio = MIX_LoadAudio(mixer_, path.string().c_str(), true);
-                auto key = fs::relative(path, fs::read_symlink("assets/music")).string();
+                std::string key;
+                if (fs::is_symlink(path)) {
+                    key = fs::relative(path, fs::read_symlink("assets/music")).string();
+                } else {
+                    key = fs::relative(path, "assets/music").string();
+                }
                 std::cout << "[begin load music...]" << key << std::endl;
                 music_path2audio_[std::move(key)] = audio;
             }
@@ -53,7 +58,12 @@ AudioManager::AudioManager() : sound_tracks_(SOUND_TRACK_NUM, nullptr) {
             auto path = entry.path();
             if (path.extension() == ".wav" || path.extension() == ".ogg" || path.extension() == ".mp3") {
                 auto audio = MIX_LoadAudio(mixer_, path.string().c_str(), true);
-                auto key = fs::relative(path, fs::read_symlink("assets/sound")).string();
+                std::string key;
+                if (fs::is_symlink(path)) {
+                    key = fs::relative(path, fs::read_symlink("assets/sound")).string();
+                } else {
+                    key = fs::relative(path, "assets/sound").string();
+                }
                 std::cout << "[begin load sound...]" << key << std::endl;
                 sound_path2audio_[std::move(key)] = audio;
             }

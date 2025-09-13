@@ -29,7 +29,9 @@
 #include <core/system/time.hpp>
 #include <core/system/del_entity_event.hpp>
 #include <core/system/collider.hpp>
+#include <core/layer/background.hpp>
 #include <core/layer/game.hpp>
+#include <core/layer/menu.hpp>
 #include <core/util/util.hpp>
 #include <survivor/system/event.hpp>
 #include <survivor/system/range_attack.hpp>
@@ -250,8 +252,10 @@ SurvivorGame::SurvivorGame() {
 
     AudioManager::instance().play("bgm.mp3");
 
-    auto& ui_manager = UIManager::instance();
-    ui_manager.push_back<GameLayer>();
+    UIManager::instance().push<
+        BackgroundLayer,
+        GameLayer
+    >();
 }
 
 }  // namespace survivor

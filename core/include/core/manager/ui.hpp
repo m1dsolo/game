@@ -17,9 +17,14 @@ public:
     void render();
     void handle_event(const SDL_Event& event);
 
+    template <typename... Ts> requires (std::derived_from<Ts, Layer> && ...)
+    void push() {
+        (push_front<Ts>(), ...);
+    }
+
     template <typename T> requires std::derived_from<T, Layer>
     void push_front() {
-        layers_.emplace_front(T{});
+        layers_.emplace_front(std::make_unique<T>());
         layers_.front()->on_attach();
     }
 
