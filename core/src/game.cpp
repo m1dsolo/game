@@ -20,7 +20,6 @@ Game::Game() {
     sdl::SDL::set_render_vsync(1);
 
     context.texture = sdl::SDL::create_texture(config.window_width, config.window_height);
-    context.exe_dir = std::filesystem::current_path();
 }
 
 void Game::run() {

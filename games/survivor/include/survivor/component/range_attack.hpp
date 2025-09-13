@@ -13,6 +13,7 @@ struct RangeAttackComponent {
     time_t interval = 1000000;
     float projectile_speed = 300.f;
     std::string projectile_sprite_name;
+    std::string range_attack_sound_name;
 
     time_t time = 0;
 };

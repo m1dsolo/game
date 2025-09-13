@@ -4,6 +4,7 @@
 #include <core/manager/system.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/time.hpp>
+#include <core/manager/audio.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
@@ -165,9 +166,10 @@ SurvivorGame::SurvivorGame() {
         TriggerComponent{wheel::Circle<float>{0.f, 0.f, 300.f}},
         RangeAttackComponent{
             .damage = 10,
-            .interval = 500000,
+            .interval = 200000,
             .projectile_speed = 500.f,
-            .projectile_sprite_name = "bullet"
+            .projectile_sprite_name = "bullet",
+            .range_attack_sound_name = "m4a1/shoot.wav"
         },
         SpriteComponent{"auto_shoot"},
         RenderComponent{1}
@@ -243,6 +245,8 @@ SurvivorGame::SurvivorGame() {
 
         return 1000000;
     });
+
+    AudioManager::instance().play("bgm.mp3");
 }
 
 }  // namespace survivor

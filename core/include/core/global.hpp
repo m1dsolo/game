@@ -5,8 +5,6 @@
 
 #include <ecs/ecs.hpp>
 
-#include <iostream>
-
 namespace core {
 
 inline wheel::ECS ecs;

@@ -3,6 +3,7 @@
 #include <core/manager/entity.hpp>
 #include <core/manager/collider.hpp>
 #include <core/manager/time.hpp>
+#include <core/manager/audio.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/direction.hpp>
@@ -77,6 +78,8 @@ void RangeAttackSystem::shoot_() {
             FractionComponent{fraction},
             MasterComponent{entity}
         );
+
+        AudioManager::instance().play(range_attack.range_attack_sound_name);
     }
 }
 
