@@ -5,6 +5,7 @@
 #include <core/manager/sprite.hpp>
 #include <core/manager/time.hpp>
 #include <core/manager/audio.hpp>
+#include <core/manager/ui.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
@@ -28,6 +29,7 @@
 #include <core/system/time.hpp>
 #include <core/system/del_entity_event.hpp>
 #include <core/system/collider.hpp>
+#include <core/layer/game.hpp>
 #include <core/util/util.hpp>
 #include <survivor/system/event.hpp>
 #include <survivor/system/range_attack.hpp>
@@ -247,6 +249,9 @@ SurvivorGame::SurvivorGame() {
     });
 
     AudioManager::instance().play("bgm.mp3");
+
+    auto& ui_manager = UIManager::instance();
+    ui_manager.push_back<GameLayer>();
 }
 
 }  // namespace survivor
