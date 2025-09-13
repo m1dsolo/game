@@ -62,6 +62,24 @@ bool GameLayer::on_event(const SDL_Event& event) {
             }
             break;
         }
+        // case SDL_Event_GAMEPAD_ADDED
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION: {
+            const auto& gaxis = event.gaxis;
+            switch (gaxis.axis) {
+                case SDL_GAMEPAD_AXIS_LEFTX: {
+                    float value = gaxis.value / 32767.0f;
+                    is_move_left_ = (value < -0.25);
+                    is_move_right_ = (value > 0.25);
+                    break;
+                }
+                case SDL_GAMEPAD_AXIS_LEFTY: {
+                    float value = gaxis.value / 32767.0f;
+                    is_move_up_ = (value < -0.25);
+                    is_move_down_ = (value > 0.25);
+                    break;
+                }
+            }
+        }
     }
 
     auto& direction = ecs.get_component<DirectionComponent>(player_entity_);
