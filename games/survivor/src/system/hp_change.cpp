@@ -3,7 +3,9 @@
 #include <core/manager/sprite.hpp>
 #include <core/component/children.hpp>
 #include <core/component/sprite.hpp>
+#include <core/tag/input.hpp>
 #include <core/event/del_entity.hpp>
+#include <survivor/manager/achievement.hpp>
 #include <survivor/component/hp.hpp>
 #include <survivor/event/hp_change.hpp>
 #include <survivor/event/death.hpp>
@@ -13,7 +15,13 @@ using namespace core;
 
 namespace survivor {
 
+EventSystem::EventSystem() : BaseSystem("Event") {
+}
+
 void EventSystem::update_impl() {
+    if (player_entity_ == wheel::NullEntity) {
+        player_entity_ = ecs.get_entity<InputTag>();
+    }
     hp_change_event_();
     death_event_();
 }
@@ -41,6 +49,9 @@ void EventSystem::hp_change_event_() {
 
 void EventSystem::death_event_() {
     for (auto [source, target] : ecs.get_events<DeathEvent>()) {
+        if (source == player_entity_) {
+            AchievementManager::instance().add_kill();
+        }
         if (ecs.has_entity(target)) {
             ecs.emplace_event<DelEntityEvent>(target);
         }

@@ -4,6 +4,10 @@
 
 #include <ecs/entity.hpp>
 
+#include <string>
+
+struct SDL_Texture;
+
 namespace survivor {
 
 class UILayer : public core::Layer {
@@ -15,6 +19,9 @@ public:
 
 private:
     wheel::Entity player_entity_;
+
+    std::string text_ = "";
+    SDL_Texture* texture_ = nullptr;
 };
 
 }  // namespace survivor

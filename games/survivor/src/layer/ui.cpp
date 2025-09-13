@@ -3,6 +3,7 @@
 #include <core/manager/texture.hpp>
 #include <core/component/transform.hpp>
 #include <core/tag/input.hpp>
+#include <survivor/manager/achievement.hpp>
 #include <survivor/component/hp.hpp>
 
 #include <sdl/sdl.hpp>
@@ -26,15 +27,17 @@ void UILayer::on_render() {
         return;
     }
 
-    const auto& hp = ecs.get_component<HPComponent>(player_entity_);
-    auto text = std::format("hp: {}/{}", hp.hp, hp.max_hp);
+    const auto& achievement_manager = AchievementManager::instance();
 
-    auto& texture_manager = TextureManager::instance();
-    if (!texture_manager.has(text)) {
-        texture_manager.set(text, sdl::SDL::create_texture(text, 32, sdl::SDL::ORANGE));
+    const auto& hp = ecs.get_component<HPComponent>(player_entity_);
+    auto text = std::format("hp:{}/{} kill:{}", hp.hp, hp.max_hp, achievement_manager.kill_num());
+    if (text_ != text) {
+        sdl::SDL::destroy(texture_);
+        texture_ = sdl::SDL::create_texture(text, 32, sdl::SDL::ORANGE);
+        text_ = std::move(text);
     }
-    auto texture = texture_manager.get(text);
-    auto [w, h] = sdl::SDL::get_texture_size(texture);
+
+    auto [w, h] = sdl::SDL::get_texture_size(texture_);
 
     SDL_FRect dst{
         x * config.virtual_window_width,
@@ -43,7 +46,7 @@ void UILayer::on_render() {
         h
     };
     auto guard = sdl::SDL::TargetGuard{context.texture};
-    sdl::SDL::render_texture(texture, nullptr, &dst);
+    sdl::SDL::render_texture(texture_, nullptr, &dst);
 }
 
 bool UILayer::on_event(const SDL_Event& event) {

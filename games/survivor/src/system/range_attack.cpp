@@ -76,7 +76,7 @@ void RangeAttackSystem::shoot_() {
             RenderComponent{2},
             TrackComponent{closest.first},
             FractionComponent{fraction},
-            MasterComponent{entity}
+            MasterComponent{master.entity}
         );
 
         AudioManager::instance().play(range_attack.range_attack_sound_name);
@@ -91,7 +91,7 @@ void RangeAttackSystem::collide_() {
                 ecs.get_component<FractionComponent>(target).fraction != fraction.fraction) {
 
                 auto source = entity;
-                if (!ecs.has_component<MasterComponent>(entity)) {
+                if (ecs.has_component<MasterComponent>(entity)) {
                     source = ecs.get_component<MasterComponent>(entity).entity;
                 }
 
