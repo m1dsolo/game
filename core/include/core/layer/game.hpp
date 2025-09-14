@@ -19,7 +19,8 @@ private:
     // 0. map
     // 1. player, enemy, range, aura
     // 2. hp_bar, bullet
-    static const unsigned int MAX_LAYER = 2;
+    // 3. ui
+    static const unsigned int MAX_LAYER = 3;
 
     bool is_move_up_{false};
     bool is_move_down_{false};

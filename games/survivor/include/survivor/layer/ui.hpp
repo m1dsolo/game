@@ -19,6 +19,7 @@ public:
 
 private:
     wheel::Entity player_entity_;
+    wheel::Entity text_entity_;
 
     std::string text_ = "";
     SDL_Texture* texture_ = nullptr;

@@ -2,6 +2,7 @@
 
 #include <wheel/geometry.hpp>
 #include <sdl/sdl.hpp>
+#include <core/util/coordinate.hpp>
 
 namespace core {
 
@@ -25,11 +26,13 @@ struct TransformComponent {
     TransformComponent(
         wheel::Vector2D<float> position = {0.f, 0.f},
         wheel::Vector2D<float> size = {0.f, 0.f},
-        wheel::Vector2D<float> scale = {1.f, 1.f}
-    ) : local{position, size, scale} {}
+        wheel::Vector2D<float> scale = {1.f, 1.f},
+        Coordinate::Type type = Coordinate::Type::WORLD
+    ) : local{position, size, scale}, type(type) {}
 
     Transform local;
     Transform global;
+    Coordinate::Type type;
 };
 
 }  // namespace core

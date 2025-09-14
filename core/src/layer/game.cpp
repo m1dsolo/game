@@ -27,7 +27,10 @@ void GameLayer::on_render() {
 
             // SDL_SetTextureColorModFloat(sprite.texture, sprite.color[0], sprite.color[1], sprite.color[2]);
             // SDL_SetTextureAlphaModFloat(sprite.texture, sprite.color[3]);
-            auto dst = Coordinate::world2screen(transform.global.rect());
+            SDL_FRect dst = transform.global.rect();
+            if (transform.type == Coordinate::Type::WORLD) {
+                dst = Coordinate::world2screen(dst);
+            }
             sdl::SDL::render_texture(sprite.sprite->texture, &sprite.sprite->rect, &dst);
             // SDL_RenderTextureRotated(
             //     sdl::SDL::renderer(),

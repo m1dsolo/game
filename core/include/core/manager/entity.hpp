@@ -55,6 +55,8 @@ public:
 
     void del_entity(wheel::Entity entity);
 
+    void update_text(wheel::Entity entity, const std::string& text);
+
 private:
     EntityManager();
     EntityManager(const EntityManager&) = delete;

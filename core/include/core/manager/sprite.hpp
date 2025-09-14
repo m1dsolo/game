@@ -15,9 +15,9 @@ class SpriteManager : public wheel::Singleton<SpriteManager> {
     friend wheel::Singleton<SpriteManager>;
 
 public:
-    void set(const std::string& name, const Sprite& sprite) {
+    const Sprite& set(const std::string& name, const Sprite& sprite) {
         std::cout << "sprite_set: " << name << " " << sprite.texture << " " << sprite.rect.x << " " << sprite.rect.y << " " << sprite.rect.w << " " << sprite.rect.h << std::endl;
-        name2sprites_[name] = sprite;
+        return name2sprites_[name] = sprite;
     }
 
     const Sprite& get(const std::string& name) const {
@@ -32,6 +32,8 @@ public:
     bool has(const std::string& name) const {
         return name2sprites_.find(name) != name2sprites_.end();
     }
+
+    void del(const std::string& name);
 
 private:
     SpriteManager();
