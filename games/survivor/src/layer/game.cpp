@@ -33,7 +33,7 @@ namespace survivor {
 void GameLayer::on_attach() {
     for (int i = 0; i <= 48; i++) {
         auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
-        auto target = sdl::SDL::TargetGuard{texture};
+        auto target = sdl::SDL::RenderTargetGuard{texture};
         auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
         sdl::SDL::render_filled_rect(&dst, sdl::SDL::GREEN);
         SpriteManager::instance().set("hp_bar" + std::to_string(i), {
@@ -155,7 +155,7 @@ void GameLayer::on_attach() {
     float map_height = config.map_height;
 
     SpriteManager::instance().set("map", Sprite{
-        sdl::SDL::create_texture(map_width, map_height, sdl::SDL::WHITE),
+        sdl::SDL::create_texture(map_width, map_height, SDL_FColor{204.f / 255.f, 1.f, 153.f / 255.f, 1.f}),
         {0.f, 0.f, map_width, map_height}
     });
     auto map = entity_manager.add_entity(

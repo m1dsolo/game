@@ -5,6 +5,7 @@
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/render.hpp>
+#include <core/tag/input.hpp>
 
 namespace core {
 
@@ -18,13 +19,16 @@ void RenderSystem::operator()() {
 
             // TODO: not render out of screen?
 
-            // SDL_SetTextureColorModFloat(sprite.texture, sprite.color[0], sprite.color[1], sprite.color[2]);
-            // SDL_SetTextureAlphaModFloat(sprite.texture, sprite.color[3]);
+            if (render.blend_mode_add_cnt > 0) {
+                sdl::SDL::set_blend_mode(sprite.sprite->texture, SDL_BLENDMODE_ADD);
+            }
+            sdl::SDL::TextureColorGuard color_guard(sprite.sprite->texture, sprite.sprite->color);
             auto dst = transform.global.rect();
             if (transform.type == Coordinate::Type::WORLD) {
                 dst = Coordinate::world2screen(dst);
             }
             sdl::SDL::render_texture(sprite.sprite->texture, &sprite.sprite->rect, &dst);
+            sdl::SDL::set_blend_mode(sprite.sprite->texture, SDL_BLENDMODE_BLEND);
             // SDL_RenderTextureRotated(
             //     sdl::SDL::renderer(),
             //     sprite.texture,

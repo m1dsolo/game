@@ -35,7 +35,7 @@ public:
 
     void del(const std::string& name);
 
-    const Sprite& get(SDL_Color color) {
+    const Sprite& get(SDL_FColor color) {
         auto key = std::to_string(color.r) + "_" + std::to_string(color.g) + "_" + std::to_string(color.b) + "_" + std::to_string(color.a);
         if (!has(key)) {
             set(key, Sprite{

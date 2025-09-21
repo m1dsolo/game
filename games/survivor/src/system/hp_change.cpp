@@ -76,6 +76,17 @@ void hp_change_event_() {
                     ecs.get_component<SpriteComponent>(child).sprite = &SpriteManager::instance().get("hp_bar" + std::to_string(bar_id));
                 }
             }
+
+            // get hit effect
+            if (value < 0) {
+                ecs.get_component<RenderComponent>(target).blend_mode_add_cnt++;
+                TimeManager::instance().timer().add(100000, [target]() {
+                    if (ecs.has_entity(target)) {
+                        ecs.get_component<RenderComponent>(target).blend_mode_add_cnt--;
+                    }
+                    return 0;
+                });
+            }
         }
     }
 }

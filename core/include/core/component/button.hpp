@@ -9,9 +9,9 @@ namespace core {
 struct ButtonComponent {
     std::function<void()> callback;
 
-    SDL_Color normal_color = {230, 230, 230, 255};
-    SDL_Color hover_color = {150, 190, 250, 255};
-    SDL_Color click_color = {200, 160, 250, 255};
+    SDL_FColor normal_color = {230.f / 255.f, 230.f / 255.f, 230.f / 255.f, 1.f};
+    SDL_FColor hover_color = {150.f / 255.f, 190.f / 255.f, 250.f / 255.f, 1.f};
+    SDL_FColor click_color = {200.f / 255.f, 160.f / 255.f, 250.f / 255.f, 1.f};
 
     enum class State {
         NORMAL,
