@@ -35,6 +35,17 @@ public:
 
     void del(const std::string& name);
 
+    const Sprite& get(SDL_Color color) {
+        auto key = std::to_string(color.r) + "_" + std::to_string(color.g) + "_" + std::to_string(color.b) + "_" + std::to_string(color.a);
+        if (!has(key)) {
+            set(key, Sprite{
+                sdl::SDL::create_texture(1.f, 1.f, color),
+                {0.f, 0.f, 1.f, 1.f}
+            });
+        }
+        return get(key);
+    }
+
 private:
     SpriteManager();
     SpriteManager(const SpriteManager&) = delete;

@@ -3,7 +3,7 @@
 
 namespace core {
 
-void ColliderSystem::update_impl() {
+void ColliderSystem::operator()() {
     ColliderManager::instance().update();
 }
 

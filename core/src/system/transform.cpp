@@ -6,11 +6,14 @@
 
 namespace core {
 
-void TransformSystem::update_impl() {
+void update_transform_();
+void update_transform_(wheel::Entity entity, const TransformComponent& parent_transform);
+
+void TransformSystem::operator()() {
     update_transform_();
 }
 
-void TransformSystem::update_transform_() {
+void update_transform_() {
     auto root = Hierarchy::root();
     auto& transform = ecs.get_component<TransformComponent>(root);
     for (auto entity : Hierarchy::entities()) {
@@ -18,7 +21,7 @@ void TransformSystem::update_transform_() {
     }
 }
 
-void TransformSystem::update_transform_(wheel::Entity entity, const TransformComponent& parent_transform) {
+void update_transform_(wheel::Entity entity, const TransformComponent& parent_transform) {
     if (!ecs.has_component<TransformComponent>(entity)) {
         return;
     }

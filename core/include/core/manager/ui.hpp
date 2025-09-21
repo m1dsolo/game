@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/animation.hpp>
+#include <core/manager/layer.hpp>
 #include <core/layer/layer.hpp>
 
 #include <wheel/singleton.hpp>
@@ -14,24 +14,17 @@ class UIManager : public wheel::Singleton<UIManager> {
     friend wheel::Singleton<UIManager>;
 
 public:
-    void render();
+    void update();
     void handle_event(const SDL_Event& event);
 
     template <typename... Ts> requires (std::derived_from<Ts, Layer> && ...)
-    void push() {
-        (push_back<Ts>(), ...);
-    }
-
-    template <typename T> requires std::derived_from<T, Layer>
     void push_front() {
-        layers_.emplace_front(std::make_unique<T>());
-        layers_.front()->on_attach();
+        (push_front_<Ts>(), ...);
     }
 
-    template <typename T> requires std::derived_from<T, Layer>
+    template <typename... Ts> requires (std::derived_from<Ts, Layer> && ...)
     void push_back() {
-        layers_.emplace_back(std::make_unique<T>());
-        layers_.back()->on_attach();
+        (push_back_<Ts>(), ...);
     }
 
     template <typename T> requires std::derived_from<T, Layer>
@@ -49,6 +42,18 @@ public:
     void pop_back();
 
 private:
+    template <typename T> requires std::derived_from<T, Layer>
+    void push_front_() {
+        layers_.emplace_front(LayerManager::instance().create_layer<T>());
+        layers_.front()->on_attach();
+    }
+
+    template <typename T> requires std::derived_from<T, Layer>
+    void push_back_() {
+        layers_.emplace_back(LayerManager::instance().create_layer<T>());
+        layers_.back()->on_attach();
+    }
+
     UIManager() = default;
     ~UIManager();
     UIManager(const UIManager&) = delete;

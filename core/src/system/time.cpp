@@ -4,7 +4,7 @@
 
 namespace core {
 
-void TimeSystem::update_impl() {
+void TimeSystem::operator()() {
     auto& time_manager = TimeManager::instance();
     auto& timer = time_manager.timer();
 

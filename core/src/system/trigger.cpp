@@ -5,7 +5,7 @@
 
 namespace core {
 
-void TriggerSystem::update_impl() {
+void TriggerSystem::operator()() {
     for (auto [entity, trigger] : ecs.get_entity_and_components<TriggerComponent>()) {
         auto current_entities = ColliderManager::instance().query(entity) | 
             std::ranges::to<std::unordered_set<wheel::Entity>>();

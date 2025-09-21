@@ -1,13 +1,17 @@
 #pragma once
 
 #include <core/global.hpp>
-#include <core/util/hierarchy.hpp>
+#include <core/manager/sprite.hpp>
 #include <core/manager/collider.hpp>
 #include <core/component/transform.hpp>
+#include <core/component/sprite.hpp>
 #include <core/component/children.hpp>
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
 #include <core/component/trigger.hpp>
+#include <core/component/button.hpp>
+#include <core/component/text.hpp>
+#include <core/util/hierarchy.hpp>
 #include <wheel/singleton.hpp>
 
 #include <functional>
@@ -46,6 +50,16 @@ public:
         transform.global.scale = transform.local.scale * parent_transform.global.scale;
         transform.global.angle = transform.local.angle + parent_transform.global.angle;
 
+        if (ecs.has_component<ButtonComponent>(entity)) {
+            auto& button = ecs.get_component<ButtonComponent>(entity);
+            auto& sprite = ecs.get_component<SpriteComponent>(entity);
+            sprite.sprite = &SpriteManager::instance().get(button.normal_color);
+        }
+
+        if (ecs.has_component<TextComponent>(entity)) {
+            update_text_(entity, ecs.get_component<TextComponent>(entity).text);
+        }
+
         if (add_entity_callback_) {
             add_entity_callback_(entity);
         }
@@ -57,11 +71,14 @@ public:
 
     void update_text(wheel::Entity entity, const std::string& text);
 
+    void add_button_entity(const std::string& text);
+
 private:
     EntityManager();
     EntityManager(const EntityManager&) = delete;
 
     void add_child_(wheel::Entity parent, wheel::Entity child);
+    void update_text_(wheel::Entity entity, const std::string& text);
 
     std::function<void(wheel::Entity)> add_entity_callback_;
 };

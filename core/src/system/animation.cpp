@@ -6,9 +6,13 @@
 #include <core/manager/animation.hpp>
 #include <core/manager/time.hpp>
 
+#include <wheel/geometry.hpp>
+
 namespace core {
 
-void AnimationSystem::update_impl() {
+std::string direction_to_string_(const wheel::Vector2D<float>& direction);
+
+void AnimationSystem::operator()() {
     auto& animation_manager = AnimationManager::instance();
 
     for (auto [animation] : ecs.get_components<AnimationComponent>()) {
@@ -34,7 +38,7 @@ void AnimationSystem::update_impl() {
     }
 }
 
-std::string AnimationSystem::direction_to_string_(const wheel::Vector2D<float>& direction) {
+std::string direction_to_string_(const wheel::Vector2D<float>& direction) {
     if (std::abs(direction[1]) >= std::abs(direction[0])) {
         if (direction[1] < 0) {
             return "up";

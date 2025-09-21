@@ -6,10 +6,24 @@
 #include <core/component/speed.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/collider.hpp>
+#include <core/tag/input.hpp>
 
 namespace core {
 
-void MoveSystem::update_impl() {
+void MoveSystem::operator()() {
+    auto player_entity = ecs.get_entity<InputTag>();
+    if (ecs.has_component<DirectionComponent>(player_entity)) {
+        auto& direction = ecs.get_component<DirectionComponent>(player_entity);
+        auto d = wheel::Vector2D<float>{
+            static_cast<float>(is_move_right) - is_move_left,
+            static_cast<float>(is_move_down) - is_move_up,
+        }.normalize();
+        direction.move = d;
+        if (d != 0.f) {
+            direction.look = d;
+        }
+    }
+
     auto& time_manager = TimeManager::instance();
     auto time = static_cast<float>(time_manager.dt()) / time_manager.timer().TIME_UNIT_PER_SECOND;
     for (auto [entity, transform, speed, direction]

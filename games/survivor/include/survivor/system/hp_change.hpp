@@ -2,9 +2,8 @@
 
 namespace survivor {
 
-struct RangeAttackSystem {
+struct HPChangeSystem {
     void operator()();
 };
 
 }  // namespace survivor
-

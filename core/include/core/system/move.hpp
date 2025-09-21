@@ -1,14 +1,14 @@
 #pragma once
 
-#include <core/system/base.hpp>
-
 namespace core {
 
-class MoveSystem : public BaseSystem {
-public:
-    MoveSystem() : BaseSystem("Move") {}
+struct MoveSystem {
+    void operator()();
 
-    void update_impl() override;
+    inline static bool is_move_up{false};
+    inline static bool is_move_down{false};
+    inline static bool is_move_left{false};
+    inline static bool is_move_right{false};
 };
 
 }  // namespace core

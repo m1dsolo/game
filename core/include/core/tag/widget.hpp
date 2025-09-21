@@ -2,8 +2,6 @@
 
 namespace core {
 
-struct TransformSystem {
-    void operator()();
-};
+struct WidgetTag {};
 
 }  // namespace core

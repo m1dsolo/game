@@ -1,17 +1,16 @@
 #pragma once
 
-#include <core/layer/layer.hpp>
+#include <core/layer/menu.hpp>
 
 namespace core {
 
-class GameLayer : public Layer {
+class MainMenuLayer : public MenuLayer {
 public:
-    GameLayer() : Layer("GameLayer") {}
+    MainMenuLayer() : MenuLayer("MainMenuLayer") {}
 
     void on_attach() override;
     void on_detach() override;
     // void on_update() override;
-    bool on_event(const SDL_Event& event) override;
 };
 
 }  // namespace core

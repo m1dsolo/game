@@ -27,6 +27,20 @@ wheel::Entity Hierarchy::detach_entity_from_parent(wheel::Entity entity) {
     return parent;
 }
 
+void Hierarchy::attach_entity_to_parent(wheel::Entity entity, wheel::Entity parent) {
+    if (!ecs.has_component<ChildrenComponent>(parent)) {
+        ecs.add_component(parent, ChildrenComponent{});
+    }
+    ecs.get_component<ChildrenComponent>(parent).children.emplace_back(entity);
+
+    if (ecs.has_component<ParentComponent>(entity)) {
+        detach_entity_from_parent(entity);
+        ecs.get_component<ParentComponent>(entity).parent = parent;
+    } else {
+        ecs.add_component(entity, ParentComponent{parent});
+    }
+}
+
 std::unordered_set<wheel::Entity> Hierarchy::get_all_parents(wheel::Entity entity) {
     auto parents = std::unordered_set<wheel::Entity>{};
     while (ecs.has_component<ParentComponent>(entity)) {

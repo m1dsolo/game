@@ -1,14 +1,11 @@
-#include <core/layer/background.hpp>
+#include <core/layer/global.hpp>
 #include <core/global.hpp>
 
 #include <sdl/sdl.hpp>
 
 namespace core {
 
-void BackgroundLayer::on_render() {
-}
-
-bool BackgroundLayer::on_event(const SDL_Event& event) {
+bool GlobalLayer::on_event(const SDL_Event& event) {
     switch (event.type) {
         case SDL_EVENT_QUIT: context.running = false;
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED: {

@@ -3,7 +3,7 @@
 
 namespace core {
 
-void SDLEventSystem::update_impl() {
+void SDLEventSystem::operator()() {
     while (SDL_PollEvent(&event_)) {
         UIManager::instance().handle_event(event_);
     }

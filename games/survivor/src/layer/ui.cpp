@@ -20,20 +20,9 @@ namespace survivor {
 
 void UILayer::on_attach() {
     player_entity_ = ecs.get_entity<InputTag>();
-    text_entity_ = EntityManager::instance().add_entity(
-        TextComponent{"", 32, sdl::SDL::ORANGE},
-        TransformComponent{
-            {0.1f * config.virtual_window_width, 0.1f * config.virtual_window_height},
-            {0.f, 0.f},
-            {1.f, 1.f},
-            Coordinate::Type::SCREEN
-        },
-        SpriteComponent{},
-        RenderComponent{3}
-    );
 }
 
-void UILayer::on_render() {
+void UILayer::on_update() {
     if (!ecs.has_component<HPComponent>(player_entity_)) {
         return;
     }

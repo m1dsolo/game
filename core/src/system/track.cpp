@@ -6,7 +6,7 @@
 
 namespace core {
 
-void TrackSystem::update_impl() {
+void TrackSystem::operator()() {
     for (auto [entity, transform, direction, track]
         :ecs.get_entity_and_components<TransformComponent, DirectionComponent, TrackComponent>()) {
         auto& pos0 = transform.global.position;

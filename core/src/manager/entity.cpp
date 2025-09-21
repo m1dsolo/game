@@ -18,11 +18,11 @@ EntityManager::EntityManager() {
         RootTag{}
     );
 
-    // add_entity(
-    //     NameComponent{"camera"},
-    //     TransformComponent{{0.f, 0.f}, {1920.f, 1080.f}},
-    //     CameraTag{}
-    // );
+    add_entity(
+        NameComponent{"camera"},
+        TransformComponent{{0.f, 0.f}, {1920.f, 1080.f}},
+        CameraTag{}
+    );
 }
 
 void EntityManager::del_entity(wheel::Entity entity) {
@@ -38,19 +38,25 @@ void EntityManager::del_entity(wheel::Entity entity) {
 
 void EntityManager::update_text(wheel::Entity entity, const std::string& text) {
     auto& t = ecs.get_component<TextComponent>(entity);
-    auto& sprite = ecs.get_component<SpriteComponent>(entity);
-    auto& sprite_manager = SpriteManager::instance();
-    auto& transform = ecs.get_component<TransformComponent>(entity);
     if (t.text != text) {
         if (t.text.length() > 0) {
-            sprite_manager.del(t.text);
+            SpriteManager::instance().del(t.text);
         }
-        auto texture = sdl::SDL::create_texture(text, t.font_size, t.color);
-        auto [w, h] = sdl::SDL::get_texture_size(texture);
-        transform.local.size = transform.global.size = {w, h};
-        sprite.sprite = &sprite_manager.set(text, {texture});
-        t.text = std::move(text);
+        update_text_(entity, text);
     }
+}
+
+void EntityManager::update_text_(wheel::Entity entity, const std::string& text) {
+    auto& t = ecs.get_component<TextComponent>(entity);
+    auto& sprite = ecs.get_component<SpriteComponent>(entity);
+    auto& transform = ecs.get_component<TransformComponent>(entity);
+
+    auto texture = sdl::SDL::create_texture(text, t.font_size, t.color);
+    auto [w, h] = sdl::SDL::get_texture_size(texture);
+    transform.local.size = transform.global.size = {w, h};
+    transform.type = Coordinate::Type::SCREEN;
+    sprite.sprite = &SpriteManager::instance().set(text, {texture});
+    t.text = std::move(text);
 }
 
 void EntityManager::add_child_(wheel::Entity parent, wheel::Entity child) {

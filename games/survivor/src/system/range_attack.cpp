@@ -24,12 +24,15 @@ using namespace core;
 
 namespace survivor {
 
-void RangeAttackSystem::update_impl() {
+void shoot_();
+void collide_();
+
+void RangeAttackSystem::operator()() {
     shoot_();
     collide_();
 }
 
-void RangeAttackSystem::shoot_() {
+void shoot_() {
     for (auto [entity, range_attack, transform, master]
             : ecs.get_entity_and_components<RangeAttackComponent, TransformComponent, MasterComponent>()) {
         range_attack.time += TimeManager::instance().dt();
@@ -83,7 +86,7 @@ void RangeAttackSystem::shoot_() {
     }
 }
 
-void RangeAttackSystem::collide_() {
+void collide_() {
     for (auto [entity, projectile, fraction]
             : ecs.get_entity_and_components<ProjectileComponent, FractionComponent>()) {
         for (auto target : ColliderManager::instance().query(entity)) {

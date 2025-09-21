@@ -1,4 +1,4 @@
-#include <survivor/system/event.hpp>
+#include <survivor/system/hp_change.hpp>
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/sprite.hpp>
@@ -23,18 +23,15 @@ using namespace core;
 
 namespace survivor {
 
-EventSystem::EventSystem() : BaseSystem("Event") {
-}
+void hp_change_event_();
+void death_event_();
 
-void EventSystem::update_impl() {
-    if (player_entity_ == wheel::NullEntity) {
-        player_entity_ = ecs.get_entity<InputTag>();
-    }
+void HPChangeSystem::operator()() {
     hp_change_event_();
     death_event_();
 }
 
-void EventSystem::hp_change_event_() {
+void hp_change_event_() {
     for (auto [source, target, value] : ecs.get_events<HPChangeEvent>()) {
         if (ecs.has_component<HPComponent>(target)) {
             // update HP
@@ -83,9 +80,10 @@ void EventSystem::hp_change_event_() {
     }
 }
 
-void EventSystem::death_event_() {
+void death_event_() {
+    auto player_entity = ecs.get_entity<InputTag>();
     for (auto [source, target] : ecs.get_events<DeathEvent>()) {
-        if (source == player_entity_) {
+        if (source == player_entity) {
             AchievementManager::instance().add_kill();
         }
         if (ecs.has_entity(target)) {

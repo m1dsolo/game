@@ -8,9 +8,9 @@ UIManager::~UIManager() {
     }
 }
 
-void UIManager::render() {
+void UIManager::update() {
     for (auto& layer : layers_) {
-        layer->on_render();
+        layer->on_update();
     }
 }
 

@@ -2,7 +2,7 @@
 
 namespace core {
 
-struct TransformSystem {
+struct UpdateSystem {
     void operator()();
 };
 

@@ -1,5 +1,15 @@
 #include <core/game.hpp>
 #include <core/global.hpp>
+#include <core/manager/ui.hpp>
+#include <core/system/sdl_event.hpp>
+#include <core/system/update.hpp>
+#include <core/system/transform.hpp>
+#include <core/system/animation.hpp>
+#include <core/system/render.hpp>
+#include <core/system/time.hpp>
+#include <core/system/del_entity_event.hpp>
+#include <core/layer/global.hpp>
+#include <core/layer/main_menu.hpp>
 
 #include <wheel/log.hpp>
 #include <sdl/sdl.hpp>
@@ -25,6 +35,21 @@ Game::Game() {
 }
 
 void Game::run() {
+    ecs.add_systems<
+        SDLEventSystem,
+        UpdateSystem,
+        TransformSystem,
+        AnimationSystem,
+        RenderSystem,
+        TimeSystem,
+        DelEntityEventSystem
+    >();
+
+    UIManager::instance().push_back<
+        GlobalLayer,
+        MainMenuLayer
+    >();
+
     while (context.running) {
         sdl::SDL::set_render_target(context.texture);
         sdl::SDL::set_color(sdl::SDL::BLACK);

@@ -16,6 +16,7 @@ public:
     static std::vector<wheel::Entity> entities();
 
     static wheel::Entity detach_entity_from_parent(wheel::Entity entity);
+    static void attach_entity_to_parent(wheel::Entity entity, wheel::Entity parent);
     static std::unordered_set<wheel::Entity> get_all_parents(wheel::Entity entity);
 };
 
