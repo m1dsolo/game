@@ -77,7 +77,7 @@ void shoot_() {
             SpriteComponent{range_attack.projectile_sprite_name},
             SpeedComponent{range_attack.projectile_speed},
             RenderComponent{2},
-            TrackComponent{closest.first},
+            // TrackComponent{closest.first},
             FractionComponent{fraction},
             MasterComponent{master.entity}
         );
@@ -90,6 +90,9 @@ void collide_() {
     for (auto [entity, projectile, fraction]
             : ecs.get_entity_and_components<ProjectileComponent, FractionComponent>()) {
         for (auto target : ColliderManager::instance().query(entity)) {
+            if (projectile.last == target) {
+                continue;
+            }
             if (ecs.has_components<HPComponent, FractionComponent>(target) &&
                 ecs.get_component<FractionComponent>(target).fraction != fraction.fraction) {
 
@@ -98,6 +101,7 @@ void collide_() {
                     source = ecs.get_component<MasterComponent>(entity).entity;
                 }
 
+                projectile.last = target;
                 ecs.emplace_event<HPChangeEvent>(source, target, -projectile.damage);
                 ecs.emplace_event<DelEntityEvent>(entity);
                 break;

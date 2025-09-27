@@ -75,7 +75,7 @@ void AnimationManager::set(const Animation& clip) {
 }
 
 const Animation& AnimationManager::get(const Animation::ID& id) {
-    std::cout << "animation_get: " << id.name << "-" << id.state << std::endl;
+    // std::cout << "animation_get: " << id.name << "-" << id.state << std::endl;
     if (clip_map_.find(id) != clip_map_.end()) {
         return clip_map_.at(id);
     }
