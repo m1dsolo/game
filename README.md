@@ -1,4 +1,3 @@
 ## Demo
 
-[demo](https://github.com/user-attachments/assets/cec5ccf2-3a02-4fca-9a0b-a5cd78bad9a8)
-
+[demo](https://github.com/user-attachments/assets/34211f93-4aef-4cd2-9bdd-38161a941671)
