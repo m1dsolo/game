@@ -1,0 +1,16 @@
+{
+    "path": "sprite_sheet/coin.png",
+    "size": [
+        16,
+        16
+    ],
+    "sprites": [
+        {
+            "name": "coin",
+            "pos": [
+                0,
+                0
+            ]
+        }
+    ]
+}

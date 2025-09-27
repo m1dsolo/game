@@ -17,15 +17,13 @@
 #include <core/tag/input.hpp>
 #include <core/tag/camera.hpp>
 #include <survivor/manager/achievement.hpp>
+#include <survivor/manager/enemy.hpp>
 #include <survivor/component/hp.hpp>
 #include <survivor/component/fraction.hpp>
 #include <survivor/component/master.hpp>
 #include <survivor/component/range_attack.hpp>
 #include <survivor/tag/hp_bar.hpp>
 #include <survivor/event/hp_change.hpp>
-#include <core/util/util.hpp>
-
-#include <wheel/random.hpp>
 
 using namespace core;
 
@@ -172,69 +170,6 @@ void GameLayer::on_attach() {
         RenderComponent{0}
     );
 
-    auto left_boundary = entity_manager.add_entity(
-        NameComponent{"left_boundary"},
-        TransformComponent{{-map_width / 2 - 5.f, 0.f}, {10.f, map_height}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}}, false}
-    );
-
-    auto right_boundary = entity_manager.add_entity(
-        NameComponent{"right_boundary"},
-        TransformComponent{{map_width / 2 + 5.f, 0.f}, {10.f, map_height}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}}, false}
-    );
-
-    auto top_boundary = entity_manager.add_entity(
-        NameComponent{"top_boundary"},
-        TransformComponent{{0.f, map_height / 2 + 5.f}, {map_width, 10.f}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}, false}
-    );
-
-    auto bottom_boundary = entity_manager.add_entity(
-        NameComponent{"bottom_boundary"},
-        TransformComponent{{0.f, -map_height / 2 - 5.f}, {map_width, 10.f}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}, false}
-    );
-
-    std::vector<wheel::Entity> boundaries = {
-        left_boundary, right_boundary, top_boundary, bottom_boundary
-    };
-    TimeManager::instance().timer().add(1000000, [bunny, boundaries = std::move(boundaries)]() {
-        auto boundary = boundaries[wheel::Random::instance().uniform(0, static_cast<int>(boundaries.size()) - 1)];
-
-        const auto& transform = ecs.get_component<TransformComponent>(boundary).global;
-        auto pos = Util::random_pick_point(wheel::Rect<float>{transform.position, transform.size});
-        // EntityManager::instance().add_entity(
-        //     NameComponent{"skeleton"},
-        //     TransformComponent{pos, {48.f, 48.f}},
-        //     SpriteComponent{},
-        //     DirectionComponent{},
-        //     SpeedComponent{100.f},
-        //     ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {24.f, 24.f}}},
-        //     AnimationComponent{"skeleton-idle-down"},
-        //     RenderComponent{1},
-        //     TrackComponent{bunny},
-        //     HPComponent{100},
-        //     FractionComponent{1}
-        // );
-        EntityManager::instance().add_entity(
-            NameComponent{"thief"},
-            TransformComponent{pos, {64.f, 64.f}},
-            SpriteComponent{},
-            DirectionComponent{},
-            SpeedComponent{100.f},
-            ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
-            AnimationComponent{{"thief"}},
-            AnimationFSMComponent{"basic"},
-            RenderComponent{1},
-            TrackComponent{bunny},
-            HPComponent{100},
-            FractionComponent{1}
-        );
-
-        return 1000000;
-    });
-
     player_entity_ = bunny;
     text_entity_ = EntityManager::instance().add_entity(
         TextComponent{"", 32, sdl::SDL::ORANGE},
@@ -249,6 +184,8 @@ void GameLayer::on_attach() {
     );
 
     core::GameLayer::on_attach();
+
+    EnemyManager::instance().generate_waves();
 }
 
 // TODO
