@@ -21,7 +21,9 @@ TextureManager::TextureManager() {
             } else {
                 key = fs::relative(path, "assets/sprite_sheet");
             }
-            set("sprite_sheet" / key, sdl::SDL::load_image(path));
+            auto texture = sdl::SDL::load_image(path);
+            sdl::SDL::set_texture_scalemode(texture, SDL_SCALEMODE_NEAREST);
+            set("sprite_sheet" / key, texture);
         }
     }
 }

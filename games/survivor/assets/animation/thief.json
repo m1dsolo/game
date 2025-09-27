@@ -1,0 +1,32 @@
+{
+    "name": "thief",
+    "path": "sprite_sheet/thief.png",
+    "duration": 0.25,
+    "loop": true,
+    "size": [
+        32,
+        32
+    ],
+    "step": [
+        32,
+        0
+    ],
+    "animations": [
+        {
+            "state": "idle",
+            "start": [
+                0,
+                0
+            ],
+            "count": 4
+        },
+        {
+            "state": "walk",
+            "start": [
+                0,
+                64
+            ],
+            "count": 6
+        }
+    ]
+}

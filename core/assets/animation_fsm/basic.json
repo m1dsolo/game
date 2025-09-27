@@ -1,0 +1,24 @@
+{
+    "name": "basic",
+    "transitions": [
+        {
+            "from": "start",
+            "to": "idle",
+            "conditions": []
+        },
+        {
+            "from": "idle",
+            "to": "walk",
+            "conditions": [
+                "is_moving"
+            ]
+        },
+        {
+            "from": "walk",
+            "to": "idle",
+            "conditions": [
+                "is_idle"
+            ]
+        }
+    ]
+}

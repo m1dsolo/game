@@ -27,7 +27,7 @@ void RenderSystem::operator()() {
             if (transform.type == Coordinate::Type::WORLD) {
                 dst = Coordinate::world2screen(dst);
             }
-            sdl::SDL::render_texture(sprite.sprite->texture, &sprite.sprite->rect, &dst);
+            sdl::SDL::render_texture(sprite.sprite->texture, &sprite.sprite->rect, &dst, sprite.flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             sdl::SDL::set_blend_mode(sprite.sprite->texture, SDL_BLENDMODE_BLEND);
             // SDL_RenderTextureRotated(
             //     sdl::SDL::renderer(),

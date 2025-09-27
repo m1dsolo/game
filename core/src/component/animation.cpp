@@ -3,7 +3,7 @@
 
 namespace core {
 
-AnimationComponent::AnimationComponent(const std::string& key)
-    : animation(&AnimationManager::instance().get(key)) {}
+AnimationComponent::AnimationComponent(const Animation::ID& id)
+    : animation(&AnimationManager::instance().get(id)) {}
 
 }  // namespace core

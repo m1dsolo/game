@@ -8,6 +8,7 @@
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/animation.hpp>
+#include <core/component/animation_fsm.hpp>
 #include <core/component/render.hpp>
 #include <core/component/trigger.hpp>
 #include <core/component/collider.hpp>
@@ -31,7 +32,7 @@ using namespace core;
 namespace survivor {
 
 void GameLayer::on_attach() {
-    for (int i = 0; i <= 48; i++) {
+    for (int i = 0; i <= 47; i++) {
         auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
         auto target = sdl::SDL::RenderTargetGuard{texture};
         auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
@@ -41,6 +42,11 @@ void GameLayer::on_attach() {
             {0.f, 0.f, 48.f, 12.f}
         });
     }
+    // hidden hp bar when hp is full
+    SpriteManager::instance().set("hp_bar48", {
+        nullptr,
+        {0.f, 0.f, 48.f, 12.f}
+    });
 
     auto& entity_manager = EntityManager::instance();
     entity_manager.set_add_entity_callback([](wheel::Entity entity) {
@@ -56,14 +62,15 @@ void GameLayer::on_attach() {
         }
     });
 
-    auto slime = entity_manager.add_entity(
-        NameComponent{"slime"},
-        TransformComponent{{0.f, 0.f}, {48.f, 48.f}},
+    auto bunny = entity_manager.add_entity(
+        NameComponent{"bunny"},
+        TransformComponent{{0.f, 0.f}, {64.f, 64.f}},
         SpriteComponent{},
         DirectionComponent{},
         SpeedComponent{200.f},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {24.f, 24.f}}},
-        AnimationComponent{"slime-idle-down"},
+        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
+        AnimationComponent{{"bunny"}},
+        AnimationFSMComponent{"basic"},
         RenderComponent{1},
         InputTag{},
         HPComponent{100},
@@ -71,14 +78,14 @@ void GameLayer::on_attach() {
     );
 
     auto camera = ecs.get_entity<CameraTag>();
-    Hierarchy::attach_entity_to_parent(camera, slime);
+    Hierarchy::attach_entity_to_parent(camera, bunny);
 
     SpriteManager::instance().set("pink_filled_circle", Sprite{
         sdl::SDL::create_filled_circle_texture(300.f, sdl::SDL::PINK),
         {0.f, 0.f, 600.f, 600.f}
     });
     auto damage_aura = entity_manager.add_entity(
-        slime,
+        bunny,
         NameComponent{"damage_aura"},
         TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
         SpriteComponent{"pink_filled_circle"},
@@ -127,9 +134,9 @@ void GameLayer::on_attach() {
         {0.f, 0.f, 600.f, 600.f}
     });
     auto auto_shoot = entity_manager.add_entity(
-        slime,
+        bunny,
         NameComponent("auto_shoot"),
-        MasterComponent{slime},
+        MasterComponent{bunny},
         TransformComponent{{0.f, 0.f}, {600.f, 600.f}},
         TriggerComponent{wheel::Circle<float>{0.f, 0.f, 300.f}},
         RangeAttackComponent{
@@ -192,21 +199,35 @@ void GameLayer::on_attach() {
     std::vector<wheel::Entity> boundaries = {
         left_boundary, right_boundary, top_boundary, bottom_boundary
     };
-    TimeManager::instance().timer().add(1000000, [slime, boundaries = std::move(boundaries)]() {
+    TimeManager::instance().timer().add(1000000, [bunny, boundaries = std::move(boundaries)]() {
         auto boundary = boundaries[wheel::Random::instance().uniform(0, static_cast<int>(boundaries.size()) - 1)];
 
         const auto& transform = ecs.get_component<TransformComponent>(boundary).global;
         auto pos = Util::random_pick_point(wheel::Rect<float>{transform.position, transform.size});
+        // EntityManager::instance().add_entity(
+        //     NameComponent{"skeleton"},
+        //     TransformComponent{pos, {48.f, 48.f}},
+        //     SpriteComponent{},
+        //     DirectionComponent{},
+        //     SpeedComponent{100.f},
+        //     ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {24.f, 24.f}}},
+        //     AnimationComponent{"skeleton-idle-down"},
+        //     RenderComponent{1},
+        //     TrackComponent{bunny},
+        //     HPComponent{100},
+        //     FractionComponent{1}
+        // );
         EntityManager::instance().add_entity(
-            NameComponent{"skeleton"},
-            TransformComponent{pos, {48.f, 48.f}},
+            NameComponent{"thief"},
+            TransformComponent{pos, {64.f, 64.f}},
             SpriteComponent{},
             DirectionComponent{},
             SpeedComponent{100.f},
-            ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {24.f, 24.f}}},
-            AnimationComponent{"skeleton-idle-down"},
+            ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
+            AnimationComponent{{"thief"}},
+            AnimationFSMComponent{"basic"},
             RenderComponent{1},
-            TrackComponent{slime},
+            TrackComponent{bunny},
             HPComponent{100},
             FractionComponent{1}
         );
@@ -214,7 +235,7 @@ void GameLayer::on_attach() {
         return 1000000;
     });
 
-    player_entity_ = slime;
+    player_entity_ = bunny;
     text_entity_ = EntityManager::instance().add_entity(
         TextComponent{"", 32, sdl::SDL::ORANGE},
         TransformComponent{

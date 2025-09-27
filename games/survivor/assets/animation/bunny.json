@@ -1,0 +1,31 @@
+{
+    "name": "bunny",
+    "path": "sprite_sheet/bunny.png",
+    "duration": 0.25,
+    "loop": true,
+    "size": [
+        32,
+        32
+    ],
+    "step": [
+        32,
+        0
+    ],
+    "count": 4,
+    "animations": [
+        {
+            "state": "idle",
+            "start": [
+                0,
+                0
+            ]
+        },
+        {
+            "state": "walk",
+            "start": [
+                0,
+                32
+            ]
+        }
+    ]
+}

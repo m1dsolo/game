@@ -9,6 +9,7 @@ struct SpriteComponent {
     SpriteComponent(SDL_FColor color);
 
     const Sprite* sprite;
+    bool flip = false;
 };
 
 }  // namespace core

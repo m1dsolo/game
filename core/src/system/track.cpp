@@ -12,7 +12,7 @@ void TrackSystem::operator()() {
         auto& pos0 = transform.global.position;
         if (ecs.has_entity(track.target)) {
             auto& pos1 = ecs.get_component<TransformComponent>(track.target).global.position;
-            direction.move = (pos1 - pos0).normalize();
+            direction.move = direction.look = (pos1 - pos0).normalize();
         } else {
             ecs.del_component<TrackComponent>(entity);
         }

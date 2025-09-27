@@ -3,7 +3,6 @@
 namespace core {
 
 struct AnimationSystem {
-public:
     void operator()();
 };
 
