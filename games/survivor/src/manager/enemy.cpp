@@ -2,6 +2,7 @@
 #include <survivor/component/hp.hpp>
 #include <survivor/component/fraction.hpp>
 #include <survivor/component/loot.hpp>
+#include <survivor/tag/obstacle.hpp>
 #include <survivor/collider_layer.hpp>
 
 #include <core/global.hpp>
@@ -51,43 +52,47 @@ EnemyManager::EnemyManager() {
 
     auto left_boundary = entity_manager.add_entity(
         NameComponent{"left_boundary"},
-        TransformComponent{{-map_width / 2 - 5.f, 0.f}, {10.f, map_height}},
+        TransformComponent{{-map_width / 2 - 20.f, 0.f}, {40.f, map_height}},
         ColliderComponent{
-            wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}},
+            wheel::Rect<float>{{0.f, 0.f}, {40.f, map_height}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
-        RigidbodyTag{}
+        RigidbodyTag{},
+        ObstacleTag{}
     );
     auto right_boundary = entity_manager.add_entity(
         NameComponent{"right_boundary"},
-        TransformComponent{{map_width / 2 + 5.f, 0.f}, {10.f, map_height}},
+        TransformComponent{{map_width / 2 + 20.f, 0.f}, {40.f, map_height}},
         ColliderComponent{
-            wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}},
+            wheel::Rect<float>{{0.f, 0.f}, {40.f, map_height}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
-        RigidbodyTag{}
+        RigidbodyTag{},
+        ObstacleTag{}
     );
     auto top_boundary = entity_manager.add_entity(
         NameComponent{"top_boundary"},
-        TransformComponent{{0.f, map_height / 2 + 5.f}, {map_width, 10.f}},
+        TransformComponent{{0.f, map_height / 2 + 20.f}, {map_width, 40.f}},
         ColliderComponent{
-            wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}},
+            wheel::Rect<float>{{0.f, 0.f}, {map_width, 40.f}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
-        RigidbodyTag{}
+        RigidbodyTag{},
+        ObstacleTag{}
     );
     auto bottom_boundary = entity_manager.add_entity(
         NameComponent{"bottom_boundary"},
-        TransformComponent{{0.f, -map_height / 2 - 5.f}, {map_width, 10.f}},
+        TransformComponent{{0.f, -map_height / 2 - 20.f}, {map_width, 40.f}},
         ColliderComponent{
-            wheel::Rect<float>{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}},
+            wheel::Rect<float>{wheel::Rect<float>{{0.f, 0.f}, {map_width, 40.f}}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
-        RigidbodyTag{}
+        RigidbodyTag{},
+        ObstacleTag{}
     );
 
     boundaries_ = { left_boundary, right_boundary, top_boundary, bottom_boundary };

@@ -20,6 +20,7 @@
 #include <survivor/component/hp.hpp>
 #include <survivor/component/fraction.hpp>
 #include <survivor/component/master.hpp>
+#include <survivor/tag/obstacle.hpp>
 #include <survivor/event/hp_change.hpp>
 #include <survivor/collider_layer.hpp>
 
@@ -46,6 +47,7 @@ void shoot_() {
         }
     }
 
+    // find targets in range
     // TODO: no need to check fraction for now because collider group already checked
     std::unordered_map<wheel::Entity, std::vector<wheel::Entity>> in_range_mp;
     for (const auto [trigger, target] : ecs.get_events<TriggerStayEvent>()) {
@@ -54,6 +56,7 @@ void shoot_() {
         }
     }
 
+    // shoot the closest target
     for (const auto& [trigger, targets] : in_range_mp) {
         auto& range_attack = ecs.get_component<RangeAttackComponent>(trigger);
         if (range_attack.time < range_attack.interval) {
@@ -94,15 +97,24 @@ void shoot_() {
 
 void collide_() {
     for (const auto [entity, target] : ecs.get_events<TriggerStayEvent>()) {
-        if (ecs.has_components<ProjectileComponent>(entity) && ecs.has_component<HPComponent>(target)) {
+        if (ecs.has_components<ProjectileComponent>(entity)) {
             auto& projectile = ecs.get_component<ProjectileComponent>(entity);
-            if (projectile.last == target) {
-                continue;
+
+            // hit the target
+            if (ecs.has_component<HPComponent>(target)) {
+                if (projectile.last == target) {
+                    continue;
+                }
+
+                auto master = ecs.get_component<MasterComponent>(entity).entity;
+                ecs.emplace_event<HPChangeEvent>(master, target, -projectile.damage);
+                ecs.emplace_event<DelEntityEvent>(entity);
             }
 
-            auto master = ecs.get_component<MasterComponent>(entity).entity;
-            ecs.emplace_event<HPChangeEvent>(master, target, -projectile.damage);
-            ecs.emplace_event<DelEntityEvent>(entity);
+            // hit obstacle
+            if (ecs.has_component<ObstacleTag>(target)) {
+                ecs.emplace_event<DelEntityEvent>(entity);
+            }
         }
     }
 }
