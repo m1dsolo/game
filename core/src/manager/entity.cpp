@@ -54,7 +54,7 @@ void EntityManager::update_text_(wheel::Entity entity, const std::string& text) 
     auto texture = sdl::SDL::create_texture(text, t.font_size, t.color);
     auto [w, h] = sdl::SDL::get_texture_size(texture);
     transform.local.size = transform.global.size = {w, h};
-    transform.type = Coordinate::Type::SCREEN;
+    transform.type = Coordinate::Type::Screen;
     sprite.sprite = &SpriteManager::instance().set(text, {texture});
     t.text = std::move(text);
 }

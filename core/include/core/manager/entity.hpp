@@ -8,7 +8,6 @@
 #include <core/component/children.hpp>
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
-#include <core/component/trigger.hpp>
 #include <core/component/button.hpp>
 #include <core/component/text.hpp>
 #include <core/util/hierarchy.hpp>

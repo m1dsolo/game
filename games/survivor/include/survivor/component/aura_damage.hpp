@@ -1,0 +1,10 @@
+#pragma once
+
+namespace survivor {
+
+struct AuraDamageComponent {
+    int damage = 0;
+    float interval = 1000000.f;
+};
+
+}  // namespace survivor

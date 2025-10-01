@@ -1,6 +1,7 @@
 #pragma once
 
-#include <ecs/entity.hpp>
+#include <core/global.hpp>
+
 #include <wheel/singleton.hpp>
 #include <wheel/quadtree.hpp>
 
@@ -18,16 +19,24 @@ public:
     void update();
     bool is_colliding(wheel::Entity entity);
 
-    std::vector<wheel::Entity> query(wheel::Entity entity) const;
+    std::vector<std::pair<wheel::Entity, wheel::Entity>> query_all() const;
+
+    template <typename... ComponentTypes>
+    std::vector<wheel::Entity> query(wheel::Entity entity) const {
+        return query_(entity) |
+            std::views::filter([&](wheel::Entity target) {
+                return ecs.has_components<ComponentTypes...>(target);
+            }) |
+            std::ranges::to<std::vector<wheel::Entity>>();
+    }
 
 private:
     ColliderManager();
     ColliderManager(const ColliderManager&) = delete;
 
-    bool is_dynamic_(wheel::Entity entity) const;
+    std::vector<wheel::Entity> query_(wheel::Entity entity) const;
 
-    wheel::QuadTree<wheel::Entity, std::function<wheel::Rect<float>(wheel::Entity)>> static_quadtree_;
-    wheel::QuadTree<wheel::Entity, std::function<wheel::Rect<float>(wheel::Entity)>> dynamic_quadtree_;
+    wheel::QuadTree<wheel::Entity, std::function<wheel::Rect<float>(wheel::Entity)>> quadtree_;
 };
 
 }  // namespace core

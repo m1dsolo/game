@@ -24,7 +24,7 @@ void RenderSystem::operator()() {
             }
             sdl::SDL::TextureColorGuard color_guard(sprite.sprite->texture, sprite.sprite->color);
             auto dst = transform.global.rect();
-            if (transform.type == Coordinate::Type::WORLD) {
+            if (transform.type == Coordinate::Type::World) {
                 dst = Coordinate::world2screen(dst);
             }
             sdl::SDL::render_texture(sprite.sprite->texture, &sprite.sprite->rect, &dst, sprite.flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);

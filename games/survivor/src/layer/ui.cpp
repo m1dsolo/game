@@ -9,6 +9,7 @@
 #include <core/tag/input.hpp>
 #include <survivor/manager/achievement.hpp>
 #include <survivor/component/hp.hpp>
+#include <survivor/component/level.hpp>
 
 #include <sdl/sdl.hpp>
 
@@ -29,7 +30,8 @@ void UILayer::on_update() {
 
     const auto& achievement_manager = AchievementManager::instance();
     const auto& hp = ecs.get_component<HPComponent>(player_entity_);
-    auto text = std::format("hp:{}/{} kill:{}", hp.hp, hp.max_hp, achievement_manager.kill_num());
+    const auto& level = ecs.get_component<LevelComponent>(player_entity_);
+    auto text = std::format("level: {} exp: {}/{} hp:{}/{} kill:{}", level.level, level.exp, 10, hp.hp, hp.max_hp, achievement_manager.kill_num());
     EntityManager::instance().update_text(text_entity_, text);
 }
 

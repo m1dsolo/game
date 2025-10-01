@@ -3,7 +3,7 @@
 #include <core/component/transform.hpp>
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
-#include <core/component/trigger.hpp>
+#include <core/tag/rigidbody.hpp>
 #include <core/util/hierarchy.hpp>
 
 namespace core {
@@ -13,87 +13,58 @@ ColliderManager::ColliderManager() {
 }
 
 void ColliderManager::init(float w, float h) {
-    static_quadtree_.clear();
-    dynamic_quadtree_.clear();
+    quadtree_.clear();
 
     auto rect = wheel::Rect<float>{-w / 2, -h / 2, w / 2, h / 2};
-    static_quadtree_.set_rect(rect);
-    dynamic_quadtree_.set_rect(rect);
+    quadtree_.set_rect(rect);
 
     auto get_rect = [](wheel::Entity entity) -> wheel::Rect<float> {
-        wheel::Vector2D<float> size;
-        if (ecs.has_component<ColliderComponent>(entity)) {
-            size = ecs.get_component<ColliderComponent>(entity).size();
-        } else if (ecs.has_component<TriggerComponent>(entity)) {
-            size = ecs.get_component<TriggerComponent>(entity).size();
-        }
-
         return {
             ecs.get_component<TransformComponent>(entity).global.position,
-            std::move(size)
+            ecs.get_component<ColliderComponent>(entity).size()
         };
     };
-    static_quadtree_.set_get_rect(get_rect);
-    dynamic_quadtree_.set_get_rect(get_rect);
+    quadtree_.set_get_rect(get_rect);
 }
 
 void ColliderManager::add(wheel::Entity entity) {
-    if (is_dynamic_(entity)) {
-        dynamic_quadtree_.add(entity);
-    } else {
-        static_quadtree_.add(entity);
-    }
+    quadtree_.add(entity);
 }
 
 void ColliderManager::remove(wheel::Entity entity) {
-    if (is_dynamic_(entity)) {
-        dynamic_quadtree_.remove(entity);
-    } else {
-        static_quadtree_.remove(entity);
-    }
+    quadtree_.remove(entity);
 }
 
 void ColliderManager::update() {
-    dynamic_quadtree_.update();
+    quadtree_.update();
 }
 
 bool ColliderManager::is_colliding(wheel::Entity entity) {
-    if (!ecs.has_component<ColliderComponent>(entity)) {
+    if (!ecs.has_components<ColliderComponent, RigidbodyTag>(entity)) {
         return false;
     }
-    return !query(entity).empty();
+    return !query<RigidbodyTag>(entity).empty();
 }
 
-std::vector<wheel::Entity> ColliderManager::query(wheel::Entity entity) const {
-    auto entities = dynamic_quadtree_.query(entity);
-    auto static_entities = static_quadtree_.query(entity);
-    entities.insert(entities.end(), static_entities.begin(), static_entities.end());
+std::vector<std::pair<wheel::Entity, wheel::Entity>> ColliderManager::query_all() const {
+    return quadtree_.query_all() |
+        std::views::filter([&](std::pair<wheel::Entity, wheel::Entity> p) {
+            const auto& collider0 = ecs.get_component<ColliderComponent>(p.first);
+            const auto& collider1 = ecs.get_component<ColliderComponent>(p.second);
+            return collider0.is_overlapping(collider1);
+        }) |
+        std::ranges::to<std::vector<std::pair<wheel::Entity, wheel::Entity>>>();
+}
 
-    // TODO: and filter children
-    const auto& component = ecs.has_component<ColliderComponent>(entity) ? 
-        ecs.get_component<ColliderComponent>(entity) : 
-        ecs.get_component<TriggerComponent>(entity);
-    auto parents = Hierarchy::get_all_parents(entity);
+std::vector<wheel::Entity> ColliderManager::query_(wheel::Entity entity) const {
+    auto entities = quadtree_.query(entity);
+
+    const auto& collider = ecs.get_component<ColliderComponent>(entity);
     return entities | 
         std::views::filter([&](wheel::Entity target) {
-            return target != entity &&
-                !parents.contains(target) &&
-                ecs.has_component<ColliderComponent>(target) &&
-                component.is_overlapping(
-                    ecs.get_component<ColliderComponent>(target)
-                );
+            return collider.is_overlapping(ecs.get_component<ColliderComponent>(target));
         }) |
         std::ranges::to<std::vector<wheel::Entity>>();
-}
-
-bool ColliderManager::is_dynamic_(wheel::Entity entity) const {
-    bool dynamic = false;
-    if (ecs.has_component<ColliderComponent>(entity)) {
-        dynamic = ecs.get_component<ColliderComponent>(entity).dynamic;
-    } else if (ecs.has_component<TriggerComponent>(entity)) {
-        dynamic = ecs.get_component<TriggerComponent>(entity).dynamic;
-    }
-    return dynamic;
 }
 
 }  // namespace core

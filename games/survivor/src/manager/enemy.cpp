@@ -1,6 +1,8 @@
 #include <survivor/manager/enemy.hpp>
 #include <survivor/component/hp.hpp>
 #include <survivor/component/fraction.hpp>
+#include <survivor/component/loot.hpp>
+#include <survivor/collider_layer.hpp>
 
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
@@ -16,6 +18,7 @@
 #include <core/component/render.hpp>
 #include <core/component/track.hpp>
 #include <core/tag/input.hpp>
+#include <core/tag/rigidbody.hpp>
 
 #include <wheel/random.hpp>
 
@@ -49,22 +52,42 @@ EnemyManager::EnemyManager() {
     auto left_boundary = entity_manager.add_entity(
         NameComponent{"left_boundary"},
         TransformComponent{{-map_width / 2 - 5.f, 0.f}, {10.f, map_height}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}}, false}
+        ColliderComponent{
+            wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}},
+            ColliderLayer::Obstacle,
+            ColliderLayer::Player | ColliderLayer::Enemy
+        },
+        RigidbodyTag{}
     );
     auto right_boundary = entity_manager.add_entity(
         NameComponent{"right_boundary"},
         TransformComponent{{map_width / 2 + 5.f, 0.f}, {10.f, map_height}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}}, false}
+        ColliderComponent{
+            wheel::Rect<float>{{0.f, 0.f}, {10.f, map_height}},
+            ColliderLayer::Obstacle,
+            ColliderLayer::Player | ColliderLayer::Enemy
+        },
+        RigidbodyTag{}
     );
     auto top_boundary = entity_manager.add_entity(
         NameComponent{"top_boundary"},
         TransformComponent{{0.f, map_height / 2 + 5.f}, {map_width, 10.f}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}, false}
+        ColliderComponent{
+            wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}},
+            ColliderLayer::Obstacle,
+            ColliderLayer::Player | ColliderLayer::Enemy
+        },
+        RigidbodyTag{}
     );
     auto bottom_boundary = entity_manager.add_entity(
         NameComponent{"bottom_boundary"},
         TransformComponent{{0.f, -map_height / 2 - 5.f}, {map_width, 10.f}},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}, false}
+        ColliderComponent{
+            wheel::Rect<float>{wheel::Rect<float>{{0.f, 0.f}, {map_width, 10.f}}},
+            ColliderLayer::Obstacle,
+            ColliderLayer::Player | ColliderLayer::Enemy
+        },
+        RigidbodyTag{}
     );
 
     boundaries_ = { left_boundary, right_boundary, top_boundary, bottom_boundary };
@@ -90,13 +113,19 @@ wheel::Entity EnemyManager::generate(const std::string& name) const {
         SpriteComponent{},
         DirectionComponent{},
         SpeedComponent{config.speed},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {32.f, 32.f}}},
+        ColliderComponent{
+            wheel::Rect<float>{{0.f, 0.f}, {32.f, 32.f}},
+            ColliderLayer::Enemy,
+            ColliderLayer::Player
+        },
+        RigidbodyTag{},
         AnimationComponent{{name}},
         AnimationFSMComponent{"basic"},
         RenderComponent{1},
         TrackComponent{ecs.get_entity<InputTag>()},
         HPComponent{config.hp},
-        FractionComponent{1}
+        FractionComponent{1},
+        LootComponent{config.loots}
     );
 
     return 1000000;

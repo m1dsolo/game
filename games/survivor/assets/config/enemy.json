@@ -3,12 +3,17 @@
         "name": "thief",
         "hp": 100,
         "speed": 50,
-        "rewards": [
+        "loots": [
             {
-                "name": "coin",
-                "count": [
-                    1,
-                    3
+                "items": [
+                    {
+                        "name": "coin",
+                        "count": [
+                            1,
+                            3
+                        ],
+                        "weight": 1
+                    }
                 ],
                 "chance": 1
             }

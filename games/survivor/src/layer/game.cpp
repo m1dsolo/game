@@ -10,20 +10,23 @@
 #include <core/component/animation.hpp>
 #include <core/component/animation_fsm.hpp>
 #include <core/component/render.hpp>
-#include <core/component/trigger.hpp>
 #include <core/component/collider.hpp>
 #include <core/component/track.hpp>
-#include <core/component/data.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/camera.hpp>
+#include <core/tag/rigidbody.hpp>
 #include <survivor/manager/achievement.hpp>
 #include <survivor/manager/enemy.hpp>
 #include <survivor/component/hp.hpp>
 #include <survivor/component/fraction.hpp>
-#include <survivor/component/master.hpp>
 #include <survivor/component/range_attack.hpp>
+#include <survivor/component/inventory.hpp>
+#include <survivor/component/pick_item.hpp>
+#include <survivor/component/aura_damage.hpp>
+#include <survivor/component/master.hpp>
 #include <survivor/tag/hp_bar.hpp>
 #include <survivor/event/hp_change.hpp>
+#include <survivor/collider_layer.hpp>
 
 using namespace core;
 
@@ -66,21 +69,28 @@ void GameLayer::on_attach() {
         SpriteComponent{},
         DirectionComponent{},
         SpeedComponent{200.f},
-        ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
+        ColliderComponent{
+            wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}},
+            ColliderLayer::Player,
+            ColliderLayer::Enemy | ColliderLayer::Obstacle
+        },
+        RigidbodyTag{},
         AnimationComponent{{"bunny"}},
         AnimationFSMComponent{"basic"},
         RenderComponent{1},
         InputTag{},
         HPComponent{100},
-        FractionComponent{0}
+        FractionComponent{0},
+        InventoryComponent{10},
+        PickItemComponent{200.f}
     );
 
     auto camera = ecs.get_entity<CameraTag>();
     Hierarchy::attach_entity_to_parent(camera, bunny);
 
     SpriteManager::instance().set("pink_filled_circle", Sprite{
-        sdl::SDL::create_filled_circle_texture(300.f, sdl::SDL::PINK),
-        {0.f, 0.f, 600.f, 600.f}
+        sdl::SDL::create_filled_circle_texture(150.f, sdl::SDL::PINK),
+        {0.f, 0.f, 300.f, 300.f}
     });
     auto damage_aura = entity_manager.add_entity(
         bunny,
@@ -88,45 +98,15 @@ void GameLayer::on_attach() {
         TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
         SpriteComponent{"pink_filled_circle"},
         RenderComponent{1},
-        DataComponent{{{"entity2timer_id", std::unordered_map<wheel::Entity, wheel::timer_id_t>{}}}},
-        TriggerComponent{
-            wheel::Circle<float>{0.f, 0.f, 150.f},
-            true,
-            [](wheel::Entity entity, wheel::Entity other) {
-                if (!ecs.get_component<TriggerComponent>(entity).stay_entities.contains(other)
-                        && ecs.has_component<HPComponent>(other)) {
-                    auto timer_id = TimeManager::instance().timer().add(1000000, [entity, other]() {
-                        if (!ecs.has_component<TriggerComponent>(entity)) {
-                            return 0;
-                        }
-                        if (!ecs.get_component<TriggerComponent>(entity).stay_entities.contains(other)) {
-                            return 0;
-                        }
-
-                        if (ecs.has_component<HPComponent>(other)) {
-                            ecs.emplace_event<HPChangeEvent>(entity, other, -15);
-                        }
-                        return 1000000;
-                    });
-                    auto& entity2timer_id = std::any_cast<std::unordered_map<wheel::Entity, wheel::timer_id_t>&>(
-                        ecs.get_component<DataComponent>(entity).data["entity2timer_id"]
-                    );
-                    entity2timer_id[other] = timer_id;
-                }
-            },
-            [](wheel::Entity entity, wheel::Entity other) {
-            },
-            [](wheel::Entity entity, wheel::Entity other) {
-                auto& entity2timer_id = std::any_cast<std::unordered_map<wheel::Entity, wheel::timer_id_t>&>(
-                    ecs.get_component<DataComponent>(entity).data["entity2timer_id"]
-                );
-                if (auto iter = entity2timer_id.find(other); iter != entity2timer_id.end()) {
-                    TimeManager::instance().timer().remove(iter->second);
-                    entity2timer_id.erase(iter);
-                }
-            }
-        }
+        ColliderComponent{
+            wheel::Circle<float>{150.f},
+            ColliderLayer::Trigger,
+            ColliderLayer::Enemy
+        },
+        AuraDamageComponent{15, 500000.f},
+        MasterComponent{bunny}
     );
+
     SpriteManager::instance().set("auto_shoot", Sprite{
         sdl::SDL::create_circle_texture(300.f, sdl::SDL::RED),
         {0.f, 0.f, 600.f, 600.f}
@@ -134,9 +114,12 @@ void GameLayer::on_attach() {
     auto auto_shoot = entity_manager.add_entity(
         bunny,
         NameComponent("auto_shoot"),
-        MasterComponent{bunny},
-        TransformComponent{{0.f, 0.f}, {600.f, 600.f}},
-        TriggerComponent{wheel::Circle<float>{0.f, 0.f, 300.f}},
+        TransformComponent{{0.f, 0.f}, {500.f, 500.f}},
+        ColliderComponent{
+            wheel::Circle<float>{250.f},
+            ColliderLayer::Trigger,
+            ColliderLayer::Enemy
+        },
         RangeAttackComponent{
             .damage = 10,
             .interval = 200000,
@@ -177,7 +160,7 @@ void GameLayer::on_attach() {
             {0.1f * config.virtual_window_width, 0.1f * config.virtual_window_height},
             {0.f, 0.f},
             {1.f, 1.f},
-            Coordinate::Type::SCREEN
+            Coordinate::Type::Screen
         },
         SpriteComponent{},
         RenderComponent{4}

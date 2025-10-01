@@ -7,8 +7,8 @@ namespace core {
 class Coordinate {
 public:
     enum class Type {
-        WORLD,
-        SCREEN
+        World,
+        Screen
     };
 
     static SDL_FRect world2screen(const SDL_FRect& world_rect);

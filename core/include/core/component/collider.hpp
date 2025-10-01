@@ -6,9 +6,12 @@
 
 namespace core {
 
+using ColliderLayerType = uint32_t;
+
 struct ColliderComponent {
     std::variant<wheel::Rect<float>, wheel::Circle<float>> shape;
-    bool dynamic = true;
+    ColliderLayerType layer = 0;
+    ColliderLayerType mask = 0;
 
     wheel::Vector2D<float> size() const {
         return std::visit([](const auto& shape) {

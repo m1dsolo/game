@@ -5,7 +5,7 @@
 namespace core {
 
 struct ParentComponent {
-    wheel::Entity parent;
+    wheel::Entity entity;
 };
 
 }  // namespace core

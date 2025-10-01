@@ -27,7 +27,7 @@ struct TransformComponent {
         wheel::Vector2D<float> position = {0.f, 0.f},
         wheel::Vector2D<float> size = {0.f, 0.f},
         wheel::Vector2D<float> scale = {1.f, 1.f},
-        Coordinate::Type type = Coordinate::Type::WORLD
+        Coordinate::Type type = Coordinate::Type::World
     ) : local{position, size, scale}, type(type) {}
 
     Transform local;

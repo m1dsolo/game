@@ -29,7 +29,7 @@ void MainMenuLayer::on_attach() {
                     {config.virtual_window_width / 2.f, config.virtual_window_height / 2.f - 50.f},
                     {200.f, 80.f},
                     {1.f, 1.f},
-                    Coordinate::Type::SCREEN
+                    Coordinate::Type::Screen
                 },
                 SpriteComponent{},
                 RenderComponent{3}
@@ -52,7 +52,7 @@ void MainMenuLayer::on_attach() {
                     {config.virtual_window_width / 2.f, config.virtual_window_height / 2.f - 50.f},
                     {200.f, 80.f},
                     {1.f, 1.f},
-                    Coordinate::Type::SCREEN
+                    Coordinate::Type::Screen
                 },
                 SpriteComponent{},
                 RenderComponent{3}
@@ -79,7 +79,7 @@ void MainMenuLayer::on_attach() {
             {config.virtual_window_width / 2.f, config.virtual_window_height / 2.f + 50.f},
             {200.f, 80.f},
             {1.f, 1.f},
-            Coordinate::Type::SCREEN
+            Coordinate::Type::Screen
         },
         SpriteComponent{},
         RenderComponent{3}

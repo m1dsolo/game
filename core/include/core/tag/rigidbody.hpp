@@ -2,8 +2,7 @@
 
 namespace core {
 
-struct TriggerSystem {
-    void operator()();
+struct RigidbodyTag {
 };
 
 }  // namespace core

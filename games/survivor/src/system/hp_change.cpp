@@ -3,6 +3,7 @@
 #include <core/manager/entity.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/time.hpp>
+#include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/speed.hpp>
@@ -13,6 +14,9 @@
 #include <core/event/del_entity.hpp>
 #include <survivor/manager/achievement.hpp>
 #include <survivor/component/hp.hpp>
+#include <survivor/component/loot.hpp>
+#include <survivor/component/item.hpp>
+#include <survivor/component/inventory.hpp>
 #include <survivor/event/hp_change.hpp>
 #include <survivor/event/death.hpp>
 #include <survivor/tag/hp_bar.hpp>
@@ -99,6 +103,36 @@ void death_event_() {
         }
         if (ecs.has_entity(target)) {
             ecs.emplace_event<DelEntityEvent>(target);
+        }
+
+        if (ecs.has_component<LootComponent>(target)) {
+            for (const auto& group : ecs.get_component<LootComponent>(target).groups) {
+                if (wheel::Random::instance().uniform<float>(0.f, 1.f) <= group.chance) {
+                    int total_weight = 0;
+                    for (const auto& item : group.items) {
+                        total_weight += item.weight;
+                    }
+                    int pick = wheel::Random::instance().uniform(1, total_weight);
+                    for (const auto& item : group.items) {
+                        pick -= item.weight;
+                        if (pick <= 0) {
+                            int count = wheel::Random::instance().uniform(item.count.first, item.count.second);
+                            EntityManager::instance().add_entity(
+                                NameComponent{item.name},
+                                TransformComponent{
+                                    ecs.get_component<TransformComponent>(target).global.position,
+                                    {16.f, 16.f}
+                                },
+                                SpriteComponent{item.name},
+                                ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
+                                RenderComponent{1},
+                                ItemComponent{item.name, count}
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
