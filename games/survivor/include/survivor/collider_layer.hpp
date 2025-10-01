@@ -12,6 +12,7 @@ enum ColliderLayer : core::ColliderLayerType {
     Obstacle = 1 << 2,
     Projectile = 1 << 3,
     Trigger = 1 << 4,
+    Item = 1 << 5,
 };
 
 }  // namespace ColliderLayer

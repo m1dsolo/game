@@ -1,4 +1,20 @@
 #include <survivor/layer/game.hpp>
+#include <survivor/global.hpp>
+#include <survivor/manager/achievement.hpp>
+#include <survivor/manager/enemy.hpp>
+#include <survivor/component/hp.hpp>
+#include <survivor/component/level.hpp>
+#include <survivor/component/fraction.hpp>
+#include <survivor/component/range_attack.hpp>
+#include <survivor/component/inventory.hpp>
+#include <survivor/component/aura_damage.hpp>
+#include <survivor/component/master.hpp>
+#include <survivor/tag/hp_bar.hpp>
+#include <survivor/tag/absorb_item.hpp>
+#include <survivor/tag/pickup_item.hpp>
+#include <survivor/event/hp_change.hpp>
+#include <survivor/collider_layer.hpp>
+
 #include <core/manager/entity.hpp>
 #include <core/manager/time.hpp>
 #include <core/manager/sprite.hpp>
@@ -15,18 +31,6 @@
 #include <core/tag/input.hpp>
 #include <core/tag/camera.hpp>
 #include <core/tag/rigidbody.hpp>
-#include <survivor/manager/achievement.hpp>
-#include <survivor/manager/enemy.hpp>
-#include <survivor/component/hp.hpp>
-#include <survivor/component/fraction.hpp>
-#include <survivor/component/range_attack.hpp>
-#include <survivor/component/inventory.hpp>
-#include <survivor/component/pick_item.hpp>
-#include <survivor/component/aura_damage.hpp>
-#include <survivor/component/master.hpp>
-#include <survivor/tag/hp_bar.hpp>
-#include <survivor/event/hp_change.hpp>
-#include <survivor/collider_layer.hpp>
 
 using namespace core;
 
@@ -80,9 +84,23 @@ void GameLayer::on_attach() {
         RenderComponent{1},
         InputTag{},
         HPComponent{100},
+        LevelComponent{},
         FractionComponent{0},
         InventoryComponent{10},
-        PickItemComponent{200.f}
+        PickupItemTag{}
+    );
+
+    entity_manager.add_entity(
+        bunny,
+        NameComponent{"inventory"},
+        TransformComponent{},
+        ColliderComponent{
+            wheel::Circle<float>{200.f},
+            ColliderLayer::Trigger,
+            ColliderLayer::Item
+        },
+        AbsorbItemTag{},
+        MasterComponent{bunny}
     );
 
     auto camera = ecs.get_entity<CameraTag>();
@@ -157,7 +175,7 @@ void GameLayer::on_attach() {
     text_entity_ = EntityManager::instance().add_entity(
         TextComponent{"", 32, sdl::SDL::ORANGE},
         TransformComponent{
-            {0.1f * config.virtual_window_width, 0.1f * config.virtual_window_height},
+            {0.5f * config.virtual_window_width, 0.1f * config.virtual_window_height},
             {0.f, 0.f},
             {1.f, 1.f},
             Coordinate::Type::Screen
@@ -178,7 +196,8 @@ void GameLayer::on_detach() {
 void GameLayer::on_update() {
     const auto& achievement_manager = AchievementManager::instance();
     const auto& hp = ecs.get_component<HPComponent>(player_entity_);
-    auto text = std::format("hp:{}/{} kill:{}", hp.hp, hp.max_hp, achievement_manager.kill_num());
+    const auto& level = ecs.get_component<LevelComponent>(player_entity_);
+    auto text = std::format("level: {} exp: {}/{} hp:{}/{} kill:{}", level.level, level.exp, game_config.exps[level.level - 1], hp.hp, hp.max_hp, achievement_manager.kill_num());
     EntityManager::instance().update_text(text_entity_, text);
 }
 

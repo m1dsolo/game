@@ -11,6 +11,7 @@
 #include <core/component/button.hpp>
 #include <core/component/text.hpp>
 #include <core/util/hierarchy.hpp>
+
 #include <wheel/singleton.hpp>
 
 #include <functional>
@@ -37,6 +38,9 @@ public:
         add_child_(parent, entity);
 
         if (ecs.has_component<ColliderComponent>(entity)) {
+            if (!ecs.has_component<TransformComponent>(entity)) {
+                wheel::Log::error("Entity with ColliderComponent must have TransformComponent");
+            }
             ColliderManager::instance().add(entity);
         }
 

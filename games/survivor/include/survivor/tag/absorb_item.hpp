@@ -2,8 +2,6 @@
 
 namespace survivor {
 
-struct PickItemComponent {
-    float radius = 0.f;
-};
+struct AbsorbItemTag {};
 
 }  // namespace survivor
