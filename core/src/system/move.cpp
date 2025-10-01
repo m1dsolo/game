@@ -25,10 +25,10 @@ void MoveSystem::operator()() {
     }
 
     auto& time_manager = TimeManager::instance();
-    auto time = static_cast<float>(time_manager.dt()) / time_manager.timer().TIME_UNIT_PER_SECOND;
+    auto dt = static_cast<float>(time_manager.dt()) / time_manager.timer().TIME_UNIT_PER_SECOND;
     for (auto [entity, transform, speed, direction]
         : ecs.get_entity_and_components<TransformComponent, SpeedComponent, DirectionComponent>()) {
-        auto delta = direction.move * speed.speed * time;
+        auto delta = direction.move * speed.speed * dt;
 
         auto& collider_manager = ColliderManager::instance();
         if (!ecs.has_components<ColliderComponent>(entity)) {
