@@ -105,6 +105,7 @@ void collide_() {
                 if (projectile.last == target) {
                     continue;
                 }
+                projectile.last = target;
 
                 auto master = ecs.get_component<MasterComponent>(entity).entity;
                 ecs.emplace_event<HPChangeEvent>(master, target, -projectile.damage);

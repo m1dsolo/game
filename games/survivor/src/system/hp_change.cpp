@@ -38,8 +38,12 @@ void HPChangeSystem::operator()() {
 void hp_change_event_() {
     for (auto [source, target, value] : ecs.get_events<HPChangeEvent>()) {
         if (ecs.has_component<HPComponent>(target)) {
-            // update HP
             auto& hp = ecs.get_component<HPComponent>(target);
+            if (hp.hp <= 0) {
+                continue;
+            }
+
+            // update HP
             hp.hp += value;
             if (hp.hp <= 0) {
                 ecs.emplace_event<DeathEvent>(source, target);
@@ -99,6 +103,8 @@ void death_event_() {
     auto player_entity = ecs.get_entity<InputTag>();
     for (auto [source, target] : ecs.get_events<DeathEvent>()) {
         if (source == player_entity) {
+            std::cout << "source: " << ecs.get_component<NameComponent>(source).name
+                      << " killed target: " << ecs.get_component<NameComponent>(target).name << " " << target << std::endl;
             AchievementManager::instance().add_kill();
         }
         if (ecs.has_entity(target)) {
