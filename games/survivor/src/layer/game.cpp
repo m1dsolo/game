@@ -70,7 +70,6 @@ void GameLayer::on_attach() {
     auto bunny = entity_manager.add_entity(
         NameComponent{"bunny"},
         TransformComponent{{0.f, 0.f}, {64.f, 64.f}},
-        SpriteComponent{},
         DirectionComponent{},
         SpeedComponent{200.f},
         ColliderComponent{
@@ -79,6 +78,7 @@ void GameLayer::on_attach() {
             ColliderLayer::Enemy | ColliderLayer::Obstacle
         },
         RigidbodyTag{},
+        SpriteComponent{},
         AnimationComponent{{"bunny"}},
         AnimationFSMComponent{"basic"},
         RenderComponent{1},

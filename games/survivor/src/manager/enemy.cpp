@@ -50,48 +50,57 @@ EnemyManager::EnemyManager() {
     float map_width = config.map_width;
     float map_height = config.map_height;
 
+    const float thickness = 40.f;
     auto left_boundary = entity_manager.add_entity(
         NameComponent{"left_boundary"},
-        TransformComponent{{-map_width / 2 - 20.f, 0.f}, {40.f, map_height}},
+        TransformComponent{{-map_width / 2 - thickness / 2, 0.f}, {thickness, map_height + thickness * 2}},
         ColliderComponent{
-            wheel::Rect<float>{{0.f, 0.f}, {40.f, map_height}},
+            wheel::Rect<float>{{0.f, 0.f}, {thickness, map_height + thickness * 2}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
+        // SpriteComponent{sdl::SDL::RED},
+        // RenderComponent{4},
         ObstacleTag{}
     );
     auto right_boundary = entity_manager.add_entity(
         NameComponent{"right_boundary"},
-        TransformComponent{{map_width / 2 + 20.f, 0.f}, {40.f, map_height}},
+        TransformComponent{{map_width / 2 + thickness / 2, 0.f}, {thickness, map_height + thickness * 2}},
         ColliderComponent{
-            wheel::Rect<float>{{0.f, 0.f}, {40.f, map_height}},
+            wheel::Rect<float>{{0.f, 0.f}, {thickness, map_height + thickness * 2}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
+        // SpriteComponent{sdl::SDL::RED},
+        // RenderComponent{4},
         ObstacleTag{}
     );
     auto top_boundary = entity_manager.add_entity(
         NameComponent{"top_boundary"},
-        TransformComponent{{0.f, map_height / 2 + 20.f}, {map_width, 40.f}},
+        TransformComponent{{0.f, -map_height / 2 - thickness / 2}, {map_width + thickness * 2, thickness}},
         ColliderComponent{
-            wheel::Rect<float>{{0.f, 0.f}, {map_width, 40.f}},
+            wheel::Rect<float>{{0.f, 0.f}, {map_width + thickness * 2, thickness}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
+        // SpriteComponent{sdl::SDL::RED},
+        // RenderComponent{4},
         ObstacleTag{}
     );
     auto bottom_boundary = entity_manager.add_entity(
         NameComponent{"bottom_boundary"},
-        TransformComponent{{0.f, -map_height / 2 - 20.f}, {map_width, 40.f}},
+        TransformComponent{{0.f, map_height / 2 + thickness / 2}, {map_width + thickness * 2, thickness}},
         ColliderComponent{
-            wheel::Rect<float>{wheel::Rect<float>{{0.f, 0.f}, {map_width, 40.f}}},
+            wheel::Rect<float>{wheel::Rect<float>{{0.f, 0.f}, {map_width + thickness * 2, thickness}}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
+        // SpriteComponent{sdl::SDL::RED},
+        // RenderComponent{4},
         ObstacleTag{}
     );
 
