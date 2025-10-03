@@ -17,21 +17,21 @@ void AnimationSystem::operator()() {
     // update animation fsm condition values
     for (auto [animation_fsm, speed, direction] : ecs.get_components<AnimationFSMComponent, SpeedComponent, DirectionComponent>()) {
         auto is_moving = speed.speed > 0.f && direction.move != 0.f;
-        animation_fsm.condition2values["is_moving"] = is_moving;
-        animation_fsm.condition2values["is_idle"] = !is_moving;
+        animation_fsm.next_condition2values["is_walking"] = is_moving;
+        animation_fsm.next_condition2values["is_idle"] = !is_moving;
     }
     for (auto [animation, animation_fsm] : ecs.get_components<AnimationComponent, AnimationFSMComponent>()) {
         const auto& anim = *animation.animation;
         auto index = static_cast<size_t>(animation.time / anim.duration);
         if (!anim.loop && index >= anim.sprites.size() - 1) {
-            animation_fsm.condition2values["is_animation_finished"] = true;
+            animation_fsm.next_condition2values["is_animation_finished"] = true;
         }
     }
 
     // update animation state
     for (auto [animation_fsm, animation] : ecs.get_components<AnimationFSMComponent, AnimationComponent>()) {
         const auto& fsm = *animation_fsm.fsm;
-        const auto& condition2values = animation_fsm.condition2values;
+        const auto& condition2values = animation_fsm.current_condition2values;
         auto& current_state = animation_fsm.current_state;
         if (current_state == "end") {
             continue;
@@ -83,6 +83,11 @@ void AnimationSystem::operator()() {
             index = std::min(index, anim.sprites.size() - 1);
         }
         sprite.sprite = &anim.sprites.at(index);
+    }
+
+    // swap and clear animation fsm condition values
+    for (auto [animation_fsm] : ecs.get_components<AnimationFSMComponent>()) {
+        animation_fsm.current_condition2values = std::move(animation_fsm.next_condition2values);
     }
 }
 

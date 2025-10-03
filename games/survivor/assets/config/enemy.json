@@ -3,6 +3,11 @@
         "name": "thief",
         "hp": 100,
         "speed": 50,
+        "attack": {
+            "damage": 10,
+            "range": 30,
+            "interval": 1000000
+        },
         "loots": [
             {
                 "items": [

@@ -46,16 +46,16 @@ void GameLayer::on_attach() {
             ColliderLayer::Player,
             ColliderLayer::Enemy | ColliderLayer::Obstacle
         },
-        RigidbodyTag{},
         SpriteComponent{},
         AnimationComponent{{"bunny"}},
         AnimationFSMComponent{"basic"},
         RenderComponent{1},
-        InputTag{},
         HPComponent{100},
         LevelComponent{},
         FractionComponent{0},
         InventoryComponent{10},
+        RigidbodyTag{},
+        InputTag{},
         PickupItemTag{}
     );
 
@@ -114,6 +114,7 @@ void GameLayer::on_attach() {
             .projectile_sprite_name = "bullet",
             .range_attack_sound_name = "m4a1/shoot.wav"
         },
+        MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
         RenderComponent{1}
     );

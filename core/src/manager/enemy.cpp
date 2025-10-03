@@ -13,11 +13,12 @@
 #include <core/component/render.hpp>
 #include <core/component/track.hpp>
 #include <core/component/hp.hpp>
+#include <core/component/attack.hpp>
 #include <core/component/fraction.hpp>
 #include <core/component/loot.hpp>
+#include <core/component/master.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/rigidbody.hpp>
-#include <core/tag/obstacle.hpp>
 
 #include <wheel/random.hpp>
 
@@ -46,9 +47,10 @@ wheel::Entity EnemyManager::generate(
     const std::string& name,
     wheel::Vector2D<float> position
 ) const {
+    auto& entity_manager = EntityManager::instance();
     const auto& config = enemy_configs_.at(name);
 
-    return EntityManager::instance().add_entity(
+    auto entity = entity_manager.add_entity(
         NameComponent{name},
         TransformComponent{position, {64.f, 64.f}},
         SpriteComponent{},
@@ -59,15 +61,30 @@ wheel::Entity EnemyManager::generate(
             ColliderLayer::Enemy,
             ColliderLayer::Player
         },
-        RigidbodyTag{},
         AnimationComponent{{name}},
         AnimationFSMComponent{"basic"},
         RenderComponent{1},
         TrackComponent{ecs.get_entity<InputTag>()},
         HPComponent{config.hp},
         FractionComponent{1},
-        LootComponent{config.loots}
+        LootComponent{config.loots},
+        RigidbodyTag{}
     );
+    auto [damage, range, interval] = config.attack;
+    auto attack = entity_manager.add_entity(
+        entity,
+        NameComponent{"attack"},
+        TransformComponent{{0.f, 0.f}, {range, range}},
+        ColliderComponent{
+            wheel::Circle<float>{range},
+            ColliderLayer::Enemy,
+            ColliderLayer::Player
+        },
+        AttackComponent{damage, interval},
+        MasterComponent{entity}
+    );
+
+    return entity;
 }
 
 }  // namespace core

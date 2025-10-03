@@ -10,7 +10,7 @@
             "from": "idle",
             "to": "walk",
             "conditions": [
-                "is_moving"
+                "is_walking"
             ]
         },
         {
@@ -21,10 +21,40 @@
             ]
         },
         {
-            "from": ["idle", "walk"],
+            "from": [
+                "idle",
+                "walk",
+                "attack"
+            ],
             "to": "dead",
             "conditions": [
                 "is_dead"
+            ]
+        },
+        {
+            "from": [
+                "idle",
+                "walk"
+            ],
+            "to": "attack",
+            "conditions": [
+                "is_attacking"
+            ]
+        },
+        {
+            "from": "attack",
+            "to": "idle",
+            "conditions": [
+                "is_idle",
+                "is_animation_finished"
+            ]
+        },
+        {
+            "from": "attack",
+            "to": "walk",
+            "conditions": [
+                "is_walking",
+                "is_animation_finished"
             ]
         },
         {

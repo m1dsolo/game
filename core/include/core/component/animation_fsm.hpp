@@ -12,7 +12,8 @@ struct AnimationFSMComponent {
 
     const AnimationFSM* fsm;
     std::string current_state = "start";
-    std::unordered_map<std::string, bool> condition2values;
+    std::unordered_map<std::string, bool> next_condition2values;
+    std::unordered_map<std::string, bool> current_condition2values;
 };
 
 }  // namespace core

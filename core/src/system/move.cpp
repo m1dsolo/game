@@ -11,6 +11,7 @@
 namespace core {
 
 void MoveSystem::operator()() {
+    // update player direction from input
     auto player_entity = ecs.get_entity<InputTag>();
     if (ecs.has_component<DirectionComponent>(player_entity)) {
         auto& direction = ecs.get_component<DirectionComponent>(player_entity);
@@ -24,6 +25,7 @@ void MoveSystem::operator()() {
         }
     }
 
+    // move
     auto& time_manager = TimeManager::instance();
     auto dt = static_cast<float>(time_manager.dt()) / time_manager.timer().TIME_UNIT_PER_SECOND;
     for (auto [entity, transform, speed, direction]

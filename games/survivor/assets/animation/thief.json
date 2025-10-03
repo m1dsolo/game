@@ -2,7 +2,6 @@
     "name": "thief",
     "path": "sprite_sheet/thief.png",
     "duration": 0.25,
-    "loop": true,
     "size": [
         32,
         32
@@ -14,6 +13,7 @@
     "animations": [
         {
             "state": "idle",
+            "loop": true,
             "start": [
                 0,
                 0
@@ -22,11 +22,22 @@
         },
         {
             "state": "walk",
+            "loop": true,
             "start": [
                 0,
                 64
             ],
             "count": 6
+        },
+        {
+            "state": "attack",
+            "loop": false,
+            "start": [
+                0,
+                128
+            ],
+            "count": 7,
+            "duration": 0.1
         },
         {
             "state": "dead",

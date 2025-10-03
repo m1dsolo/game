@@ -69,8 +69,8 @@ void shoot_() {
             return trigger_pos.euclidean_distance(target0_pos) < trigger_pos.euclidean_distance(target1_pos);
         });
 
-        auto parent = ecs.get_component<ParentComponent>(trigger).entity;
-        auto fraction = ecs.get_component<FractionComponent>(parent).fraction;
+        auto master = ecs.get_component<MasterComponent>(trigger).entity;
+        auto fraction = ecs.get_component<FractionComponent>(master).fraction;
         EntityManager::instance().add_entity(
             NameComponent{"bullet"},
             ProjectileComponent{range_attack.damage},
@@ -86,7 +86,7 @@ void shoot_() {
             RenderComponent{2},
             // TrackComponent{closest.first},
             FractionComponent{fraction},
-            MasterComponent{parent}
+            MasterComponent{master}
         );
 
         AudioManager::instance().play(range_attack.range_attack_sound_name);

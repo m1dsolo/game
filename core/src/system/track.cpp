@@ -8,7 +8,7 @@ namespace core {
 
 void TrackSystem::operator()() {
     for (auto [entity, transform, direction, track]
-        :ecs.get_entity_and_components<TransformComponent, DirectionComponent, TrackComponent>()) {
+            :ecs.get_entity_and_components<TransformComponent, DirectionComponent, TrackComponent>()) {
         auto& pos0 = transform.global.position;
         if (ecs.has_entity(track.target)) {
             auto& pos1 = ecs.get_component<TransformComponent>(track.target).global.position;
