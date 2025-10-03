@@ -21,14 +21,7 @@
             ]
         },
         {
-            "from": "idle",
-            "to": "dead",
-            "conditions": [
-                "is_dead"
-            ]
-        },
-        {
-            "from": "walk",
+            "from": ["idle", "walk"],
             "to": "dead",
             "conditions": [
                 "is_dead"
