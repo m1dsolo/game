@@ -29,6 +29,7 @@
         },
         {
             "state": "dead",
+            "loop": false,
             "start": [
                 0,
                 96

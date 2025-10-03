@@ -19,7 +19,7 @@ namespace core {
 
 void GameLayer::on_attach() {
     // init hp bar sprites
-    for (int i = 0; i <= 47; i++) {
+    for (int i = 1; i <= 47; i++) {
         auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
         auto target = sdl::SDL::RenderTargetGuard{texture};
         auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
@@ -29,7 +29,11 @@ void GameLayer::on_attach() {
             {0.f, 0.f, 48.f, 12.f}
         });
     }
-    // hidden hp bar when hp is full
+    // hidden hp bar when hp is empty or full
+    SpriteManager::instance().set("hp_bar0", {
+        nullptr,
+        {0.f, 0.f, 48.f, 12.f}
+    });
     SpriteManager::instance().set("hp_bar48", {
         nullptr,
         {0.f, 0.f, 48.f, 12.f}

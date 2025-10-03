@@ -19,6 +19,27 @@
             "conditions": [
                 "is_idle"
             ]
+        },
+        {
+            "from": "idle",
+            "to": "dead",
+            "conditions": [
+                "is_dead"
+            ]
+        },
+        {
+            "from": "walk",
+            "to": "dead",
+            "conditions": [
+                "is_dead"
+            ]
+        },
+        {
+            "from": "dead",
+            "to": "end",
+            "conditions": [
+                "is_animation_finished"
+            ]
         }
     ]
 }

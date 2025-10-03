@@ -9,6 +9,7 @@
 #include <core/manager/time.hpp>
 
 #include <wheel/geometry.hpp>
+#include <wheel/log.hpp>
 
 namespace core {
 
@@ -19,12 +20,26 @@ void AnimationSystem::operator()() {
         animation_fsm.condition2values["is_moving"] = is_moving;
         animation_fsm.condition2values["is_idle"] = !is_moving;
     }
+    for (auto [animation, animation_fsm] : ecs.get_components<AnimationComponent, AnimationFSMComponent>()) {
+        const auto& anim = *animation.animation;
+        auto index = static_cast<size_t>(animation.time / anim.duration);
+        if (!anim.loop && index >= anim.sprites.size() - 1) {
+            animation_fsm.condition2values["is_animation_finished"] = true;
+        }
+    }
 
     // update animation state
     for (auto [animation_fsm, animation] : ecs.get_components<AnimationFSMComponent, AnimationComponent>()) {
         const auto& fsm = *animation_fsm.fsm;
         const auto& condition2values = animation_fsm.condition2values;
         auto& current_state = animation_fsm.current_state;
+        if (current_state == "end") {
+            continue;
+        }
+        if (!fsm.transitions.count(current_state)) {
+            wheel::Log::warning("AnimationFSM has no transitions for state: {}", current_state);
+            continue;
+        }
         const auto& current_state_transitions = fsm.transitions.at(animation_fsm.current_state);
         for (const auto& [next_state, conditions] : current_state_transitions) {
             bool satisfied = true;
@@ -36,7 +51,12 @@ void AnimationSystem::operator()() {
             }
             if (satisfied) {
                 current_state = next_state;
-                animation.animation = &AnimationManager::instance().get({animation.animation->id.name, next_state});
+                if (current_state != "start" && current_state != "end") {
+                    animation.animation = &AnimationManager::instance().get({animation.animation->id.name, next_state});
+                    if (!animation.animation->loop) {
+                        animation.time = 0.f;
+                    }
+                }
                 break;
             }
         }
@@ -55,14 +75,14 @@ void AnimationSystem::operator()() {
     // update animation sprite frame
     for (auto [sprite, animation]
         : ecs.get_components<SpriteComponent, AnimationComponent>()) {
-        const auto& clip = *animation.animation;
-        auto index = static_cast<size_t>(animation.time / clip.duration);
-        if (clip.loop) {
-            index %= clip.sprites.size();
+        const auto& anim = *animation.animation;
+        auto index = static_cast<size_t>(animation.time / anim.duration);
+        if (anim.loop) {
+            index %= anim.sprites.size();
         } else {
-            index = std::min(index, clip.sprites.size() - 1);
+            index = std::min(index, anim.sprites.size() - 1);
         }
-        sprite.sprite = &clip.sprites.at(index);
+        sprite.sprite = &anim.sprites.at(index);
     }
 }
 
