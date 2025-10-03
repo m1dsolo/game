@@ -26,7 +26,7 @@ void MainMenuLayer::on_attach() {
                     UIManager::instance().push_back<GameLayer>();
                 }},
                 TransformComponent{
-                    {config.virtual_window_width / 2.f, config.virtual_window_height / 2.f - 50.f},
+                    {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f - 50.f},
                     {200.f, 80.f},
                     {1.f, 1.f},
                     Coordinate::Type::Screen
@@ -49,7 +49,7 @@ void MainMenuLayer::on_attach() {
                     GameManager::instance().resume();
                 }},
                 TransformComponent{
-                    {config.virtual_window_width / 2.f, config.virtual_window_height / 2.f - 50.f},
+                    {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f - 50.f},
                     {200.f, 80.f},
                     {1.f, 1.f},
                     Coordinate::Type::Screen
@@ -76,7 +76,7 @@ void MainMenuLayer::on_attach() {
             context.running = false;
         }},
         TransformComponent{
-            {config.virtual_window_width / 2.f, config.virtual_window_height / 2.f + 50.f},
+            {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f + 50.f},
             {200.f, 80.f},
             {1.f, 1.f},
             Coordinate::Type::Screen

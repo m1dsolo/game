@@ -14,13 +14,15 @@
 #include <wheel/log.hpp>
 #include <sdl/sdl.hpp>
 
+#include <rfl/json.hpp>
+
 namespace core {
 
 Game::Game() {
     // SDL
     wheel::Log::assert_(sdl::SDL::init(
         SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_GAMEPAD,
-        "game", config.virtual_window_width, config.virtual_window_height,
+        "game", context.virtual_window_width, context.virtual_window_height,
         SDL_WINDOW_BORDERLESS | SDL_WINDOW_RESIZABLE
     ), SDL_GetError);
     wheel::Log::assert_(sdl::SDL::init_audio(), SDL_GetError);
@@ -31,7 +33,14 @@ Game::Game() {
     sdl::SDL::set_window_maximized();
     sdl::SDL::set_render_vsync(1);
 
-    context.texture = sdl::SDL::create_texture(config.virtual_window_width, config.virtual_window_height);
+    std::ifstream file("assets/config/game.json");
+    if (file.is_open()) {
+        config = rfl::json::read<ConfigResource>(file).value();
+    } else {
+        wheel::Log::error("Can't find assets/config/game.json!");
+    }
+
+    context.texture = sdl::SDL::create_texture(context.virtual_window_width, context.virtual_window_height);
 }
 
 void Game::run() {

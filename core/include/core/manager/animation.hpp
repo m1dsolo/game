@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/animation.hpp>
+
 #include <wheel/singleton.hpp>
 #include <wheel/geometry.hpp>
 

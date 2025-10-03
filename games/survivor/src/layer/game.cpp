@@ -1,20 +1,8 @@
 #include <survivor/layer/game.hpp>
-#include <survivor/global.hpp>
 #include <survivor/manager/achievement.hpp>
-#include <survivor/manager/enemy.hpp>
-#include <survivor/component/hp.hpp>
-#include <survivor/component/level.hpp>
-#include <survivor/component/fraction.hpp>
-#include <survivor/component/range_attack.hpp>
-#include <survivor/component/inventory.hpp>
-#include <survivor/component/aura_damage.hpp>
-#include <survivor/component/master.hpp>
-#include <survivor/tag/hp_bar.hpp>
-#include <survivor/tag/absorb_item.hpp>
-#include <survivor/tag/pickup_item.hpp>
-#include <survivor/event/hp_change.hpp>
-#include <survivor/collider_layer.hpp>
+#include <survivor/manager/wave.hpp>
 
+#include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/time.hpp>
 #include <core/manager/sprite.hpp>
@@ -28,44 +16,25 @@
 #include <core/component/render.hpp>
 #include <core/component/collider.hpp>
 #include <core/component/track.hpp>
+#include <core/component/hp.hpp>
+#include <core/component/level.hpp>
+#include <core/component/fraction.hpp>
+#include <core/component/range_attack.hpp>
+#include <core/component/inventory.hpp>
+#include <core/component/aura_damage.hpp>
+#include <core/component/master.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/camera.hpp>
 #include <core/tag/rigidbody.hpp>
+#include <core/tag/absorb_item.hpp>
+#include <core/tag/pickup_item.hpp>
 
 using namespace core;
 
 namespace survivor {
 
 void GameLayer::on_attach() {
-    for (int i = 0; i <= 47; i++) {
-        auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
-        auto target = sdl::SDL::RenderTargetGuard{texture};
-        auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
-        sdl::SDL::render_filled_rect(&dst, sdl::SDL::GREEN);
-        SpriteManager::instance().set("hp_bar" + std::to_string(i), {
-            texture,
-            {0.f, 0.f, 48.f, 12.f}
-        });
-    }
-    // hidden hp bar when hp is full
-    SpriteManager::instance().set("hp_bar48", {
-        nullptr,
-        {0.f, 0.f, 48.f, 12.f}
-    });
-
     auto& entity_manager = EntityManager::instance();
-    entity_manager.set_add_entity_callback([](wheel::Entity entity) {
-        if (ecs.has_component<HPComponent>(entity)) {
-            EntityManager::instance().add_entity(
-                entity,
-                NameComponent{"hp_bar"},
-                TransformComponent{{0.f, -36.f}, {48.f, 12.f}},
-                SpriteComponent{"hp_bar48"},
-                RenderComponent{2},
-                HPBarTag{}
-            );
-        }
-    });
 
     auto bunny = entity_manager.add_entity(
         NameComponent{"bunny"},
@@ -157,25 +126,11 @@ void GameLayer::on_attach() {
     //     RenderComponent{0}
     // );
 
-    float map_width = config.map_width;
-    float map_height = config.map_height;
-
-    SpriteManager::instance().set("map", Sprite{
-        sdl::SDL::create_texture(map_width, map_height, SDL_FColor{204.f / 255.f, 1.f, 153.f / 255.f, 1.f}),
-        {0.f, 0.f, map_width, map_height}
-    });
-    auto map = entity_manager.add_entity(
-        NameComponent{"map"},
-        TransformComponent{{0.f, 0.f}, {map_width, map_height}},
-        SpriteComponent{"map"},
-        RenderComponent{0}
-    );
-
     player_entity_ = bunny;
     text_entity_ = EntityManager::instance().add_entity(
         TextComponent{"", 32, sdl::SDL::ORANGE},
         TransformComponent{
-            {0.5f * config.virtual_window_width, 0.1f * config.virtual_window_height},
+            {0.5f * context.virtual_window_width, 0.1f * context.virtual_window_height},
             {0.f, 0.f},
             {1.f, 1.f},
             Coordinate::Type::Screen
@@ -186,7 +141,7 @@ void GameLayer::on_attach() {
 
     core::GameLayer::on_attach();
 
-    EnemyManager::instance().generate_waves();
+    WaveManager::instance().generate_waves();
 }
 
 // TODO
@@ -194,10 +149,11 @@ void GameLayer::on_detach() {
 }
 
 void GameLayer::on_update() {
+    // TODO: simple ui
     const auto& achievement_manager = AchievementManager::instance();
     const auto& hp = ecs.get_component<HPComponent>(player_entity_);
     const auto& level = ecs.get_component<LevelComponent>(player_entity_);
-    auto text = std::format("level: {} exp: {}/{} hp:{}/{} kill:{}", level.level, level.exp, game_config.exps[level.level - 1], hp.hp, hp.max_hp, achievement_manager.kill_num());
+    auto text = std::format("level: {} exp: {}/{} hp:{}/{} kill:{}", level.level, level.exp, config.exps[level.level - 1], hp.hp, hp.max_hp, achievement_manager.kill_num());
     EntityManager::instance().update_text(text_entity_, text);
 }
 

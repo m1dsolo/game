@@ -1,8 +1,9 @@
 #pragma once
 
+#include <core/util/coordinate.hpp>
+
 #include <wheel/geometry.hpp>
 #include <sdl/sdl.hpp>
-#include <core/util/coordinate.hpp>
 
 namespace core {
 

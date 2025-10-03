@@ -1,9 +1,9 @@
 #include <core/layer/menu.hpp>
 #include <core/global.hpp>
 #include <core/manager/sprite.hpp>
-#include <core/event/del_entity.hpp>
 #include <core/component/button.hpp>
 #include <core/component/sprite.hpp>
+#include <core/event/del_entity.hpp>
 
 namespace core {
 

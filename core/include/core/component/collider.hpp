@@ -1,8 +1,8 @@
 #pragma once
 
-#include <variant>
-
 #include <wheel/geometry.hpp>
+
+#include <variant>
 
 namespace core {
 
@@ -24,6 +24,15 @@ struct ColliderComponent {
             return shape1.is_overlapping(shape2);
         }, shape, other.shape);
     }
+};
+
+enum ColliderLayer : ColliderLayerType {
+    Player = 1 << 0,
+    Enemy = 1 << 1,
+    Obstacle = 1 << 2,
+    Projectile = 1 << 3,
+    Trigger = 1 << 4,
+    Item = 1 << 5,
 };
 
 }  // namespace core

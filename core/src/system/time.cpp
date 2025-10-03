@@ -14,7 +14,7 @@ void TimeSystem::operator()() {
 
     time_manager.update();
 
-    int fps = config.fps;
+    int fps = context.fps;
     time_t target = timer.TIME_UNIT_PER_SECOND / fps;
     timer.sleep(std::max(static_cast<wheel::time_t>(0), target - time_manager.dt()));
 }

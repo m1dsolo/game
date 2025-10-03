@@ -1,8 +1,8 @@
 #pragma once
 
-#include <functional>
-
 #include <sdl/sdl.hpp>
+
+#include <functional>
 
 namespace core {
 

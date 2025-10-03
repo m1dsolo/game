@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include <sdl/sdl.hpp>
+
+#include <string>
 
 namespace core {
 
