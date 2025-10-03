@@ -21,7 +21,7 @@ wheel::Entity Hierarchy::detach_entity_from_parent(wheel::Entity entity) {
         auto& children = ecs.get_component<ChildrenComponent>(parent).children;
         std::erase(children, entity);
         if (children.empty()) {
-            ecs.del_component<ChildrenComponent>(parent);
+            ecs.remove_component<ChildrenComponent>(parent);
         }
     }
     return parent;

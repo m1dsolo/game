@@ -14,7 +14,7 @@ void TrackSystem::operator()() {
             auto& pos1 = ecs.get_component<TransformComponent>(track.target).global.position;
             direction.move = direction.look = (pos1 - pos0).normalize();
         } else {
-            ecs.del_component<TrackComponent>(entity);
+            ecs.remove_component<TrackComponent>(entity);
         }
     }
 }

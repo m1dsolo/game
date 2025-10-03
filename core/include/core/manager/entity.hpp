@@ -72,7 +72,7 @@ public:
         return entity;
     }
 
-    void del_entity(wheel::Entity entity);
+    void remove_entity(wheel::Entity entity);
 
     void update_text(wheel::Entity entity, const std::string& text);
 

@@ -3,7 +3,7 @@
 #include <core/manager/sprite.hpp>
 #include <core/component/button.hpp>
 #include <core/component/sprite.hpp>
-#include <core/event/del_entity.hpp>
+#include <core/event/remove_entity.hpp>
 
 namespace core {
 
@@ -13,7 +13,7 @@ void MenuLayer::on_attach() {
 
 void MenuLayer::on_detach() {
     for (auto& entity : button_entities_) {
-        ecs.emplace_event<DelEntityEvent>(entity);
+        ecs.emplace_event<RemoveEntityEvent>(entity);
     }
 }
 

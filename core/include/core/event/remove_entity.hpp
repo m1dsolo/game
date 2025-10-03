@@ -4,7 +4,7 @@
 
 namespace core {
 
-struct DelEntityEvent {
+struct RemoveEntityEvent {
     wheel::Entity entity;
 };
 

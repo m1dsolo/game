@@ -25,15 +25,15 @@ EntityManager::EntityManager() {
     );
 }
 
-void EntityManager::del_entity(wheel::Entity entity) {
+void EntityManager::remove_entity(wheel::Entity entity) {
     if (ecs.has_component<ChildrenComponent>(entity)) {
         for (auto child : ecs.get_component<ChildrenComponent>(entity).children) {
-            del_entity(child);
+            remove_entity(child);
         }
     }
     Hierarchy::detach_entity_from_parent(entity);
     ColliderManager::instance().remove(entity);
-    ecs.del_entity(entity);
+    ecs.remove_entity(entity);
 }
 
 void EntityManager::update_text(wheel::Entity entity, const std::string& text) {

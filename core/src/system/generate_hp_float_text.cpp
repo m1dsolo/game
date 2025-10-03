@@ -10,7 +10,7 @@
 #include <core/component/render.hpp>
 #include <core/component/hp.hpp>
 #include <core/event/hp_change.hpp>
-#include <core/event/del_entity.hpp>
+#include <core/event/remove_entity.hpp>
 
 #include <wheel/random.hpp>
 
@@ -42,7 +42,7 @@ void GenerateHPFloatTextSystem::operator()() {
             );
             TimeManager::instance().timer().add(1000000, [text_entity]() {
                 if (ecs.has_entity(text_entity)) {
-                    ecs.emplace_event<DelEntityEvent>(text_entity);
+                    ecs.emplace_event<RemoveEntityEvent>(text_entity);
                 }
                 return 0;
             });

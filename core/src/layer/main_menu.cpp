@@ -9,7 +9,7 @@
 #include <core/component/sprite.hpp>
 #include <core/component/render.hpp>
 #include <core/layer/game.hpp>
-#include <core/event/del_entity.hpp>
+#include <core/event/remove_entity.hpp>
 
 namespace core {
 

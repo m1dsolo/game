@@ -7,7 +7,7 @@
 #include <core/system/animation.hpp>
 #include <core/system/render.hpp>
 #include <core/system/time.hpp>
-#include <core/system/del_entity_event.hpp>
+#include <core/system/remove_entity.hpp>
 #include <core/layer/global.hpp>
 #include <core/layer/main_menu.hpp>
 
@@ -51,7 +51,7 @@ void Game::run() {
         AnimationSystem,
         RenderSystem,
         TimeSystem,
-        DelEntityEventSystem
+        RemoveEntitySystem
     >();
 
     UIManager::instance().push_back<

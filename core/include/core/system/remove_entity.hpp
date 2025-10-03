@@ -2,7 +2,7 @@
 
 namespace core {
 
-struct DelEntityEventSystem {
+struct RemoveEntitySystem {
     void operator()();
 };
 
