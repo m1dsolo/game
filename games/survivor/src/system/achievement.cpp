@@ -2,7 +2,7 @@
 #include <survivor/manager/achievement.hpp>
 #include <core/global.hpp>
 #include <core/tag/input.hpp>
-#include <core/event/death.hpp>
+#include <core/entity_event/death.hpp>
 
 using namespace core;
 
@@ -10,8 +10,8 @@ namespace survivor {
 
 void AchievementSystem::operator()() {
     auto player_entity = ecs.get_entity<InputTag>();
-    for (auto [source, target] : ecs.get_events<DeathEvent>()) {
-        if (source == player_entity) {
+    for (auto [event] : ecs.get_components<DeathEvent>()) {
+        if (event.source == player_entity) {
             AchievementManager::instance().add_kill();
         }
     }

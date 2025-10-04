@@ -38,7 +38,7 @@ void update_transform_(wheel::Entity entity, const TransformComponent& parent_tr
 
     if (ecs.has_component<ChildrenComponent>(entity)) {
         auto& children = ecs.get_component<ChildrenComponent>(entity);
-        for (auto child : children.children) {
+        for (auto child : children.entities) {
             update_transform_(child, transform);
         }
     }

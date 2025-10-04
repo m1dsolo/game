@@ -10,14 +10,11 @@ using namespace core;
 namespace core {
 
 void LevelSystem::operator()() {
-    for (const auto [entity, exp] : ecs.get_events<ExpEvent>()) {
-        if (ecs.has_component<LevelComponent>(entity)) {
-            auto& level = ecs.get_component<LevelComponent>(entity);
-            level.exp += exp;
-            while (level.exp >= config.exps[level.level - 1]) {
-                level.exp -= config.exps[level.level - 1];
-                level.level++;
-            }
+    for (const auto [entity, level, event] : ecs.get_entity_and_components<LevelComponent, ExpEvent>()) {
+        level.exp += event.exp;
+        while (level.exp >= config.exps[level.level - 1]) {
+            level.exp -= config.exps[level.level - 1];
+            level.level++;
         }
     }
 }

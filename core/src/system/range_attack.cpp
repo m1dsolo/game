@@ -20,7 +20,7 @@
 #include <core/tag/obstacle.hpp>
 #include <core/event/hp_change.hpp>
 #include <core/event/trigger.hpp>
-#include <core/event/remove_entity.hpp>
+#include <core/entity_event/remove_entity.hpp>
 
 using namespace core;
 
@@ -107,12 +107,12 @@ void collide_() {
 
                 auto master = ecs.get_component<MasterComponent>(entity).entity;
                 ecs.emplace_event<HPChangeEvent>(master, target, -projectile.damage);
-                ecs.emplace_event<RemoveEntityEvent>(entity);
+                ecs.add_entity_event(entity, RemoveEntityEvent{});
             }
 
             // hit obstacle
             if (ecs.has_component<ObstacleTag>(target)) {
-                ecs.emplace_event<RemoveEntityEvent>(entity);
+                ecs.add_entity_event(entity, RemoveEntityEvent{});
             }
         }
     }

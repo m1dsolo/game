@@ -27,7 +27,7 @@ EntityManager::EntityManager() {
 
 void EntityManager::remove_entity(wheel::Entity entity) {
     if (ecs.has_component<ChildrenComponent>(entity)) {
-        for (auto child : ecs.get_component<ChildrenComponent>(entity).children) {
+        for (auto child : ecs.get_component<ChildrenComponent>(entity).entities) {
             remove_entity(child);
         }
     }
@@ -63,7 +63,7 @@ void EntityManager::add_child_(wheel::Entity parent, wheel::Entity child) {
     if (!ecs.has_component<ChildrenComponent>(parent)) {
         ecs.add_component(parent, ChildrenComponent{});
     }
-    ecs.get_component<ChildrenComponent>(parent).children.emplace_back(child);
+    ecs.get_component<ChildrenComponent>(parent).entities.emplace_back(child);
     ecs.add_component(child, ParentComponent{parent});
 }
 

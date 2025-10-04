@@ -11,8 +11,8 @@
 #include <core/component/render.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/hp_bar.hpp>
-#include <core/event/death.hpp>
 #include <core/event/hp_change.hpp>
+#include <core/entity_event/death.hpp>
 
 using namespace core;
 
@@ -29,11 +29,11 @@ void HPChangeSystem::operator()() {
             // update HP
             hp.hp += value;
             if (hp.hp <= 0) {
-                ecs.emplace_event<DeathEvent>(source, target);
+                ecs.add_entity_event(target, DeathEvent{source});
             }
 
             // update HP bar
-            for (auto child : ecs.get_component<ChildrenComponent>(target).children) {
+            for (auto child : ecs.get_component<ChildrenComponent>(target).entities) {
                 if (ecs.has_components<HPBarTag, SpriteComponent>(child)) {
                     auto bar_id = std::clamp(static_cast<int>(std::round(48.f * hp.hp / hp.max_hp)), 0, 48);
                     ecs.get_component<SpriteComponent>(child).sprite = &SpriteManager::instance().get("hp_bar" + std::to_string(bar_id));

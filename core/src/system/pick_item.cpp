@@ -11,9 +11,9 @@
 #include <core/component/master.hpp>
 #include <core/tag/absorb_item.hpp>
 #include <core/tag/pickup_item.hpp>
-#include <core/event/remove_entity.hpp>
 #include <core/event/trigger.hpp>
 #include <core/event/exp.hpp>
+#include <core/entity_event/remove_entity.hpp>
 
 using namespace core;
 
@@ -40,7 +40,7 @@ void PickItemSystem::operator()() {
                 }
             } else {
             }
-            ecs.emplace_event<RemoveEntityEvent>(target);
+            ecs.add_entity_event(target, RemoveEntityEvent{});
         }
     }
 }

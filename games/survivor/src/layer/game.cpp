@@ -20,6 +20,7 @@
 #include <core/component/level.hpp>
 #include <core/component/fraction.hpp>
 #include <core/component/range_attack.hpp>
+#include <core/component/reload.hpp>
 #include <core/component/inventory.hpp>
 #include <core/component/aura_damage.hpp>
 #include <core/component/master.hpp>
@@ -114,6 +115,7 @@ void GameLayer::on_attach() {
             .projectile_sprite_name = "bullet",
             .range_attack_sound_name = "m4a1/shoot.wav"
         },
+        ReloadComponent{30, 2000000, "m4a1/reload.wav"},
         MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
         RenderComponent{1}

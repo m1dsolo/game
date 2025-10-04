@@ -5,8 +5,7 @@
 namespace core {
 
 struct DeathEvent {
-    wheel::Entity source;
-    wheel::Entity target;
+    wheel::Entity source = wheel::NullEntity;
 };
 
 }  // namespace core

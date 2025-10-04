@@ -7,7 +7,7 @@
 namespace core {
 
 struct ChildrenComponent {
-    std::vector<wheel::Entity> children;
+    std::vector<wheel::Entity> entities;
 };
 
 }  // namespace core
