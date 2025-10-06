@@ -2,6 +2,8 @@
 
 namespace core {
 
-struct RigidbodyTag {};
+struct LayerComponent {
+    int layer = 0;
+};
 
 }  // namespace core

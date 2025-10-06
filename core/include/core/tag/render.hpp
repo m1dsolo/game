@@ -2,6 +2,6 @@
 
 namespace core {
 
-struct RigidbodyTag {};
+struct RenderTag {};
 
 }  // namespace core

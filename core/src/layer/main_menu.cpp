@@ -7,7 +7,8 @@
 #include <core/component/text.hpp>
 #include <core/component/button.hpp>
 #include <core/component/sprite.hpp>
-#include <core/component/render.hpp>
+#include <core/component/layer.hpp>
+#include <core/tag/render.hpp>
 #include <core/layer/game.hpp>
 
 namespace core {
@@ -31,14 +32,16 @@ void MainMenuLayer::on_attach() {
                     Coordinate::Type::Screen
                 },
                 SpriteComponent{},
-                RenderComponent{3}
+                LayerComponent{3},
+                RenderTag{}
             );
             auto text0_entity = entity_manager.add_entity(
                 button0_entity,
                 TextComponent{"new", 32, sdl::SDL::BLACK},
                 TransformComponent{},
                 SpriteComponent{},
-                RenderComponent{4}
+                LayerComponent{4},
+                RenderTag{}
             );
             break;
         }
@@ -54,14 +57,16 @@ void MainMenuLayer::on_attach() {
                     Coordinate::Type::Screen
                 },
                 SpriteComponent{},
-                RenderComponent{3}
+                LayerComponent{3},
+                RenderTag{}
             );
             auto text0_entity = entity_manager.add_entity(
                 button0_entity,
                 TextComponent{"resume", 32, sdl::SDL::BLACK},
                 TransformComponent{},
                 SpriteComponent{},
-                RenderComponent{4}
+                LayerComponent{4},
+                RenderTag{}
             );
             break;
         }
@@ -81,14 +86,16 @@ void MainMenuLayer::on_attach() {
             Coordinate::Type::Screen
         },
         SpriteComponent{},
-        RenderComponent{3}
+        LayerComponent{3},
+        RenderTag{}
     );
     auto text1_entity = entity_manager.add_entity(
         button1_entity,
         TextComponent{"exit", 32, sdl::SDL::BLACK},
         TransformComponent{},
         SpriteComponent{},
-        RenderComponent{4}
+        LayerComponent{4},
+        RenderTag{}
     );
 
     button_entities_ = {button0_entity, button1_entity};

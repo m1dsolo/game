@@ -10,7 +10,7 @@
 #include <core/component/collider.hpp>
 #include <core/component/animation.hpp>
 #include <core/component/animation_fsm.hpp>
-#include <core/component/render.hpp>
+#include <core/component/layer.hpp>
 #include <core/component/track.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/attack.hpp>
@@ -19,6 +19,7 @@
 #include <core/component/master.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/rigidbody.hpp>
+#include <core/tag/render.hpp>
 
 #include <wheel/random.hpp>
 
@@ -63,12 +64,13 @@ wheel::Entity EnemyManager::generate(
         },
         AnimationComponent{{name}},
         AnimationFSMComponent{"basic"},
-        RenderComponent{1},
+        LayerComponent{1},
         TrackComponent{ecs.get_entity<InputTag>()},
         HPComponent{config.hp},
         FractionComponent{1},
         LootComponent{config.loots},
-        RigidbodyTag{}
+        RigidbodyTag{},
+        RenderTag{}
     );
     auto [damage, range, interval] = config.attack;
     auto attack = entity_manager.add_entity(

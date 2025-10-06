@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/sprite.hpp>
+#include <core/component/sprite.hpp>
 
 #include <vector>
 #include <functional>

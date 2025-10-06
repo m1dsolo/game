@@ -7,8 +7,9 @@
 #include <core/component/direction.hpp>
 #include <core/component/speed.hpp>
 #include <core/component/sprite.hpp>
-#include <core/component/render.hpp>
+#include <core/component/layer.hpp>
 #include <core/component/hp.hpp>
+#include <core/tag/render.hpp>
 #include <core/event/hp_change.hpp>
 #include <core/entity_event/remove_entity.hpp>
 
@@ -38,7 +39,8 @@ void GenerateHPFloatTextSystem::operator()() {
                 DirectionComponent{{wheel::Random::instance().uniform<float>(-0.5f, 0.5f), -1.f}},
                 SpeedComponent{wheel::Random::instance().uniform<float>(10.f, 20.f)},
                 SpriteComponent{key},
-                RenderComponent{1}
+                LayerComponent{1},
+                RenderTag{}
             );
             TimeManager::instance().timer().add(1000000, [text_entity]() {
                 if (ecs.has_entity(text_entity)) {

@@ -8,9 +8,10 @@
 #include <core/component/loot.hpp>
 #include <core/component/item.hpp>
 #include <core/component/sprite.hpp>
-#include <core/component/render.hpp>
+#include <core/component/layer.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/hp_bar.hpp>
+#include <core/tag/render.hpp>
 #include <core/event/hp_change.hpp>
 #include <core/entity_event/death.hpp>
 
@@ -42,10 +43,10 @@ void HPChangeSystem::operator()() {
 
             // get hit effect
             if (value < 0) {
-                ecs.get_component<RenderComponent>(target).blend_mode_add_cnt++;
+                ecs.get_component<SpriteComponent>(target).get_hit_effect_cnt++;
                 TimeManager::instance().timer().add(100000, [target]() {
                     if (ecs.has_entity(target)) {
-                        ecs.get_component<RenderComponent>(target).blend_mode_add_cnt--;
+                        ecs.get_component<SpriteComponent>(target).get_hit_effect_cnt--;
                     }
                     return 0;
                 });

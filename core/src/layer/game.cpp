@@ -6,11 +6,12 @@
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
-#include <core/component/render.hpp>
+#include <core/component/layer.hpp>
 #include <core/component/hp.hpp>
 #include <core/tag/hp_bar.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/obstacle.hpp>
+#include <core/tag/render.hpp>
 #include <core/system/move.hpp>
 
 #include <sdl/sdl.hpp>
@@ -49,8 +50,9 @@ void GameLayer::on_attach() {
                 NameComponent{"hp_bar"},
                 TransformComponent{{0.f, -36.f}, {48.f, 12.f}},
                 SpriteComponent{"hp_bar48"},
-                RenderComponent{2},
-                HPBarTag{}
+                LayerComponent{2},
+                HPBarTag{},
+                RenderTag{}
             );
         }
     });
@@ -66,7 +68,8 @@ void GameLayer::on_attach() {
         NameComponent{"map"},
         TransformComponent{{0.f, 0.f}, {map_width, map_height}},
         SpriteComponent{"map"},
-        RenderComponent{0}
+        LayerComponent{0},
+        RenderTag{}
     );
 
     // init boundaries
@@ -80,8 +83,6 @@ void GameLayer::on_attach() {
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        // SpriteComponent{sdl::SDL::RED},
-        // RenderComponent{4},
         ObstacleTag{}
     );
     auto right_boundary = entity_manager.add_entity(
@@ -93,8 +94,6 @@ void GameLayer::on_attach() {
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        // SpriteComponent{sdl::SDL::RED},
-        // RenderComponent{4},
         ObstacleTag{}
     );
     auto top_boundary = entity_manager.add_entity(
@@ -106,8 +105,6 @@ void GameLayer::on_attach() {
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        // SpriteComponent{sdl::SDL::RED},
-        // RenderComponent{4},
         ObstacleTag{}
     );
     auto bottom_boundary = entity_manager.add_entity(
@@ -119,8 +116,6 @@ void GameLayer::on_attach() {
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        // SpriteComponent{sdl::SDL::RED},
-        // RenderComponent{4},
         ObstacleTag{}
     );
 

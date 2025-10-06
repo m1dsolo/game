@@ -1,28 +1,29 @@
 #include <core/system/render.hpp>
 #include <core/global.hpp>
 #include <core/manager/ui.hpp>
-#include <core/util/coordinate.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
-#include <core/component/render.hpp>
+#include <core/component/layer.hpp>
 #include <core/tag/input.hpp>
+#include <core/tag/render.hpp>
+#include <core/util/coordinate.hpp>
 
 namespace core {
 
 void RenderSystem::operator()() {
     for (int layer = 0; layer <= MAX_LAYER; layer++) {
-        for (auto [render, transform, sprite]
-            : ecs.get_components<RenderComponent, TransformComponent, SpriteComponent>()) {
-            if (render.layer != layer || !render.visible) {
+        for (auto [render_layer, transform, sprite, _]
+            : ecs.get_components<LayerComponent, TransformComponent, SpriteComponent, RenderTag>()) {
+            if (render_layer.layer != layer) {
                 continue;
             }
 
             // TODO: not render out of screen?
 
-            if (render.blend_mode_add_cnt > 0) {
+            if (sprite.get_hit_effect_cnt > 0) {
                 sdl::SDL::set_blend_mode(sprite.sprite->texture, SDL_BLENDMODE_ADD);
             }
-            sdl::SDL::TextureColorGuard color_guard(sprite.sprite->texture, sprite.sprite->color);
+            sdl::SDL::TextureColorGuard color_guard(sprite.sprite->texture, sprite.color);
             auto dst = transform.global.rect();
             if (transform.type == Coordinate::Type::World) {
                 dst = Coordinate::world2screen(dst);
