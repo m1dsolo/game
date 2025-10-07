@@ -12,7 +12,8 @@ namespace core {
 
 void LevelSystem::operator()() {
     const auto& config = ecs.get_resource<ConfigResource>();
-    for (const auto [entity, level, event] : ecs.get_entity_and_components<LevelComponent, ExpEvent>()) {
+    for (const auto event : ecs.get_events<ExpEvent>()) {
+        auto& level = ecs.get_component<LevelComponent>(event.entity);
         level.exp += event.exp;
         while (level.exp >= config.exps[level.level - 1]) {
             level.exp -= config.exps[level.level - 1];
