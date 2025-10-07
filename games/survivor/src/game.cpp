@@ -1,11 +1,12 @@
 #include <survivor/game.hpp>
-#include <survivor/system/achievement.hpp>
 #include <survivor/layer/game.hpp>
+#include <survivor/system/achievement.hpp>
+#include <survivor/system/update_hud.hpp>
 
 #include <core/global.hpp>
-#include <core/manager/game.hpp>
-#include <core/manager/layer.hpp>
+#include <core/manager/system.hpp>
 #include <core/manager/audio.hpp>
+#include <core/manager/layer.hpp>
 #include <core/system/track.hpp>
 #include <core/system/move.hpp>
 #include <core/system/collider.hpp>
@@ -19,14 +20,12 @@
 #include <core/system/pick_item.hpp>
 #include <core/system/level.hpp>
 
-#include <wheel/log.hpp>
-
 using namespace core;
 
 namespace survivor {
 
 SurvivorGame::SurvivorGame() {
-    GameManager::instance().add_game_systems<
+    SystemManager::instance().add_game_systems<
         TrackSystem,
         MoveSystem,
         ColliderSystem,
@@ -37,6 +36,7 @@ SurvivorGame::SurvivorGame() {
         GenerateHPFloatTextSystem,
         DeathSystem,
         AchievementSystem,
+        UpdateHudSystem,
         DropItemSystem,
         PickItemSystem,
         LevelSystem

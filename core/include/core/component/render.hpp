@@ -2,8 +2,8 @@
 
 namespace core {
 
-struct LevelSystem {
-    void operator()();
+struct RenderComponent {
+    int layer = 0;
 };
 
 }  // namespace core

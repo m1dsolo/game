@@ -3,14 +3,17 @@
 #include <core/global.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/collider.hpp>
+#include <core/manager/render.hpp>
+#include <core/util/hierarchy.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/children.hpp>
-#include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
 #include <core/component/button.hpp>
+#include <core/component/layout.hpp>
 #include <core/component/text.hpp>
-#include <core/util/hierarchy.hpp>
+#include <core/component/render.hpp>
+#include <core/entity_event/button.hpp>
 
 #include <wheel/singleton.hpp>
 
@@ -43,6 +46,9 @@ public:
             }
             ColliderManager::instance().add(entity);
         }
+        if (ecs.has_component<RenderComponent>(entity)) {
+            RenderManager::instance().add(entity);
+        }
 
         // update transform
         // TODO: encapsulation
@@ -61,6 +67,11 @@ public:
             sprite.sprite = &SpriteManager::instance().get(button.normal_color);
         }
 
+        if (ecs.has_component<LayoutComponent>(entity)) {
+            auto& layout = ecs.get_component<LayoutComponent>(entity);
+            ecs.add_entity_event(layout.widgets[layout.selected.first][layout.selected.second], ButtonHoveredEvent{});
+        }
+
         if (ecs.has_component<TextComponent>(entity)) {
             update_text_(entity, ecs.get_component<TextComponent>(entity).text);
         }
@@ -75,8 +86,6 @@ public:
     void remove_entity(wheel::Entity entity);
 
     void update_text(wheel::Entity entity, const std::string& text);
-
-    void add_button_entity(const std::string& text);
 
 private:
     EntityManager();

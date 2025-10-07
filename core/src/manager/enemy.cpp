@@ -10,7 +10,7 @@
 #include <core/component/collider.hpp>
 #include <core/component/animation.hpp>
 #include <core/component/animation_fsm.hpp>
-#include <core/component/layer.hpp>
+#include <core/component/render.hpp>
 #include <core/component/track.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/attack.hpp>
@@ -64,7 +64,7 @@ wheel::Entity EnemyManager::generate(
         },
         AnimationComponent{{name}},
         AnimationFSMComponent{"basic"},
-        LayerComponent{1},
+        RenderComponent{1},
         TrackComponent{ecs.get_entity<InputTag>()},
         HPComponent{config.hp},
         FractionComponent{1},

@@ -4,11 +4,8 @@
 
 namespace core {
 
-struct SDLEventSystem {
+struct HandleSDLEventSystem {
     void operator()();
-
-private:
-    SDL_Event event_;
 };
 
 }  // namespace core

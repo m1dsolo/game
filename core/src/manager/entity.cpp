@@ -5,6 +5,7 @@
 #include <core/component/children.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/text.hpp>
+#include <core/component/parent.hpp>
 #include <core/tag/root.hpp>
 #include <core/tag/camera.hpp>
 
@@ -33,6 +34,9 @@ void EntityManager::remove_entity(wheel::Entity entity) {
     }
     Hierarchy::detach_entity_from_parent(entity);
     ColliderManager::instance().remove(entity);
+    if (ecs.has_component<RenderComponent>(entity)) {
+        RenderManager::instance().remove(entity);
+    }
     ecs.remove_entity(entity);
 }
 

@@ -6,16 +6,10 @@
 
 namespace core {
 
-class GameManager : public wheel::Singleton<GameManager> {
-    friend wheel::Singleton<GameManager>;
+class SystemManager : public wheel::Singleton<SystemManager> {
+    friend wheel::Singleton<SystemManager>;
 
 public:
-    enum class State {
-        MAIN_MENU,
-        RUNNING,
-        PAUSED,
-    };
-
     template <typename... SystemTypes>
     void add_game_systems() {
         (add_game_system<SystemTypes>(), ...);
@@ -29,20 +23,14 @@ public:
         game_system_ids_.emplace_back(ecs.get_system_id<SystemType>());
     }
 
-    void start();
-    void stop();
-    void pause();
-    void resume();
-
-    State state() const { return state_; }
+    void pause_game_systems();
+    void resume_game_systems();
 
 private:
-    GameManager() = default;
-    GameManager(const GameManager&) = delete;
+    SystemManager() = default;
+    SystemManager(const SystemManager&) = delete;
 
     std::vector<wheel::SystemID> game_system_ids_;
-
-    State state_{State::MAIN_MENU};
 };
 
 }  // namespace core

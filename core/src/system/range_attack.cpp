@@ -10,7 +10,7 @@
 #include <core/component/speed.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/animation.hpp>
-#include <core/component/layer.hpp>
+#include <core/component/render.hpp>
 #include <core/component/track.hpp>
 #include <core/component/projectile.hpp>
 #include <core/component/range_attack.hpp>
@@ -84,7 +84,7 @@ void shoot_() {
             DirectionComponent{(ecs.get_component<TransformComponent>(closest).global.position - trigger_pos).normalize()},
             SpriteComponent{range_attack.projectile_sprite_name},
             SpeedComponent{range_attack.projectile_speed},
-            LayerComponent{2},
+            RenderComponent{2},
             // TrackComponent{closest.first},
             FractionComponent{fraction},
             MasterComponent{master},

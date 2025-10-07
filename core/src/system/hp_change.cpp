@@ -8,7 +8,6 @@
 #include <core/component/loot.hpp>
 #include <core/component/item.hpp>
 #include <core/component/sprite.hpp>
-#include <core/component/layer.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/hp_bar.hpp>
 #include <core/tag/render.hpp>

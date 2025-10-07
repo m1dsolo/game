@@ -6,12 +6,7 @@
 namespace core {
 
 void RemoveEntitySystem::operator()() {
-    auto entities = ecs.get_entity_and_components<RemoveEntityEvent>() |
-        std::views::transform([](auto&& tuple) {
-            return std::get<0>(tuple);
-        }) |
-        std::ranges::to<std::vector<wheel::Entity>>();
-
+    auto entities = ecs.get_entities<RemoveEntityEvent>() | std::ranges::to<std::vector>();
     for (auto entity : entities) {
         EntityManager::instance().remove_entity(entity);
     }

@@ -3,7 +3,7 @@
 #include <core/manager/entity.hpp>
 #include <core/component/name.hpp>
 #include <core/component/loot.hpp>
-#include <core/component/layer.hpp>
+#include <core/component/render.hpp>
 #include <core/component/item.hpp>
 #include <core/tag/render.hpp>
 #include <core/entity_event/death.hpp>
@@ -33,7 +33,7 @@ void DropItemSystem::operator()() {
                             },
                             SpriteComponent{item.name},
                             ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
-                            LayerComponent{1},
+                            RenderComponent{1},
                             ItemComponent{item.name, count},
                             RenderTag{}
                         );

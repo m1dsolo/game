@@ -8,9 +8,9 @@
 
 namespace core {
 
-class MainMenuLayer : public Layer {
+class PauseMenuLayer : public Layer {
 public:
-    MainMenuLayer() : Layer("MainMenuLayer") {}
+    PauseMenuLayer() : Layer("PauseMenuLayer") {}
 
     void on_attach() override;
     void on_detach() override;
@@ -21,7 +21,7 @@ public:
 
 private:
     inline static std::vector<wheel::Entity> entities_;
-    inline static wheel::Entity start_button_entity_;
+    inline static wheel::Entity resume_button_entity_;
     inline static wheel::Entity exit_button_entity_;
     inline static wheel::Entity layout_entity_;
 };

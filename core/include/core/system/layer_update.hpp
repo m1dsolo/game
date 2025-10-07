@@ -2,7 +2,7 @@
 
 namespace core {
 
-struct UpdateSystem {
+struct LayerUpdateSystem {
     void operator()();
 };
 

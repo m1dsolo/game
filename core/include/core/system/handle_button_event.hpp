@@ -2,8 +2,8 @@
 
 namespace core {
 
-struct LayerComponent {
-    int layer = 0;
+struct HandleButtonEventSystem {
+    void operator()();
 };
 
 }  // namespace core

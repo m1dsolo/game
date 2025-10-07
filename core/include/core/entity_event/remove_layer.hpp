@@ -2,8 +2,6 @@
 
 namespace core {
 
-struct LevelSystem {
-    void operator()();
-};
+struct RemoveLayerEvent {};
 
 }  // namespace core

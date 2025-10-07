@@ -1,24 +1,83 @@
 #include <core/layer/game.hpp>
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
-#include <core/manager/game.hpp>
-#include <core/manager/ui.hpp>
+#include <core/manager/layer.hpp>
+#include <core/layer/pause_menu.hpp>
+#include <core/system/move.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
-#include <core/component/layer.hpp>
+#include <core/component/render.hpp>
 #include <core/component/hp.hpp>
 #include <core/tag/hp_bar.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/obstacle.hpp>
 #include <core/tag/render.hpp>
-#include <core/system/move.hpp>
 
 #include <sdl/sdl.hpp>
 
 namespace core {
 
+void init_hp_bar_();
+void init_map_();
+
 void GameLayer::on_attach() {
+    init_hp_bar_();
+    init_map_();
+}
+
+// TODO
+void GameLayer::on_detach() {
+}
+
+bool GameLayer::on_event(const SDL_Event& event) {
+    switch (event.type) {
+        case SDL_EVENT_KEY_DOWN: {
+            switch (event.key.key) {
+                case SDLK_W: MoveSystem::is_move_up = true; return true;
+                case SDLK_S: MoveSystem::is_move_down = true; return true;
+                case SDLK_A: MoveSystem::is_move_left = true; return true;
+                case SDLK_D: MoveSystem::is_move_right = true; return true;
+                case SDLK_ESCAPE: {
+                    LayerManager::instance().push<PauseMenuLayer>();
+                    return true;
+                }
+            }
+            break;
+        }
+        case SDL_EVENT_KEY_UP: {
+            switch (event.key.key) {
+                case SDLK_W: MoveSystem::is_move_up = false; return true;
+                case SDLK_S: MoveSystem::is_move_down = false; return true;
+                case SDLK_A: MoveSystem::is_move_left = false; return true;
+                case SDLK_D: MoveSystem::is_move_right = false; return true;
+            }
+            break;
+        }
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION: {
+            const auto& gaxis = event.gaxis;
+            switch (gaxis.axis) {
+                case SDL_GAMEPAD_AXIS_LEFTX: {
+                    float value = gaxis.value / 32767.0f;
+                    MoveSystem::is_move_left = (value < -0.25);
+                    MoveSystem::is_move_right = (value > 0.25);
+                    return true;
+                }
+                case SDL_GAMEPAD_AXIS_LEFTY: {
+                    float value = gaxis.value / 32767.0f;
+                    MoveSystem::is_move_up = (value < -0.25);
+                    MoveSystem::is_move_down = (value > 0.25);
+                    return true;
+                }
+            }
+            break;
+        }
+    }
+
+    return false;
+}
+
+void init_hp_bar_() {
     // init hp bar sprites
     for (int i = 1; i <= 47; i++) {
         auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
@@ -40,22 +99,23 @@ void GameLayer::on_attach() {
         {0.f, 0.f, 48.f, 12.f}
     });
 
-    auto& entity_manager = EntityManager::instance();
-
-    // set add hp bar callback
-    entity_manager.set_add_entity_callback([](wheel::Entity entity) {
+    EntityManager::instance().set_add_entity_callback([](wheel::Entity entity) {
         if (ecs.has_component<HPComponent>(entity)) {
             EntityManager::instance().add_entity(
                 entity,
                 NameComponent{"hp_bar"},
                 TransformComponent{{0.f, -36.f}, {48.f, 12.f}},
                 SpriteComponent{"hp_bar48"},
-                LayerComponent{2},
+                RenderComponent{2},
                 HPBarTag{},
                 RenderTag{}
             );
         }
     });
+}
+
+void init_map_() {
+    auto& entity_manager = EntityManager::instance();
 
     // init map
     float map_width = context.map_width;
@@ -68,7 +128,7 @@ void GameLayer::on_attach() {
         NameComponent{"map"},
         TransformComponent{{0.f, 0.f}, {map_width, map_height}},
         SpriteComponent{"map"},
-        LayerComponent{0},
+        RenderComponent{0},
         RenderTag{}
     );
 
@@ -118,62 +178,6 @@ void GameLayer::on_attach() {
         RigidbodyTag{},
         ObstacleTag{}
     );
-
-    GameManager::instance().start();
-}
-
-void GameLayer::on_detach() {
-    // TODO: clean
-
-    GameManager::instance().stop();
-}
-
-bool GameLayer::on_event(const SDL_Event& event) {
-    switch (event.type) {
-        case SDL_EVENT_KEY_DOWN: {
-            switch (event.key.key) {
-                case SDLK_W: MoveSystem::is_move_up = true; return true;
-                case SDLK_S: MoveSystem::is_move_down = true; return true;
-                case SDLK_A: MoveSystem::is_move_left = true; return true;
-                case SDLK_D: MoveSystem::is_move_right = true; return true;
-                case SDLK_ESCAPE: {
-                    GameManager::instance().pause();
-                    return true;
-                }
-            }
-            break;
-        }
-        case SDL_EVENT_KEY_UP: {
-            switch (event.key.key) {
-                case SDLK_W: MoveSystem::is_move_up = false; return true;
-                case SDLK_S: MoveSystem::is_move_down = false; return true;
-                case SDLK_A: MoveSystem::is_move_left = false; return true;
-                case SDLK_D: MoveSystem::is_move_right = false; return true;
-            }
-            break;
-        }
-        // case SDL_Event_GAMEPAD_ADDED
-        case SDL_EVENT_GAMEPAD_AXIS_MOTION: {
-            const auto& gaxis = event.gaxis;
-            switch (gaxis.axis) {
-                case SDL_GAMEPAD_AXIS_LEFTX: {
-                    float value = gaxis.value / 32767.0f;
-                    MoveSystem::is_move_left = (value < -0.25);
-                    MoveSystem::is_move_right = (value > 0.25);
-                    return true;
-                }
-                case SDL_GAMEPAD_AXIS_LEFTY: {
-                    float value = gaxis.value / 32767.0f;
-                    MoveSystem::is_move_up = (value < -0.25);
-                    MoveSystem::is_move_down = (value > 0.25);
-                    return true;
-                }
-            }
-            break;
-        }
-    }
-
-    return false;
 }
 
 }  // namespace core

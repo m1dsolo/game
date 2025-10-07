@@ -1,35 +1,32 @@
 #include <survivor/layer/game.hpp>
-#include <survivor/manager/achievement.hpp>
 #include <survivor/manager/wave.hpp>
+#include <survivor/tag/hud.hpp>
 
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
-#include <core/manager/time.hpp>
-#include <core/manager/sprite.hpp>
 #include <core/component/name.hpp>
+#include <core/component/transform.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/speed.hpp>
-#include <core/component/transform.hpp>
+#include <core/component/collider.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/animation.hpp>
 #include <core/component/animation_fsm.hpp>
-#include <core/component/layer.hpp>
-#include <core/component/collider.hpp>
-#include <core/component/track.hpp>
+#include <core/component/render.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/level.hpp>
 #include <core/component/fraction.hpp>
+#include <core/component/inventory.hpp>
+#include <core/component/master.hpp>
+#include <core/component/aura_damage.hpp>
 #include <core/component/range_attack.hpp>
 #include <core/component/reload.hpp>
-#include <core/component/inventory.hpp>
-#include <core/component/aura_damage.hpp>
-#include <core/component/master.hpp>
-#include <core/tag/input.hpp>
 #include <core/tag/camera.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/render.hpp>
-#include <core/tag/absorb_item.hpp>
+#include <core/tag/input.hpp>
 #include <core/tag/pickup_item.hpp>
+#include <core/tag/absorb_item.hpp>
 
 using namespace core;
 
@@ -51,7 +48,7 @@ void GameLayer::on_attach() {
         SpriteComponent{},
         AnimationComponent{{"bunny"}},
         AnimationFSMComponent{"basic"},
-        LayerComponent{1},
+        RenderComponent{1},
         HPComponent{100},
         LevelComponent{},
         FractionComponent{0},
@@ -87,7 +84,7 @@ void GameLayer::on_attach() {
         NameComponent{"damage_aura"},
         TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
         SpriteComponent{"pink_filled_circle"},
-        LayerComponent{1},
+        RenderComponent{1},
         ColliderComponent{
             wheel::Circle<float>{150.f},
             ColliderLayer::Trigger,
@@ -121,7 +118,7 @@ void GameLayer::on_attach() {
         ReloadComponent{30, 2000000, "m4a1/reload.wav"},
         MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
-        LayerComponent{1},
+        RenderComponent{1},
         RenderTag{}
     );
 
@@ -133,9 +130,8 @@ void GameLayer::on_attach() {
     //     RenderComponent{0}
     // );
 
-    player_entity_ = bunny;
-    text_entity_ = EntityManager::instance().add_entity(
-        TextComponent{"", 32, sdl::SDL::ORANGE},
+    entity_manager.add_entity(
+        TextComponent{"Hud", 32, sdl::SDL::ORANGE},
         TransformComponent{
             {0.5f * context.virtual_window_width, 0.1f * context.virtual_window_height},
             {0.f, 0.f},
@@ -143,8 +139,9 @@ void GameLayer::on_attach() {
             Coordinate::Type::Screen
         },
         SpriteComponent{},
-        LayerComponent{4},
-        RenderTag{}
+        RenderComponent{4},
+        RenderTag{},
+        HudTag{}
     );
 
     core::GameLayer::on_attach();
@@ -154,15 +151,6 @@ void GameLayer::on_attach() {
 
 // TODO
 void GameLayer::on_detach() {
-}
-
-void GameLayer::on_update() {
-    // TODO: simple ui
-    const auto& achievement_manager = AchievementManager::instance();
-    const auto& hp = ecs.get_component<HPComponent>(player_entity_);
-    const auto& level = ecs.get_component<LevelComponent>(player_entity_);
-    auto text = std::format("level: {} exp: {}/{} hp:{}/{} kill:{}", level.level, level.exp, config.exps[level.level - 1], hp.hp, hp.max_hp, achievement_manager.kill_num());
-    EntityManager::instance().update_text(text_entity_, text);
 }
 
 }  // namespace survivor
