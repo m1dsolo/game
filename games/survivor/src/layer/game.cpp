@@ -21,12 +21,14 @@
 #include <core/component/aura_damage.hpp>
 #include <core/component/range_attack.hpp>
 #include <core/component/reload.hpp>
+#include <core/component/track.hpp>
 #include <core/tag/camera.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/render.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/pickup_item.hpp>
 #include <core/tag/absorb_item.hpp>
+#include <core/tag/avoid_enemy.hpp>
 
 using namespace core;
 
@@ -105,6 +107,52 @@ void GameLayer::on_attach() {
         TransformComponent{{0.f, 0.f}, {500.f, 500.f}},
         ColliderComponent{
             wheel::Circle<float>{250.f},
+            ColliderLayer::Trigger,
+            ColliderLayer::Enemy
+        },
+        RangeAttackComponent{
+            .damage = 10,
+            .interval = 200000,
+            .projectile_speed = 500.f,
+            .projectile_sprite_name = "bullet",
+            .range_attack_sound_name = "m4a1/shoot.wav"
+        },
+        ReloadComponent{30, 2000000, "m4a1/reload.wav"},
+        MasterComponent{bunny},
+        SpriteComponent{"auto_shoot"},
+        RenderComponent{1},
+        RenderTag{}
+    );
+
+    auto follower = entity_manager.add_entity(
+        NameComponent{"follower"},
+        TransformComponent{{50.f, 0.f}, {64.f, 64.f}},
+        DirectionComponent{},
+        SpeedComponent{150.f},
+        ColliderComponent{
+            wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}},
+            ColliderLayer::Player,
+            ColliderLayer::Enemy | ColliderLayer::Obstacle
+        },
+        SpriteComponent{},
+        AnimationComponent{{"bunny"}},
+        AnimationFSMComponent{"basic"},
+        RenderComponent{1},
+        HPComponent{100},
+        LevelComponent{},
+        FractionComponent{0},
+        InventoryComponent{10},
+        TrackComponent{bunny, 50.f},
+        AvoidEnemyTag{},
+        RigidbodyTag{},
+        RenderTag{}
+    );
+    auto follower_auto_shoot = entity_manager.add_entity(
+        follower,
+        NameComponent("follower_auto_shoot"),
+        TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
+        ColliderComponent{
+            wheel::Circle<float>{150.f},
             ColliderLayer::Trigger,
             ColliderLayer::Enemy
         },

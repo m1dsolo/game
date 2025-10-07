@@ -12,7 +12,12 @@ void TrackSystem::operator()() {
         auto& pos0 = transform.global.position;
         if (ecs.has_entity(track.target)) {
             auto& pos1 = ecs.get_component<TransformComponent>(track.target).global.position;
-            direction.move = direction.look = (pos1 - pos0).normalize();
+            auto dist = pos1.euclidean_distance(pos0);
+            if (!track.range || dist >= track.range) {
+                direction.move = direction.look = (pos1 - pos0).normalize();
+            } else {
+                direction.move = {0.f, 0.f};
+            }
         } else {
             ecs.remove_component<TrackComponent>(entity);
         }
