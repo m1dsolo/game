@@ -1,11 +1,13 @@
 #include <core/layer/global.hpp>
 #include <core/global.hpp>
+#include <core/resource/context.hpp>
 
 #include <sdl/sdl.hpp>
 
 namespace core {
 
 bool GlobalLayer::on_event(const SDL_Event& event) {
+    auto& context = ecs.get_resource<ContextResource>();
     switch (event.type) {
         case SDL_EVENT_QUIT: context.running = false;
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED: {

@@ -28,13 +28,15 @@
 #include <core/tag/input.hpp>
 #include <core/tag/pickup_item.hpp>
 #include <core/tag/absorb_item.hpp>
-#include <core/tag/avoid_enemy.hpp>
+#include <core/resource/context.hpp>
 
 using namespace core;
 
 namespace survivor {
 
 void GameLayer::on_attach() {
+    const auto& context = ecs.get_resource<ContextResource>();
+
     auto& entity_manager = EntityManager::instance();
 
     auto bunny = entity_manager.add_entity(
@@ -143,7 +145,6 @@ void GameLayer::on_attach() {
         FractionComponent{0},
         InventoryComponent{10},
         TrackComponent{bunny, 50.f},
-        AvoidEnemyTag{},
         RigidbodyTag{},
         RenderTag{}
     );

@@ -3,6 +3,8 @@
 #include <core/component/layout.hpp>
 #include <core/entity_event/button.hpp>
 
+#include <sdl/sdl.hpp>
+
 namespace core {
 
 bool UI::handle_layout_event(wheel::Entity entity, const SDL_Event& event) {

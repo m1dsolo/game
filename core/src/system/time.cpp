@@ -1,6 +1,7 @@
 #include <core/system/time.hpp>
 #include <core/global.hpp>
 #include <core/manager/time.hpp>
+#include <core/resource/context.hpp>
 
 namespace core {
 
@@ -14,7 +15,7 @@ void TimeSystem::operator()() {
 
     time_manager.update();
 
-    int fps = context.fps;
+    int fps = ecs.get_resource<ContextResource>().fps;
     time_t target = timer.TIME_UNIT_PER_SECOND / fps;
     timer.sleep(std::max(static_cast<wheel::time_t>(0), target - time_manager.dt()));
 }

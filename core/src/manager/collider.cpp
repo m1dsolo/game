@@ -4,11 +4,13 @@
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
 #include <core/tag/rigidbody.hpp>
+#include <core/resource/context.hpp>
 #include <core/util/hierarchy.hpp>
 
 namespace core {
 
 ColliderManager::ColliderManager() {
+    const auto& context = ecs.get_resource<ContextResource>();
     init(context.map_width + 100.f, context.map_height + 100.f);
 }
 

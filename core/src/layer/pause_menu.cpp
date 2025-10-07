@@ -10,6 +10,7 @@
 #include <core/component/render.hpp>
 #include <core/component/layout.hpp>
 #include <core/tag/render.hpp>
+#include <core/resource/context.hpp>
 #include <core/entity_event/button.hpp>
 #include <core/entity_event/remove_entity.hpp>
 #include <core/entity_event/remove_layer.hpp>
@@ -17,6 +18,7 @@
 namespace core {
 
 void PauseMenuLayer::on_attach() {
+    const auto& context = ecs.get_resource<ContextResource>();
     auto& entity_manager = EntityManager::instance();
     resume_button_entity_ = entity_manager.add_entity(
         NameComponent{"resume_button"},
@@ -98,7 +100,7 @@ void PauseMenuLayer::on_update() {
     }
 
     if (ecs.has_component<ButtonPressedEvent>(exit_button_entity_)) {
-        context.running = false;
+        ecs.get_resource<ContextResource>().running = false;
     }
 }
 

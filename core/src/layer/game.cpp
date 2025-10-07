@@ -13,6 +13,7 @@
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/obstacle.hpp>
 #include <core/tag/render.hpp>
+#include <core/resource/context.hpp>
 
 #include <sdl/sdl.hpp>
 
@@ -118,6 +119,7 @@ void init_map_() {
     auto& entity_manager = EntityManager::instance();
 
     // init map
+    const auto& context = ecs.get_resource<ContextResource>();
     float map_width = context.map_width;
     float map_height = context.map_height;
     SpriteManager::instance().set("map", Sprite{
