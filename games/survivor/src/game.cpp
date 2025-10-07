@@ -10,6 +10,7 @@
 #include <core/system/track.hpp>
 #include <core/system/move.hpp>
 #include <core/system/collider.hpp>
+#include <core/system/trigger.hpp>
 #include <core/system/attack.hpp>
 #include <core/system/range_attack.hpp>
 #include <core/system/aura_damage.hpp>
@@ -29,6 +30,7 @@ SurvivorGame::SurvivorGame() {
         TrackSystem,
         MoveSystem,
         ColliderSystem,
+        TriggerSystem,
         AttackSystem,
         RangeAttackSystem,
         AuraDamageSystem,
