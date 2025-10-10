@@ -1,0 +1,39 @@
+{
+    "name": "fox",
+    "path": "sprite_sheet/fox.png",
+    "duration": 0.25,
+    "loop": true,
+    "size": [
+        32,
+        32
+    ],
+    "step": [
+        32,
+        0
+    ],
+    "count": 4,
+    "animations": [
+        {
+            "state": "idle",
+            "start": [
+                0,
+                0
+            ]
+        },
+        {
+            "state": "walk",
+            "start": [
+                0,
+                32
+            ]
+        },
+        {
+            "state": "dead",
+            "loop": false,
+            "start": [
+                0,
+                160
+            ]
+        }
+    ]
+}

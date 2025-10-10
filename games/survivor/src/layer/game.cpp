@@ -94,7 +94,7 @@ void GameLayer::on_attach() {
             ColliderLayer::Trigger,
             ColliderLayer::Enemy
         },
-        AuraDamageComponent{15, 500000.f},
+        AuraDamageComponent{8, 500000.f},
         MasterComponent{bunny},
         RenderTag{}
     );
@@ -113,7 +113,7 @@ void GameLayer::on_attach() {
             ColliderLayer::Enemy
         },
         RangeAttackComponent{
-            .damage = 10,
+            .damage = 7,
             .interval = 200000,
             .projectile_speed = 500.f,
             .projectile_sprite_name = "bullet",
@@ -126,8 +126,8 @@ void GameLayer::on_attach() {
         RenderTag{}
     );
 
-    auto follower = entity_manager.add_entity(
-        NameComponent{"follower"},
+    auto fox = entity_manager.add_entity(
+        NameComponent{"fox"},
         TransformComponent{{50.f, 0.f}, {64.f, 64.f}},
         DirectionComponent{},
         SpeedComponent{150.f},
@@ -137,7 +137,7 @@ void GameLayer::on_attach() {
             ColliderLayer::Enemy | ColliderLayer::Obstacle
         },
         SpriteComponent{},
-        AnimationComponent{{"bunny"}},
+        AnimationComponent{{"fox"}},
         AnimationFSMComponent{"basic"},
         RenderComponent{1},
         HPComponent{100},
@@ -148,9 +148,9 @@ void GameLayer::on_attach() {
         RigidbodyTag{},
         RenderTag{}
     );
-    auto follower_auto_shoot = entity_manager.add_entity(
-        follower,
-        NameComponent("follower_auto_shoot"),
+    auto fox_auto_shoot = entity_manager.add_entity(
+        fox,
+        NameComponent("fox_auto_shoot"),
         TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
         ColliderComponent{
             wheel::Circle<float>{150.f},
@@ -159,12 +159,12 @@ void GameLayer::on_attach() {
         },
         RangeAttackComponent{
             .damage = 10,
-            .interval = 200000,
+            .interval = 500000,
             .projectile_speed = 500.f,
             .projectile_sprite_name = "bullet",
-            .range_attack_sound_name = "m4a1/shoot.wav"
+            .range_attack_sound_name = "usp/shoot.wav"
         },
-        ReloadComponent{30, 2000000, "m4a1/reload.wav"},
+        ReloadComponent{12, 1000000, "usp/reload.wav"},
         MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
         RenderComponent{1},
