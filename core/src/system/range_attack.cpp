@@ -14,8 +14,10 @@
 #include <core/component/track.hpp>
 #include <core/component/projectile.hpp>
 #include <core/component/range_attack.hpp>
+#include <core/component/reload.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/fraction.hpp>
+#include <core/component/master.hpp>
 #include <core/component/master.hpp>
 #include <core/tag/obstacle.hpp>
 #include <core/tag/render.hpp>
@@ -63,6 +65,23 @@ void shoot_() {
             continue;
         }
         range_attack.time -= range_attack.interval;
+
+        if (ecs.has_component<ReloadComponent>(trigger)) {
+            auto& reload = ecs.get_component<ReloadComponent>(trigger);
+            if (reload.current_ammo == 0) {
+                continue;
+            }
+            if (--reload.current_ammo == 0) {
+                AudioManager::instance().play(reload.sound_name);
+                TimeManager::instance().timer().add(reload.reload_time, [trigger]() {
+                    if (ecs.has_component<ReloadComponent>(trigger)) {
+                        auto& reload = ecs.get_component<ReloadComponent>(trigger);
+                        reload.current_ammo = reload.max_ammo;
+                    }
+                    return 0;
+                });
+            }
+        }
 
         auto master = ecs.get_component<MasterComponent>(trigger).entity;
         auto fraction = ecs.get_component<FractionComponent>(master).fraction;

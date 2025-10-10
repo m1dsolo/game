@@ -12,7 +12,6 @@ struct ReloadComponent {
     int max_ammo;
     time_t reload_time = 1000000;
     std::string sound_name;
-    bool is_reloading = false;
 };
 
 }  // namespace core
