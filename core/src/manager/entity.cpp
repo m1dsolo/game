@@ -27,6 +27,9 @@ EntityManager::EntityManager() {
 }
 
 void EntityManager::remove_entity(wheel::Entity entity) {
+    if (!ecs.has_entity(entity)) {
+        return;
+    }
     if (ecs.has_component<ChildrenComponent>(entity)) {
         for (auto child : ecs.get_component<ChildrenComponent>(entity).entities) {
             remove_entity(child);
