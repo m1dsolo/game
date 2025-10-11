@@ -7,6 +7,7 @@
 #include <core/manager/system.hpp>
 #include <core/manager/audio.hpp>
 #include <core/manager/layer.hpp>
+#include <core/system/timer.hpp>
 #include <core/system/track.hpp>
 #include <core/system/move.hpp>
 #include <core/system/collider.hpp>
@@ -27,6 +28,7 @@ namespace survivor {
 
 SurvivorGame::SurvivorGame() {
     SystemManager::instance().add_game_systems<
+        TimerSystem,
         TrackSystem,
         MoveSystem,
         ColliderSystem,

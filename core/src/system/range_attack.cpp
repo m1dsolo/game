@@ -1,7 +1,7 @@
 #include <core/system/range_attack.hpp>
+#include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/collider.hpp>
-#include <core/manager/time.hpp>
 #include <core/manager/audio.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
@@ -21,11 +21,10 @@
 #include <core/tag/obstacle.hpp>
 #include <core/tag/render.hpp>
 #include <core/resource/trigger.hpp>
+#include <core/resource/time.hpp>
 #include <core/event/hp_change.hpp>
 #include <core/event/trigger.hpp>
 #include <core/entity_event/remove_entity.hpp>
-
-#include <ecs/ecs.hpp>
 
 namespace core {
 
@@ -39,10 +38,9 @@ void RangeAttackSystem::operator()(wheel::ECS& ecs) {
 
 void shoot_(wheel::ECS& ecs) {
     // prepare shoot
-    auto dt = TimeManager::instance().dt();
     for (auto [range_attack] : ecs.get_components<RangeAttackComponent>()) {
         if (range_attack.time < range_attack.interval) {
-            range_attack.time += dt;
+            range_attack.time += ecs.get_resource<TimeResource>().dt;
         } else {
             range_attack.time = range_attack.interval;
         }
@@ -72,7 +70,7 @@ void shoot_(wheel::ECS& ecs) {
             }
             if (--reload.current_ammo == 0) {
                 AudioManager::instance().play(reload.sound_name);
-                TimeManager::instance().timer().add(reload.reload_time, [trigger, &ecs]() {
+                timer.add(reload.reload_time, [trigger, &ecs]() {
                     if (ecs.has_component<ReloadComponent>(trigger)) {
                         auto& reload = ecs.get_component<ReloadComponent>(trigger);
                         reload.current_ammo = reload.max_ammo;

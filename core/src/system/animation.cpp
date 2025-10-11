@@ -4,8 +4,8 @@
 #include <core/component/animation_fsm.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/speed.hpp>
+#include <core/resource/time.hpp>
 #include <core/manager/animation.hpp>
-#include <core/manager/time.hpp>
 
 #include <ecs/ecs.hpp>
 #include <wheel/geometry.hpp>
@@ -64,7 +64,8 @@ void AnimationSystem::operator()(wheel::ECS& ecs) {
 
     // update animation time
     for (auto [animation] : ecs.get_components<AnimationComponent>()) {
-        animation.time += static_cast<float>(TimeManager::instance().dt()) / wheel::Timer::TIME_UNIT_PER_SECOND;
+        auto dt = ecs.get_resource<TimeResource>().dt;
+        animation.time += static_cast<float>(dt) / wheel::Timer::TIME_UNIT_PER_SECOND;
     }
 
     // update sprite flip

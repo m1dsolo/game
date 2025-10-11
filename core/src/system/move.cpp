@@ -1,13 +1,12 @@
 #include <core/system/move.hpp>
-#include <core/manager/time.hpp>
+#include <core/global.hpp>
 #include <core/manager/collider.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/speed.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/collider.hpp>
+#include <core/resource/time.hpp>
 #include <core/tag/input.hpp>
-
-#include <ecs/ecs.hpp>
 
 namespace core {
 
@@ -27,8 +26,7 @@ void MoveSystem::operator()(wheel::ECS& ecs) {
     }
 
     // move
-    auto& time_manager = TimeManager::instance();
-    auto dt = static_cast<float>(time_manager.dt()) / time_manager.timer().TIME_UNIT_PER_SECOND;
+    auto dt = static_cast<float>(ecs.get_resource<TimeResource>().dt) / timer.TIME_UNIT_PER_SECOND;
     for (auto [entity, transform, speed, direction]
         : ecs.get_entity_and_components<TransformComponent, SpeedComponent, DirectionComponent>()) {
         auto delta = direction.move * speed.speed * dt;

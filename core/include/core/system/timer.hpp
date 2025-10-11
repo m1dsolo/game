@@ -1,18 +1,13 @@
 #pragma once
 
-#include <wheel/timer.hpp>
-
 namespace wheel {
 class ECS;
 }
 
 namespace core {
 
-struct TimeSystem {
+struct TimerSystem {
     void operator()(wheel::ECS& ecs);
-
-private:
-    wheel::time_t last_frame_time_ = 0;
 };
 
 }  // namespace core

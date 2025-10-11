@@ -1,7 +1,6 @@
 #include <core/manager/enemy.hpp>
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
-#include <core/manager/time.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>

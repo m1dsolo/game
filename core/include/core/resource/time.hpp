@@ -1,11 +1,11 @@
 #pragma once
 
-#include <ecs/ecs.hpp>
 #include <wheel/timer.hpp>
 
 namespace core {
 
-inline wheel::ECS ecs;
-inline wheel::Timer timer;
+struct TimeResource {
+    wheel::time_t dt = 100000;
+};
 
 }  // namespace core

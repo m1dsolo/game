@@ -1,6 +1,5 @@
 #include <survivor/manager/wave.hpp>
 #include <core/global.hpp>
-#include <core/manager/time.hpp>
 #include <core/manager/enemy.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
@@ -23,7 +22,7 @@ WaveManager::WaveManager() {
 }
 
 void WaveManager::generate_waves() const {
-    TimeManager::instance().timer().add(1000000, [this]() {
+    timer.add(1000000, [this]() {
         generate("thief");
 
         return 1000000;

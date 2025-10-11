@@ -22,6 +22,7 @@
 #include <core/resource/config.hpp>
 #include <core/resource/context.hpp>
 #include <core/resource/trigger.hpp>
+#include <core/resource/time.hpp>
 
 #include <wheel/log.hpp>
 #include <sdl/sdl.hpp>
@@ -58,6 +59,7 @@ Game::Game() {
     context.texture = sdl::SDL::create_texture(context.virtual_window_width, context.virtual_window_height);
     ecs.add_resource<ContextResource>(std::move(context));
     ecs.add_resource(TriggerResource{});
+    ecs.add_resource(TimeResource{});
 }
 
 void Game::run() {
