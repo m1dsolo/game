@@ -3,7 +3,6 @@
 #include <core/manager/entity.hpp>
 #include <core/manager/layer.hpp>
 #include <core/layer/pause_menu.hpp>
-#include <core/system/move.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
@@ -14,6 +13,7 @@
 #include <core/tag/obstacle.hpp>
 #include <core/tag/render.hpp>
 #include <core/resource/context.hpp>
+#include <core/resource/input.hpp>
 
 #include <sdl/sdl.hpp>
 
@@ -32,13 +32,14 @@ void GameLayer::on_detach() {
 }
 
 bool GameLayer::on_event(const SDL_Event& event) {
+    auto& input = ecs.get_resource<InputResource>();
     switch (event.type) {
         case SDL_EVENT_KEY_DOWN: {
             switch (event.key.key) {
-                case SDLK_W: MoveSystem::is_move_up = true; return true;
-                case SDLK_S: MoveSystem::is_move_down = true; return true;
-                case SDLK_A: MoveSystem::is_move_left = true; return true;
-                case SDLK_D: MoveSystem::is_move_right = true; return true;
+                case SDLK_W: input.is_move_up = true; return true;
+                case SDLK_S: input.is_move_down = true; return true;
+                case SDLK_A: input.is_move_left = true; return true;
+                case SDLK_D: input.is_move_right = true; return true;
                 case SDLK_ESCAPE: {
                     LayerManager::instance().push<PauseMenuLayer>();
                     return true;
@@ -48,10 +49,10 @@ bool GameLayer::on_event(const SDL_Event& event) {
         }
         case SDL_EVENT_KEY_UP: {
             switch (event.key.key) {
-                case SDLK_W: MoveSystem::is_move_up = false; return true;
-                case SDLK_S: MoveSystem::is_move_down = false; return true;
-                case SDLK_A: MoveSystem::is_move_left = false; return true;
-                case SDLK_D: MoveSystem::is_move_right = false; return true;
+                case SDLK_W: input.is_move_up = false; return true;
+                case SDLK_S: input.is_move_down = false; return true;
+                case SDLK_A: input.is_move_left = false; return true;
+                case SDLK_D: input.is_move_right = false; return true;
             }
             break;
         }
@@ -60,14 +61,14 @@ bool GameLayer::on_event(const SDL_Event& event) {
             switch (gaxis.axis) {
                 case SDL_GAMEPAD_AXIS_LEFTX: {
                     float value = gaxis.value / 32767.0f;
-                    MoveSystem::is_move_left = (value < -0.25);
-                    MoveSystem::is_move_right = (value > 0.25);
+                    input.is_move_left = (value < -0.25);
+                    input.is_move_right = (value > 0.25);
                     return true;
                 }
                 case SDL_GAMEPAD_AXIS_LEFTY: {
                     float value = gaxis.value / 32767.0f;
-                    MoveSystem::is_move_up = (value < -0.25);
-                    MoveSystem::is_move_down = (value > 0.25);
+                    input.is_move_up = (value < -0.25);
+                    input.is_move_down = (value > 0.25);
                     return true;
                 }
             }

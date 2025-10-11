@@ -23,6 +23,7 @@
 #include <core/resource/context.hpp>
 #include <core/resource/trigger.hpp>
 #include <core/resource/time.hpp>
+#include <core/resource/input.hpp>
 
 #include <wheel/log.hpp>
 #include <sdl/sdl.hpp>
@@ -60,6 +61,7 @@ Game::Game() {
     ecs.add_resource<ContextResource>(std::move(context));
     ecs.add_resource(TriggerResource{});
     ecs.add_resource(TimeResource{});
+    ecs.add_resource(InputResource{});
 }
 
 void Game::run() {

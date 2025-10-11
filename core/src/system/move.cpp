@@ -6,6 +6,7 @@
 #include <core/component/direction.hpp>
 #include <core/component/collider.hpp>
 #include <core/resource/time.hpp>
+#include <core/resource/input.hpp>
 #include <core/tag/input.hpp>
 
 namespace core {
@@ -14,11 +15,13 @@ void MoveSystem::operator()(wheel::ECS& ecs) {
     // update player direction from input
     auto player_entity = ecs.get_entity<InputTag>();
     if (ecs.has_component<DirectionComponent>(player_entity)) {
-        auto& direction = ecs.get_component<DirectionComponent>(player_entity);
+        const auto& input = ecs.get_resource<InputResource>();
         auto d = wheel::Vector2D<float>{
-            static_cast<float>(is_move_right) - is_move_left,
-            static_cast<float>(is_move_down) - is_move_up,
+            static_cast<float>(input.is_move_right) - input.is_move_left,
+            static_cast<float>(input.is_move_down) - input.is_move_up,
         }.normalize();
+
+        auto& direction = ecs.get_component<DirectionComponent>(player_entity);
         direction.move = d;
         if (d != 0.f) {
             direction.look = d;
