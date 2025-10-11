@@ -119,6 +119,9 @@ Sprites:
 - [MiniFolks - Villagers 2](https://lyaseek.itch.io/minifvillagers2)
 - [MiniFolks - Forest animals](https://lyaseek.itch.io/miniffanimals)
 
+Sounds:
+- [fantasy-ui-sound-effects](https://ateliermagicae.itch.io/fantasy-ui-sound-effects)
+
 Repositories:
 - [reflect-cpp](https://github.com/getml/reflect-cpp)
 - [SDL](https://github.com/libsdl-org/SDL)
