@@ -1,13 +1,14 @@
 #include <core/system/handle_button_event.hpp>
-#include <core/global.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/component/button.hpp>
 #include <core/component/sprite.hpp>
 #include <core/entity_event/button.hpp>
 
+#include <ecs/ecs.hpp>
+
 namespace core {
 
-void HandleButtonEventSystem::operator()() {
+void HandleButtonEventSystem::operator()(wheel::ECS& ecs) {
     for (auto [button, sprite, _] : ecs.get_components<ButtonComponent, SpriteComponent, ButtonHoveredEvent>()) {
         sprite.sprite = &SpriteManager::instance().get(button.hovered_color);
     }

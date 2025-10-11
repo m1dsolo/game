@@ -1,9 +1,13 @@
 #pragma once
 
+namespace wheel {
+class ECS;
+}
+
 namespace core {
 
 struct TrackSystem {
-    void operator()();
+    void operator()(wheel::ECS& ecs);
 };
 
 }  // namespace core

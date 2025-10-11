@@ -2,18 +2,19 @@
 #include <survivor/manager/achievement.hpp>
 #include <survivor/tag/hud.hpp>
 
-#include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/level.hpp>
 #include <core/tag/input.hpp>
 #include <core/resource/config.hpp>
 
+#include <ecs/ecs.hpp>
+
 using namespace core;
 
 namespace survivor {
 
-void UpdateHudSystem::operator()() {
+void UpdateHudSystem::operator()(wheel::ECS& ecs) {
     const auto& achievement_manager = AchievementManager::instance();
     auto player = ecs.get_entity<InputTag>();
     const auto& hp = ecs.get_component<HPComponent>(player);

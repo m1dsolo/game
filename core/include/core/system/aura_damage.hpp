@@ -6,10 +6,14 @@
 
 #include <unordered_map>
 
+namespace wheel {
+class ECS;
+}
+
 namespace core {
 
 struct AuraDamageSystem {
-    void operator()();
+    void operator()(wheel::ECS& ecs);
 
 private:
     std::unordered_map<std::pair<wheel::Entity, wheel::Entity>, wheel::timer_id_t, wheel::Utils::hash_pair> timer_id_mp_;

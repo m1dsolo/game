@@ -5,10 +5,14 @@
 #include <unordered_set>
 #include <unordered_map>
 
+namespace wheel {
+class ECS;
+}
+
 namespace core {
 
 struct ColliderSystem {
-    void operator()();
+    void operator()(wheel::ECS& ecs);
 
 private:
     void helper_(wheel::Entity entity0, wheel::Entity entity1);

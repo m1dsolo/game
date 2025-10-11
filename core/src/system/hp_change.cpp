@@ -1,5 +1,4 @@
 #include <core/system/hp_change.hpp>
-#include <core/global.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/time.hpp>
 #include <core/component/name.hpp>
@@ -14,11 +13,13 @@
 #include <core/event/hp_change.hpp>
 #include <core/entity_event/death.hpp>
 
+#include <ecs/ecs.hpp>
+
 using namespace core;
 
 namespace core {
 
-void HPChangeSystem::operator()() {
+void HPChangeSystem::operator()(wheel::ECS& ecs) {
     for (auto [source, target, value] : ecs.get_events<HPChangeEvent>()) {
         if (ecs.has_component<HPComponent>(target)) {
             auto& hp = ecs.get_component<HPComponent>(target);
@@ -43,7 +44,7 @@ void HPChangeSystem::operator()() {
             // get hit effect
             if (value < 0) {
                 ecs.get_component<SpriteComponent>(target).get_hit_effect_cnt++;
-                TimeManager::instance().timer().add(100000, [target]() {
+                TimeManager::instance().timer().add(100000, [target, &ecs]() {
                     if (ecs.has_entity(target)) {
                         ecs.get_component<SpriteComponent>(target).get_hit_effect_cnt--;
                     }

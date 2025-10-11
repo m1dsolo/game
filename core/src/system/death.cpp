@@ -1,5 +1,4 @@
 #include <core/system/death.hpp>
-#include <core/global.hpp>
 #include <core/manager/collider.hpp>
 #include <core/component/animation_fsm.hpp>
 #include <core/component/children.hpp>
@@ -12,7 +11,7 @@
 
 namespace core {
 
-void DeathSystem::operator()() {
+void DeathSystem::operator()(wheel::ECS& ecs) {
     for (auto [entity, event] : ecs.get_entity_and_components<DeathEvent>()) {
         if (ecs.has_component<AnimationFSMComponent>(entity)) {
             auto& animation_fsm = ecs.get_component<AnimationFSMComponent>(entity);

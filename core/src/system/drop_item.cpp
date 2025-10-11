@@ -1,5 +1,4 @@
 #include <core/system/drop_item.hpp>
-#include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/component/name.hpp>
 #include <core/component/loot.hpp>
@@ -12,7 +11,7 @@
 
 namespace core {
 
-void DropItemSystem::operator()() {
+void DropItemSystem::operator()(wheel::ECS& ecs) {
     for (auto [entity, event, loot, transform] : ecs.get_entity_and_components<DeathEvent, LootComponent, TransformComponent>()) {
         for (const auto& group : loot.groups) {
             if (wheel::Random::instance().uniform<float>(0.f, 1.f) <= group.chance) {

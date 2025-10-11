@@ -1,5 +1,4 @@
 #include <core/system/generate_hp_float_text.hpp>
-#include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/time.hpp>
@@ -13,11 +12,12 @@
 #include <core/event/hp_change.hpp>
 #include <core/entity_event/remove_entity.hpp>
 
+#include <ecs/ecs.hpp>
 #include <wheel/random.hpp>
 
 namespace core {
 
-void GenerateHPFloatTextSystem::operator()() {
+void GenerateHPFloatTextSystem::operator()(wheel::ECS& ecs) {
     for (auto [source, target, value] : ecs.get_events<HPChangeEvent>()) {
         if (ecs.has_component<HPComponent>(target)) {
             // generate HP change float text
@@ -42,7 +42,7 @@ void GenerateHPFloatTextSystem::operator()() {
                 RenderComponent{1},
                 RenderTag{}
             );
-            TimeManager::instance().timer().add(1000000, [text_entity]() {
+            TimeManager::instance().timer().add(1000000, [text_entity, &ecs]() {
                 if (ecs.has_entity(text_entity)) {
                     ecs.add_entity_event(text_entity, RemoveEntityEvent{});
                 }

@@ -1,5 +1,4 @@
 #include <core/system/range_attack.hpp>
-#include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/collider.hpp>
 #include <core/manager/time.hpp>
@@ -26,19 +25,19 @@
 #include <core/event/trigger.hpp>
 #include <core/entity_event/remove_entity.hpp>
 
-using namespace core;
+#include <ecs/ecs.hpp>
 
 namespace core {
 
-void shoot_();
-void collide_();
+void shoot_(wheel::ECS& ecs);
+void collide_(wheel::ECS& ecs);
 
-void RangeAttackSystem::operator()() {
-    shoot_();
-    collide_();
+void RangeAttackSystem::operator()(wheel::ECS& ecs) {
+    shoot_(ecs);
+    collide_(ecs);
 }
 
-void shoot_() {
+void shoot_(wheel::ECS& ecs) {
     // prepare shoot
     auto dt = TimeManager::instance().dt();
     for (auto [range_attack] : ecs.get_components<RangeAttackComponent>()) {
@@ -73,7 +72,7 @@ void shoot_() {
             }
             if (--reload.current_ammo == 0) {
                 AudioManager::instance().play(reload.sound_name);
-                TimeManager::instance().timer().add(reload.reload_time, [trigger]() {
+                TimeManager::instance().timer().add(reload.reload_time, [trigger, &ecs]() {
                     if (ecs.has_component<ReloadComponent>(trigger)) {
                         auto& reload = ecs.get_component<ReloadComponent>(trigger);
                         reload.current_ammo = reload.max_ammo;
@@ -111,7 +110,7 @@ void shoot_() {
     }
 }
 
-void collide_() {
+void collide_(wheel::ECS& ecs) {
     for (const auto [entity, target] : ecs.get_events<TriggerStayEvent>()) {
         if (ecs.has_components<ProjectileComponent>(entity)) {
             auto& projectile = ecs.get_component<ProjectileComponent>(entity);

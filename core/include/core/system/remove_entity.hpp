@@ -1,9 +1,13 @@
 #pragma once
 
+namespace wheel {
+class ECS;
+}
+
 namespace core {
 
 struct RemoveEntitySystem {
-    void operator()();
+    void operator()(wheel::ECS& ecs);
 };
 
 }  // namespace core

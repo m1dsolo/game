@@ -1,11 +1,12 @@
 #include <core/system/time.hpp>
-#include <core/global.hpp>
 #include <core/manager/time.hpp>
 #include <core/resource/context.hpp>
 
+#include <ecs/ecs.hpp>
+
 namespace core {
 
-void TimeSystem::operator()() {
+void TimeSystem::operator()(wheel::ECS& ecs) {
     auto& time_manager = TimeManager::instance();
     auto& timer = time_manager.timer();
 

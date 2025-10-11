@@ -1,11 +1,13 @@
 #pragma once
 
-#include <sdl/sdl.hpp>
+namespace wheel {
+class ECS;
+}
 
 namespace core {
 
 struct HandleSDLEventSystem {
-    void operator()();
+    void operator()(wheel::ECS& ecs);
 };
 
 }  // namespace core

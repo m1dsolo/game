@@ -1,22 +1,20 @@
 #include <core/system/aura_damage.hpp>
+#include <core/manager/time.hpp>
 #include <core/component/aura_damage.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/master.hpp>
 #include <core/event/hp_change.hpp>
-
-#include <core/global.hpp>
-#include <core/manager/time.hpp>
 #include <core/event/trigger.hpp>
 
-using namespace core;
+#include <ecs/ecs.hpp>
 
 namespace core {
 
-void AuraDamageSystem::operator()() {
+void AuraDamageSystem::operator()(wheel::ECS& ecs) {
     for (const auto [trigger, target] : ecs.get_events<TriggerEnterEvent>()) {
         if (ecs.has_component<AuraDamageComponent>(trigger) && ecs.has_component<HPComponent>(target)) {
             const auto& aura = ecs.get_component<AuraDamageComponent>(trigger);
-            auto timer_id = TimeManager::instance().timer().add(aura.interval, [trigger, target, &aura]() {
+            auto timer_id = TimeManager::instance().timer().add(aura.interval, [trigger, target, &aura, &ecs]() {
                 auto master = ecs.get_component<MasterComponent>(trigger).entity;
                 ecs.emplace_event<HPChangeEvent>(master, target, -aura.damage);
                 return aura.interval;

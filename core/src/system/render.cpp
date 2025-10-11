@@ -1,5 +1,4 @@
 #include <core/system/render.hpp>
-#include <core/global.hpp>
 #include <core/manager/render.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
@@ -9,7 +8,7 @@
 
 namespace core {
 
-void RenderSystem::operator()() {
+void RenderSystem::operator()(wheel::ECS& ecs) {
     for (auto [entity, transform, sprite]
             : RenderManager::instance().get_entity_and_components_ascending<TransformComponent, SpriteComponent>()) {
         // TODO: not render out of screen?

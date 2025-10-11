@@ -3,7 +3,7 @@
 
 namespace core {
 
-void HandleSDLEventSystem::operator()() {
+void HandleSDLEventSystem::operator()(wheel::ECS& ecs) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         LayerManager::instance().handle_event(event);

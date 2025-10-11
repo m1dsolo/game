@@ -1,12 +1,13 @@
 #include <core/system/track.hpp>
-#include <core/global.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/track.hpp>
 
+#include <ecs/ecs.hpp>
+
 namespace core {
 
-void TrackSystem::operator()() {
+void TrackSystem::operator()(wheel::ECS& ecs) {
     for (auto [entity, transform, direction, track]
             :ecs.get_entity_and_components<TransformComponent, DirectionComponent, TrackComponent>()) {
         auto& pos0 = transform.global.position;

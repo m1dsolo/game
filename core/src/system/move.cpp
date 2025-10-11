@@ -1,5 +1,4 @@
 #include <core/system/move.hpp>
-#include <core/global.hpp>
 #include <core/manager/time.hpp>
 #include <core/manager/collider.hpp>
 #include <core/component/transform.hpp>
@@ -8,9 +7,11 @@
 #include <core/component/collider.hpp>
 #include <core/tag/input.hpp>
 
+#include <ecs/ecs.hpp>
+
 namespace core {
 
-void MoveSystem::operator()() {
+void MoveSystem::operator()(wheel::ECS& ecs) {
     // update player direction from input
     auto player_entity = ecs.get_entity<InputTag>();
     if (ecs.has_component<DirectionComponent>(player_entity)) {

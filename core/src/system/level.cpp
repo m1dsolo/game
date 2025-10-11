@@ -1,16 +1,13 @@
 #include <core/system/level.hpp>
-#include <core/global.hpp>
 #include <core/component/level.hpp>
 #include <core/resource/config.hpp>
 #include <core/event/exp.hpp>
 
-#include <core/global.hpp>
-
-using namespace core;
+#include <ecs/ecs.hpp>
 
 namespace core {
 
-void LevelSystem::operator()() {
+void LevelSystem::operator()(wheel::ECS& ecs) {
     const auto& config = ecs.get_resource<ConfigResource>();
     for (const auto event : ecs.get_events<ExpEvent>()) {
         auto& level = ecs.get_component<LevelComponent>(event.entity);

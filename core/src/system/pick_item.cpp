@@ -1,5 +1,4 @@
 #include <core/system/pick_item.hpp>
-#include <core/global.hpp>
 #include <core/manager/collider.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/direction.hpp>
@@ -15,11 +14,11 @@
 #include <core/event/exp.hpp>
 #include <core/entity_event/remove_entity.hpp>
 
-using namespace core;
+#include <ecs/ecs.hpp>
 
 namespace core {
 
-void PickItemSystem::operator()() {
+void PickItemSystem::operator()(wheel::ECS& ecs) {
     for (const auto [entity, target] : ecs.get_events<TriggerEnterEvent>()) {
         // absorb nearby items
         if (ecs.has_component<AbsorbItemTag>(entity) && ecs.has_component<ItemComponent>(target)) {

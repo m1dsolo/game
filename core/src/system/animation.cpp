@@ -1,5 +1,4 @@
 #include <core/system/animation.hpp>
-#include <core/global.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/animation.hpp>
 #include <core/component/animation_fsm.hpp>
@@ -8,12 +7,13 @@
 #include <core/manager/animation.hpp>
 #include <core/manager/time.hpp>
 
+#include <ecs/ecs.hpp>
 #include <wheel/geometry.hpp>
 #include <wheel/log.hpp>
 
 namespace core {
 
-void AnimationSystem::operator()() {
+void AnimationSystem::operator()(wheel::ECS& ecs) {
     // update animation fsm condition values
     for (auto [animation_fsm, speed, direction] : ecs.get_components<AnimationFSMComponent, SpeedComponent, DirectionComponent>()) {
         auto is_moving = speed.speed > 0.f && direction.move != 0.f;

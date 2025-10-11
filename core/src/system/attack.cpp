@@ -1,5 +1,4 @@
 #include <core/system/attack.hpp>
-#include <core/global.hpp>
 #include <core/manager/time.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/hp.hpp>
@@ -10,9 +9,11 @@
 #include <core/event/trigger.hpp>
 #include <core/event/hp_change.hpp>
 
+#include <ecs/ecs.hpp>
+
 namespace core {
 
-void AttackSystem::operator()() {
+void AttackSystem::operator()(wheel::ECS& ecs) {
     auto dt = TimeManager::instance().dt();
     for (auto [attack] : ecs.get_components<AttackComponent>()) {
         if (attack.time < attack.interval) {

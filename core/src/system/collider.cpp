@@ -5,7 +5,7 @@
 
 namespace core {
 
-void ColliderSystem::operator()() {
+void ColliderSystem::operator()(wheel::ECS& ecs) {
     auto& collider_manager = ColliderManager::instance();
     collider_manager.update();
 

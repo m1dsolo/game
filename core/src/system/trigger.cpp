@@ -1,12 +1,13 @@
 #include <core/system/trigger.hpp>
-#include <core/global.hpp>
 #include <core/component/transform.hpp>
 #include <core/resource/trigger.hpp>
 #include <core/event/trigger.hpp>
 
+#include <ecs/ecs.hpp>
+
 namespace core {
 
-void TriggerSystem::operator()() {
+void TriggerSystem::operator()(wheel::ECS& ecs) {
     auto& closest_target = ecs.get_resource<TriggerResource>().closest_target;
     closest_target.clear();
 
