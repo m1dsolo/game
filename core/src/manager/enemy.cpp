@@ -53,7 +53,7 @@ wheel::Entity EnemyManager::generate(
 
     auto entity = entity_manager.add_entity(
         NameComponent{name},
-        TransformComponent{position, {64.f, 64.f}},
+        TransformComponent{position},
         SpriteComponent{},
         DirectionComponent{},
         SpeedComponent{config.speed},
@@ -76,7 +76,7 @@ wheel::Entity EnemyManager::generate(
     auto attack = entity_manager.add_entity(
         entity,
         NameComponent{"attack"},
-        TransformComponent{{0.f, 0.f}, {range, range}},
+        TransformComponent{},
         ColliderComponent{
             wheel::Circle<float>{range},
             ColliderLayer::Enemy,

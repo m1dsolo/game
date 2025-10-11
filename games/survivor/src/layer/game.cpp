@@ -41,7 +41,7 @@ void GameLayer::on_attach() {
 
     auto bunny = entity_manager.add_entity(
         NameComponent{"bunny"},
-        TransformComponent{{0.f, 0.f}, {64.f, 64.f}},
+        TransformComponent{},
         DirectionComponent{},
         SpeedComponent{200.f},
         ColliderComponent{
@@ -86,7 +86,7 @@ void GameLayer::on_attach() {
     auto damage_aura = entity_manager.add_entity(
         bunny,
         NameComponent{"damage_aura"},
-        TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
+        TransformComponent{},
         SpriteComponent{"pink_filled_circle"},
         RenderComponent{1},
         ColliderComponent{
@@ -100,13 +100,13 @@ void GameLayer::on_attach() {
     );
 
     SpriteManager::instance().set("auto_shoot", Sprite{
-        sdl::SDL::create_circle_texture(300.f, sdl::SDL::RED),
-        {0.f, 0.f, 600.f, 600.f}
+        sdl::SDL::create_circle_texture(250.f, sdl::SDL::RED),
+        {0.f, 0.f, 500.f, 500.f}
     });
     auto auto_shoot = entity_manager.add_entity(
         bunny,
         NameComponent("auto_shoot"),
-        TransformComponent{{0.f, 0.f}, {500.f, 500.f}},
+        TransformComponent{},
         ColliderComponent{
             wheel::Circle<float>{250.f},
             ColliderLayer::Trigger,
@@ -128,7 +128,7 @@ void GameLayer::on_attach() {
 
     auto fox = entity_manager.add_entity(
         NameComponent{"fox"},
-        TransformComponent{{50.f, 0.f}, {64.f, 64.f}},
+        TransformComponent{{50.f, 0.f}},
         DirectionComponent{},
         SpeedComponent{150.f},
         ColliderComponent{
