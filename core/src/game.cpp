@@ -85,13 +85,13 @@ void Game::run() {
 
     while (context.running) {
         sdl::SDL::set_render_target(context.texture);
-        sdl::SDL::set_render_color(sdl::SDL::BLACK);
+        sdl::SDL::set_render_color(sdl::SDL::Color::Black);
         sdl::SDL::render_clear();
 
         ecs.update();
 
         sdl::SDL::set_render_target(nullptr);
-        sdl::SDL::set_render_color(sdl::SDL::BLACK);
+        sdl::SDL::set_render_color(sdl::SDL::Color::Black);
         sdl::SDL::render_clear();
 
         sdl::SDL::render_texture(context.texture, nullptr, &context.viewport);

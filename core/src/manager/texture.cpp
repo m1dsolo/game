@@ -9,7 +9,7 @@ namespace core {
 
 TextureManager::TextureManager() {
     // default
-    set("", sdl::SDL::create_texture(48, 48, sdl::SDL::WHITE));
+    set("", sdl::SDL::create_texture(48, 48, sdl::SDL::Color::White));
 
     // TODO: ugly code
     for (const auto& entry : fs::recursive_directory_iterator("assets/sprite_sheet")) {

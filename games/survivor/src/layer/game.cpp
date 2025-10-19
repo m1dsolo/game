@@ -102,7 +102,7 @@ void GameLayer::on_attach() {
     Hierarchy::attach_entity_to_parent(camera, bunny);
 
     SpriteManager::instance().set("pink_filled_circle", Sprite{
-        sdl::SDL::create_filled_circle_texture(150.f, sdl::SDL::PINK),
+        sdl::SDL::create_filled_circle_texture(150.f, sdl::SDL::Color::Pink),
         {0.f, 0.f, 300.f, 300.f}
     });
     auto damage_aura = entity_manager.add_entity(
@@ -122,7 +122,7 @@ void GameLayer::on_attach() {
     );
 
     SpriteManager::instance().set("auto_shoot", Sprite{
-        sdl::SDL::create_circle_texture(250.f, sdl::SDL::RED),
+        sdl::SDL::create_circle_texture(250.f, sdl::SDL::Color::Red),
         {0.f, 0.f, 500.f, 500.f}
     });
     auto auto_shoot = entity_manager.add_entity(
@@ -201,7 +201,7 @@ void GameLayer::on_attach() {
     // );
 
     entity_manager.add_entity(
-        TextComponent{"Hud", 32, sdl::SDL::ORANGE},
+        TextComponent{"Hud", 32, sdl::SDL::Color::Orange},
         TransformComponent{
             {0.5f * context.virtual_window_width, 0.1f * context.virtual_window_height},
             {0.f, 0.f},

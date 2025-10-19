@@ -36,7 +36,7 @@ void PauseMenuLayer::on_attach() {
     auto resume_text = entity_manager.add_entity(
         resume_button_entity_,
         NameComponent{"resume_text"},
-        TextComponent{"resume", 32, sdl::SDL::BLACK},
+        TextComponent{"resume", 32, sdl::SDL::Color::Black},
         TransformComponent{},
         SpriteComponent{},
         RenderComponent{4}
@@ -57,7 +57,7 @@ void PauseMenuLayer::on_attach() {
     auto exit_text = entity_manager.add_entity(
         exit_button_entity_,
         NameComponent{"exit_text"},
-        TextComponent{"exit", 32, sdl::SDL::BLACK},
+        TextComponent{"exit", 32, sdl::SDL::Color::Black},
         TransformComponent{},
         SpriteComponent{},
         RenderComponent{4}

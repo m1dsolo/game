@@ -24,7 +24,7 @@ void GenerateHPFloatTextSystem::operator()(wheel::ECS& ecs) {
             auto& sprite_manager = SpriteManager::instance();
             auto key = "hp_change" + std::to_string(value);
             if (!sprite_manager.has(key)) {
-                auto texture = sdl::SDL::create_texture(std::to_string(std::abs(value)), 20.f, value > 0 ? sdl::SDL::GREEN : sdl::SDL::RED);
+                auto texture = sdl::SDL::create_texture(std::to_string(std::abs(value)), 20.f, value > 0 ? sdl::SDL::Color::Green : sdl::SDL::Color::Red);
                 sprite_manager.set(key, Sprite{texture});
             }
             auto [w, h] = sdl::SDL::get_texture_size(sprite_manager.get(key).texture);

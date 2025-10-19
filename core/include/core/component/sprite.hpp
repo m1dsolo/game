@@ -27,7 +27,7 @@ struct SpriteComponent {
 
     const Sprite* sprite;
     bool flip = false;
-    SDL_FColor color = sdl::SDL::WHITE;
+    SDL_FColor color = sdl::SDL::Color::White;
     int get_hit_effect_cnt = 0;
 };
 

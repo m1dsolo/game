@@ -30,7 +30,7 @@ void InventoryLayer::on_register() {
     {
         auto texture = sdl::SDL::create_texture(
             inventory_sizes_[0], inventory_sizes_[1],
-            sdl::SDL::WHITE,
+            sdl::SDL::Color::White,
             SDL_TEXTUREACCESS_TARGET
         );
         sdl::SDL::RenderTargetGuard guard(texture);
@@ -42,7 +42,7 @@ void InventoryLayer::on_register() {
                     slot_sizes_[0],
                     slot_sizes_[1]
                 };
-                sdl::SDL::render_rect(&slot_rects_[i][j], sdl::SDL::BLACK);
+                sdl::SDL::render_rect(&slot_rects_[i][j], sdl::SDL::Color::Black);
             }
         }
         SpriteManager::instance().set("inventory", Sprite{texture});
@@ -66,7 +66,7 @@ void InventoryLayer::on_register() {
     {
         auto texture = sdl::SDL::create_texture(
             inventory_sizes_[0], inventory_sizes_[1],
-            sdl::SDL::TRANSPARENT,
+            sdl::SDL::Color::Transparent,
             SDL_TEXTUREACCESS_TARGET
         );
         SpriteManager::instance().set("inventory_items", Sprite{texture});
@@ -85,7 +85,7 @@ void InventoryLayer::on_register() {
     {
         auto texture = sdl::SDL::create_texture(
             inventory_sizes_[0], inventory_sizes_[1],
-            sdl::SDL::TRANSPARENT,
+            sdl::SDL::Color::Transparent,
             SDL_TEXTUREACCESS_TARGET
         );
         SpriteManager::instance().set("inventory_rarities", Sprite{texture});
@@ -104,7 +104,7 @@ void InventoryLayer::on_register() {
     {
         auto texture = sdl::SDL::create_texture(
             inventory_sizes_[0], inventory_sizes_[1],
-            sdl::SDL::TRANSPARENT,
+            sdl::SDL::Color::Transparent,
             SDL_TEXTUREACCESS_TARGET
         );
         SpriteManager::instance().set("inventory_items_count", Sprite{texture});
@@ -149,7 +149,7 @@ void InventoryLayer::on_update() {
     {
         auto texture = SpriteManager::instance().get("inventory_items").texture;
         sdl::SDL::RenderTargetGuard guard(texture);
-        sdl::SDL::RenderColorGuard color_guard(sdl::SDL::TRANSPARENT);
+        sdl::SDL::RenderColorGuard color_guard(sdl::SDL::Color::Transparent);
         sdl::SDL::render_clear();
 
         for (auto [idx, entity] : std::views::enumerate(items)) {
@@ -166,7 +166,7 @@ void InventoryLayer::on_update() {
     {
         auto texture = SpriteManager::instance().get("inventory_rarities").texture;
         sdl::SDL::RenderTargetGuard guard(texture);
-        sdl::SDL::RenderColorGuard color_guard(sdl::SDL::TRANSPARENT);
+        sdl::SDL::RenderColorGuard color_guard(sdl::SDL::Color::Transparent);
         sdl::SDL::render_clear();
 
         for (auto [idx, entity] : std::views::enumerate(items)) {
@@ -184,7 +184,7 @@ void InventoryLayer::on_update() {
     {
         auto texture = SpriteManager::instance().get("inventory_items_count").texture;
         sdl::SDL::RenderTargetGuard guard(texture);
-        sdl::SDL::RenderColorGuard color_guard(sdl::SDL::TRANSPARENT);
+        sdl::SDL::RenderColorGuard color_guard(sdl::SDL::Color::Transparent);
         sdl::SDL::render_clear();
         for (auto [idx, entity] : std::views::enumerate(items)) {
             int i = idx % 10, j = idx / 10;

@@ -37,7 +37,7 @@ void MainMenuLayer::on_attach() {
     auto start_text = entity_manager.add_entity(
         start_button_entity_,
         NameComponent{"start_text"},
-        TextComponent{"start", 32, sdl::SDL::BLACK},
+        TextComponent{"start", 32, sdl::SDL::Color::Black},
         TransformComponent{},
         SpriteComponent{},
         RenderComponent{4}
@@ -58,7 +58,7 @@ void MainMenuLayer::on_attach() {
     auto exit_text = entity_manager.add_entity(
         exit_button_entity_,
         NameComponent{"exit_text"},
-        TextComponent{"exit", 32, sdl::SDL::BLACK},
+        TextComponent{"exit", 32, sdl::SDL::Color::Black},
         TransformComponent{},
         SpriteComponent{},
         RenderComponent{4}

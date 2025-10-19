@@ -83,7 +83,7 @@ void EntityManager::postprocess_entity_(wheel::Entity entity) {
                 sprite.sprite = &animation.sprites[0];
             } else {
                 const auto& name = ecs.get_component<NameComponent>(entity).name;
-                auto texture = sdl::SDL::create_texture(name, 32, sdl::SDL::BLACK);
+                auto texture = sdl::SDL::create_texture(name, 32, sdl::SDL::Color::Black);
                 sprite.sprite = &SpriteManager::instance().set(name, {texture});
             }
         }

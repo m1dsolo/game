@@ -11,7 +11,7 @@
 namespace core {
 
 SpriteManager::SpriteManager() {
-    set("", {sdl::SDL::create_texture(48, 48, sdl::SDL::PURPLE), {0.f, 0.f, 48.f, 48.f}});
+    set("", {sdl::SDL::create_texture(48, 48, sdl::SDL::Color::Purple), {0.f, 0.f, 48.f, 48.f}});
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator("assets/sprite")) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {

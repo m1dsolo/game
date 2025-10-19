@@ -92,10 +92,10 @@ bool GameLayer::on_event(const SDL_Event& event) {
 void init_hp_bar_() {
     // init hp bar sprites
     for (int i = 1; i <= 47; i++) {
-        auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
+        auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::Color::Red);
         sdl::SDL::RenderTargetGuard guard{texture};
         auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
-        sdl::SDL::render_filled_rect(&dst, sdl::SDL::GREEN);
+        sdl::SDL::render_filled_rect(&dst, sdl::SDL::Color::Green);
         SpriteManager::instance().set("hp_bar" + std::to_string(i), {
             texture,
             {0.f, 0.f, 48.f, 12.f}
@@ -128,7 +128,7 @@ void init_hp_bar_() {
 
 void init_text_sprite_() {
     for (int i = 1; i <= 99; i++) {
-        auto texture = sdl::SDL::create_texture(std::to_string(i), 16.f, sdl::SDL::BLACK);
+        auto texture = sdl::SDL::create_texture(std::to_string(i), 16.f, sdl::SDL::Color::Black);
         auto [w, h] = sdl::SDL::get_texture_size(texture);
         sdl::SDL::RenderTargetGuard guard{texture};
         SpriteManager::instance().set(std::to_string(i), {
