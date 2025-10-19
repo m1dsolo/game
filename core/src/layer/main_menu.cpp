@@ -13,26 +13,40 @@
 #include <core/component/render.hpp>
 #include <core/component/layout.hpp>
 #include <core/tag/render.hpp>
+#include <core/tag/layer.hpp>
 #include <core/resource/context.hpp>
 #include <core/entity_event/button.hpp>
 #include <core/entity_event/remove_entity.hpp>
+#include <core/entity_event/button.hpp>
 
 namespace core {
 
 void MainMenuLayer::on_attach() {
     const auto& context = ecs.get_resource<ContextResource>();
     auto& entity_manager = EntityManager::instance();
-    start_button_entity_ = entity_manager.add_entity(
-        NameComponent{"start_button"},
-        ButtonComponent{},
+
+    layout_entity_ = entity_manager.add_entity(
+        NameComponent{"main_menu_layout"},
         TransformComponent{
-            {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f - 50.f},
-            {200.f, 80.f},
+            {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f},
+            {240.f, 260.f},
             {1.f, 1.f},
             Coordinate::Type::Screen
         },
+        LayoutComponent{},
+        SpriteComponent{sdl::SDL::Color::Gray},
+        RenderComponent{2},
+        MainMenuLayerTag{}
+    );
+
+    start_button_entity_ = entity_manager.add_entity(
+        layout_entity_,
+        NameComponent{"start_button"},
+        ButtonComponent{},
+        TransformComponent{{0.f, -60.f}, {200.f, 100.f}},
         SpriteComponent{},
-        RenderComponent{3}
+        RenderComponent{3},
+        MainMenuLayerTag{}
     );
     auto start_text = entity_manager.add_entity(
         start_button_entity_,
@@ -40,20 +54,18 @@ void MainMenuLayer::on_attach() {
         TextComponent{"start", 32, sdl::SDL::Color::Black},
         TransformComponent{},
         SpriteComponent{},
-        RenderComponent{4}
+        RenderComponent{4},
+        MainMenuLayerTag{}
     );
 
     exit_button_entity_ = entity_manager.add_entity(
+        layout_entity_,
         NameComponent{"exit_button"},
         ButtonComponent{},
-        TransformComponent{
-            {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f + 50.f},
-            {200.f, 80.f},
-            {1.f, 1.f},
-            Coordinate::Type::Screen
-        },
+        TransformComponent{{0.f, 60.f}, {200.f, 100.f}},
         SpriteComponent{},
-        RenderComponent{3}
+        RenderComponent{3},
+        MainMenuLayerTag{}
     );
     auto exit_text = entity_manager.add_entity(
         exit_button_entity_,
@@ -61,37 +73,29 @@ void MainMenuLayer::on_attach() {
         TextComponent{"exit", 32, sdl::SDL::Color::Black},
         TransformComponent{},
         SpriteComponent{},
-        RenderComponent{4}
+        RenderComponent{4},
+        MainMenuLayerTag{}
     );
 
-    layout_entity_ = entity_manager.add_entity(
-        NameComponent{"main_menu_layout"},
-        LayoutComponent{{{start_button_entity_}, {exit_button_entity_}}}
-    );
-
-    entities_ = {
-        start_button_entity_,
-        start_text,
-        exit_button_entity_,
-        exit_text,
-    };
+    auto& layout = ecs.get_component<LayoutComponent>(layout_entity_);
+    layout.widgets = {{start_button_entity_}, {exit_button_entity_}};
+    ecs.add_entity_event(start_button_entity_, ButtonHoveredEvent{});
 }
 
 void MainMenuLayer::on_detach() {
-    for (auto entity : entities_) {
+    for (auto entity : ecs.get_entities<MainMenuLayerTag>()) {
         ecs.add_component(entity, RemoveEntityEvent{});
     }
-    ecs.add_component(layout_entity_, RemoveEntityEvent{});
 }
 
 void MainMenuLayer::on_show() {
-    for (auto entity : entities_) {
+    for (auto entity : ecs.get_entities<MainMenuLayerTag>()) {
         ecs.add_component(entity, RenderTag{});
     }
 }
 
 void MainMenuLayer::on_hide() {
-    for (auto entity : entities_) {
+    for (auto entity : ecs.get_entities<MainMenuLayerTag>()) {
         ecs.remove_component<RenderTag>(entity);
     }
 }

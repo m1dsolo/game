@@ -11,13 +11,11 @@
 #include <core/component/parent.hpp>
 #include <core/component/collider.hpp>
 #include <core/component/button.hpp>
-#include <core/component/layout.hpp>
 #include <core/component/text.hpp>
 #include <core/component/render.hpp>
 #include <core/component/item.hpp>
 #include <core/tag/root.hpp>
 #include <core/tag/camera.hpp>
-#include <core/entity_event/button.hpp>
 
 namespace core {
 
@@ -115,11 +113,6 @@ void EntityManager::postprocess_entity_(wheel::Entity entity) {
         auto& button = ecs.get_component<ButtonComponent>(entity);
         auto& sprite = ecs.get_component<SpriteComponent>(entity);
         sprite.sprite = &SpriteManager::instance().get(button.normal_color);
-    }
-
-    if (ecs.has_component<LayoutComponent>(entity)) {
-        auto& layout = ecs.get_component<LayoutComponent>(entity);
-        ecs.add_entity_event(layout.widgets[layout.selected.first][layout.selected.second], ButtonHoveredEvent{});
     }
 
     if (ecs.has_component<TextComponent>(entity)) {

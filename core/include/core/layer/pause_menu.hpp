@@ -4,8 +4,6 @@
 
 #include <ecs/entity.hpp>
 
-#include <vector>
-
 namespace core {
 
 class PauseMenuLayer : public Layer {
@@ -20,7 +18,6 @@ public:
     bool on_event(const SDL_Event& event) override;
 
 private:
-    inline static std::vector<wheel::Entity> entities_;
     inline static wheel::Entity resume_button_entity_;
     inline static wheel::Entity exit_button_entity_;
     inline static wheel::Entity layout_entity_;
