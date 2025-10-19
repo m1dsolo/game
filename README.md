@@ -118,6 +118,8 @@ Sprites:
 - [MiniFolks - Villagers](https://lyaseek.itch.io/minifvillagers)
 - [MiniFolks - Villagers 2](https://lyaseek.itch.io/minifvillagers2)
 - [MiniFolks - Forest animals](https://lyaseek.itch.io/miniffanimals)
+- [item-rarity](https://espectrow94.itch.io/item-rarity)
+- [free-guns-icon](https://free-game-assets.itch.io/free-guns-icon-3232-pixel-pack)
 
 Sounds:
 - [fantasy-ui-sound-effects](https://ateliermagicae.itch.io/fantasy-ui-sound-effects)

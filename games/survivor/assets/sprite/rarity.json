@@ -1,0 +1,44 @@
+{
+    "path": "sprite_sheet/rarity.png",
+    "size": [
+        32,
+        32
+    ],
+    "sprites": [
+        {
+            "name": "common",
+            "pos": [
+                0,
+                0
+            ]
+        },
+        {
+            "name": "uncommon",
+            "pos": [
+                32,
+                0
+            ]
+        },
+        {
+            "name": "rare",
+            "pos": [
+                64,
+                0
+            ]
+        },
+        {
+            "name": "epic",
+            "pos": [
+                96,
+                0
+            ]
+        },
+        {
+            "name": "legendary",
+            "pos": [
+                128,
+                0
+            ]
+        }
+    ]
+}

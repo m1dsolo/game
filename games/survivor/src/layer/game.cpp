@@ -4,11 +4,13 @@
 
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
+#include <core/manager/layer.hpp>
+#include <core/manager/sprite.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
+#include <core/component/collider.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/speed.hpp>
-#include <core/component/collider.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/animation.hpp>
 #include <core/component/animation_fsm.hpp>
@@ -16,12 +18,14 @@
 #include <core/component/hp.hpp>
 #include <core/component/level.hpp>
 #include <core/component/fraction.hpp>
+#include <core/component/item.hpp>
 #include <core/component/inventory.hpp>
 #include <core/component/master.hpp>
 #include <core/component/aura_damage.hpp>
 #include <core/component/range_attack.hpp>
 #include <core/component/reload.hpp>
 #include <core/component/track.hpp>
+#include <core/component/text.hpp>
 #include <core/tag/camera.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/render.hpp>
@@ -56,16 +60,34 @@ void GameLayer::on_attach() {
         HPComponent{100},
         LevelComponent{},
         FractionComponent{0},
-        InventoryComponent{10},
         RigidbodyTag{},
         RenderTag{},
         InputTag{},
         PickupItemTag{}
     );
 
+    auto inventory = ecs.get_entity<InventoryComponent>();
+    auto& items = ecs.get_component<InventoryComponent>().items;
+    items[0] = entity_manager.add_entity(
+        inventory,
+        NameComponent{"m4a1"},
+        TransformComponent{},
+        SpriteComponent{"m4a1"},
+        RenderComponent{5},
+        ItemComponent{"m4a1", 1}
+    );
+    items[1] = entity_manager.add_entity(
+        inventory,
+        NameComponent{"usp"},
+        TransformComponent{},
+        SpriteComponent{"usp"},
+        RenderComponent{5},
+        ItemComponent{"usp", 3}
+    );
+
     entity_manager.add_entity(
         bunny,
-        NameComponent{"inventory"},
+        NameComponent{"absorb"},
         TransformComponent{},
         ColliderComponent{
             wheel::Circle<float>{200.f},
@@ -143,7 +165,6 @@ void GameLayer::on_attach() {
         HPComponent{100},
         LevelComponent{},
         FractionComponent{0},
-        InventoryComponent{10},
         TrackComponent{bunny, 50.f},
         RigidbodyTag{},
         RenderTag{}

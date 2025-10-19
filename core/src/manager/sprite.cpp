@@ -21,16 +21,12 @@ SpriteManager::SpriteManager() {
                 const auto [path, size, sprites] = rfl::json::read<SpritesConfig>(file).value();
                 auto texture = TextureManager::instance().get(path);
                 for (const auto& [name, pos] : sprites) {
-                    set(
-                        name, {
-                            texture, {
-                                static_cast<float>(pos.first),
-                                static_cast<float>(pos.second),
-                                static_cast<float>(size.first),
-                                static_cast<float>(size.second)
-                            }
-                        }
-                    );
+                    set(name, {texture, {
+                        static_cast<float>(pos.first),
+                        static_cast<float>(pos.second),
+                        static_cast<float>(size.first),
+                        static_cast<float>(size.second)
+                    }});
                 }
                 file.close();
                 std::cout << "[end load sprite...]" << std::endl;

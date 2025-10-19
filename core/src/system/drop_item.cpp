@@ -1,8 +1,11 @@
 #include <core/system/drop_item.hpp>
 #include <core/manager/entity.hpp>
 #include <core/component/name.hpp>
-#include <core/component/loot.hpp>
+#include <core/component/transform.hpp>
+#include <core/component/collider.hpp>
+#include <core/component/sprite.hpp>
 #include <core/component/render.hpp>
+#include <core/component/loot.hpp>
 #include <core/component/item.hpp>
 #include <core/tag/render.hpp>
 #include <core/entity_event/death.hpp>

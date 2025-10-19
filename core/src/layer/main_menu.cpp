@@ -6,6 +6,7 @@
 #include <core/layer/game.hpp>
 #include <core/util/ui.hpp>
 #include <core/component/name.hpp>
+#include <core/component/transform.hpp>
 #include <core/component/text.hpp>
 #include <core/component/button.hpp>
 #include <core/component/sprite.hpp>
@@ -106,6 +107,16 @@ void MainMenuLayer::on_update() {
 }
 
 bool MainMenuLayer::on_event(const SDL_Event& event) {
+    switch (event.type) {
+        case SDL_EVENT_KEY_DOWN: {
+            switch (event.key.key) {
+                case SDLK_ESCAPE: {
+                    ecs.get_resource<ContextResource>().running = false;
+                    return true;
+                }
+            }
+        }
+    }
     if (UI::handle_layout_event(layout_entity_, event)) {
         return true;
     }

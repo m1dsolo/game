@@ -17,7 +17,7 @@ class SpriteManager : public wheel::Singleton<SpriteManager> {
 
 public:
     const Sprite& set(const std::string& name, const Sprite& sprite) {
-        std::cout << "sprite_set: " << name << " " << sprite.texture << " " << sprite.rect.x << " " << sprite.rect.y << " " << sprite.rect.w << " " << sprite.rect.h << std::endl;
+        // std::cout << "sprite_set: " << name << " " << sprite.texture << " " << sprite.rect.x << " " << sprite.rect.y << " " << sprite.rect.w << " " << sprite.rect.h << std::endl;
         return name2sprites_[name] = sprite;
     }
 

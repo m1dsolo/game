@@ -10,6 +10,8 @@
 
 #include <ecs/ecs.hpp>
 
+#include <format>
+
 using namespace core;
 
 namespace survivor {

@@ -1,7 +1,9 @@
 #include <core/system/render.hpp>
 #include <core/manager/render.hpp>
+#include <core/manager/item.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
+#include <core/component/inventory.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/render.hpp>
 #include <core/util/coordinate.hpp>

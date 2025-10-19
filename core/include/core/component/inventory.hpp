@@ -1,15 +1,16 @@
 #pragma once
 
-#include <string>
 #include <vector>
+
+#include <ecs/entity.hpp>
 
 namespace core {
 
 struct InventoryComponent {
     InventoryComponent(int size) {
-        items.resize(size);
+        items.resize(size, wheel::NullEntity);
     }
-    std::vector<std::pair<std::string, int>> items;
+    std::vector<wheel::Entity> items;
 };
 
 }  // namespace core

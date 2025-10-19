@@ -1,0 +1,23 @@
+{
+    "path": "sprite_sheet/gun.png",
+    "size": [
+        32,
+        32
+    ],
+    "sprites": [
+        {
+            "name": "m4a1",
+            "pos": [
+                96,
+                64
+            ]
+        },
+        {
+            "name": "usp",
+            "pos": [
+                192,
+                96
+            ]
+        }
+    ]
+}

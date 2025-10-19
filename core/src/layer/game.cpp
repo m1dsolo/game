@@ -1,13 +1,17 @@
 #include <core/layer/game.hpp>
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
+#include <core/manager/sprite.hpp>
 #include <core/manager/layer.hpp>
+#include <core/layer/inventory.hpp>
 #include <core/layer/pause_menu.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
+#include <core/component/collider.hpp>
 #include <core/component/sprite.hpp>
 #include <core/component/render.hpp>
 #include <core/component/hp.hpp>
+#include <core/component/item.hpp>
 #include <core/tag/hp_bar.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/obstacle.hpp>
@@ -20,10 +24,12 @@
 namespace core {
 
 void init_hp_bar_();
+void init_text_sprite_();
 void init_map_();
 
 void GameLayer::on_attach() {
     init_hp_bar_();
+    init_text_sprite_();
     init_map_();
 }
 
@@ -40,6 +46,10 @@ bool GameLayer::on_event(const SDL_Event& event) {
                 case SDLK_S: input.is_move_down = true; return true;
                 case SDLK_A: input.is_move_left = true; return true;
                 case SDLK_D: input.is_move_right = true; return true;
+                case SDLK_I: {
+                    LayerManager::instance().push<InventoryLayer>();
+                    return true;
+                }
                 case SDLK_ESCAPE: {
                     LayerManager::instance().push<PauseMenuLayer>();
                     return true;
@@ -83,7 +93,7 @@ void init_hp_bar_() {
     // init hp bar sprites
     for (int i = 1; i <= 47; i++) {
         auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::RED);
-        auto target = sdl::SDL::RenderTargetGuard{texture};
+        sdl::SDL::RenderTargetGuard guard{texture};
         auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
         sdl::SDL::render_filled_rect(&dst, sdl::SDL::GREEN);
         SpriteManager::instance().set("hp_bar" + std::to_string(i), {
@@ -114,6 +124,18 @@ void init_hp_bar_() {
             );
         }
     });
+}
+
+void init_text_sprite_() {
+    for (int i = 1; i <= 99; i++) {
+        auto texture = sdl::SDL::create_texture(std::to_string(i), 16.f, sdl::SDL::BLACK);
+        auto [w, h] = sdl::SDL::get_texture_size(texture);
+        sdl::SDL::RenderTargetGuard guard{texture};
+        SpriteManager::instance().set(std::to_string(i), {
+            texture,
+            {0.f, 0.f, w, h}
+        });
+    }
 }
 
 void init_map_() {

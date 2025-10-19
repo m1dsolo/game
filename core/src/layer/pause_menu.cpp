@@ -4,6 +4,7 @@
 #include <core/manager/sprite.hpp>
 #include <core/util/ui.hpp>
 #include <core/component/name.hpp>
+#include <core/component/transform.hpp>
 #include <core/component/text.hpp>
 #include <core/component/button.hpp>
 #include <core/component/sprite.hpp>
@@ -105,6 +106,16 @@ void PauseMenuLayer::on_update() {
 }
 
 bool PauseMenuLayer::on_event(const SDL_Event& event) {
+    switch (event.type) {
+        case SDL_EVENT_KEY_DOWN: {
+            switch (event.key.key) {
+                case SDLK_ESCAPE: {
+                    ecs.emplace_event<RemoveLayerEvent>();
+                    return true;
+                }
+            }
+        }
+    }
     if (UI::handle_layout_event(layout_entity_, event)) {
         return true;
     }

@@ -5,6 +5,7 @@
 #include <core/manager/audio.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
+#include <core/component/collider.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/speed.hpp>
 #include <core/component/sprite.hpp>
