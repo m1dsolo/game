@@ -44,7 +44,7 @@ void AttackSystem::operator()(wheel::ECS& ecs) {
         auto master = ecs.get_component<MasterComponent>(trigger).entity;
         if (ecs.has_component<AnimationFSMComponent>(master)) {
             auto& fsm = ecs.get_component<AnimationFSMComponent>(master);
-            fsm.next_condition2values["is_attacking"] = true;
+            fsm.next_condition_id2values["is_attacking"] = true;
         }
 
         ecs.emplace_event<HPChangeEvent>(master, target, -attack.damage);

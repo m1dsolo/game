@@ -46,7 +46,7 @@ SurvivorGame::SurvivorGame() {
         LevelSystem
     >();
 
-    AudioManager::instance().play("bgm.mp3");
+    AudioManager::instance().play("bgm");
     LayerManager::instance().register_layer<GameLayer>();
 }
 

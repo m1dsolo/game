@@ -13,7 +13,7 @@ ItemManager::ItemManager() {
         auto result = rfl::json::read<std::vector<ItemConfig>>(file);
         if (result.has_value()) {
             for (const auto& item_config : result.value()) {
-                item_infos_.emplace(item_config.name, item_config);
+                set(item_config);
             }
         } else {
             std::cerr << "Failed to load item config: " << result.error().what() << std::endl;
@@ -22,8 +22,8 @@ ItemManager::ItemManager() {
     }
 }
 
-const ItemConfig& ItemManager::get(const std::string& name) const {
-    auto iter = item_infos_.find(name);
+const ItemConfig& ItemManager::get(wheel::ID id) const {
+    auto iter = item_infos_.find(id);
     if (iter != item_infos_.end()) {
         return iter->second;
     }
@@ -34,8 +34,8 @@ const ItemConfig& ItemManager::set(const ItemConfig& item_config) {
     return item_infos_[item_config.name] = item_config;
 }
 
-bool ItemManager::has(const std::string& name) const {
-    return item_infos_.find(name) != item_infos_.end();
+bool ItemManager::has(wheel::ID id) const {
+    return item_infos_.find(id) != item_infos_.end();
 }
 
 }  // namespace core

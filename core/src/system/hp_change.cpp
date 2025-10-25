@@ -13,6 +13,8 @@
 #include <core/event/hp_change.hpp>
 #include <core/entity_event/death.hpp>
 
+#include <format>
+
 using namespace core;
 
 namespace core {
@@ -35,7 +37,7 @@ void HPChangeSystem::operator()(wheel::ECS& ecs) {
             for (auto child : ecs.get_component<ChildrenComponent>(target).entities) {
                 if (ecs.has_components<HPBarTag, SpriteComponent>(child)) {
                     auto bar_id = std::clamp(static_cast<int>(std::round(48.f * hp.hp / hp.max_hp)), 0, 48);
-                    ecs.get_component<SpriteComponent>(child).sprite = &SpriteManager::instance().get("hp_bar" + std::to_string(bar_id));
+                    ecs.get_component<SpriteComponent>(child).sprite = &SpriteManager::instance().get(std::format("hp_bar{}", bar_id));
                 }
             }
 

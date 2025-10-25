@@ -4,9 +4,10 @@
 
 #include <wheel/singleton.hpp>
 #include <wheel/geometry.hpp>
+#include <wheel/id.hpp>
 
-#include <string>
 #include <unordered_map>
+#include <format>
 
 #include <iostream>
 
@@ -16,42 +17,42 @@ class SpriteManager : public wheel::Singleton<SpriteManager> {
     friend wheel::Singleton<SpriteManager>;
 
 public:
-    const Sprite& set(const std::string& name, const Sprite& sprite) {
+    const Sprite& set(wheel::ID id, const Sprite& sprite) {
         // std::cout << "sprite_set: " << name << " " << sprite.texture << " " << sprite.rect.x << " " << sprite.rect.y << " " << sprite.rect.w << " " << sprite.rect.h << std::endl;
-        return name2sprites_[name] = sprite;
+        return id2sprites_[id] = sprite;
     }
 
-    const Sprite& get(const std::string& name) const {
-        if (name2sprites_.find(name) == name2sprites_.end()) {
-            std::cout << "not found sprite: " << name << "!!!!!" << std::endl;
-            return name2sprites_.at("");
+    const Sprite& get(wheel::ID id) const {
+        if (id2sprites_.find(id) == id2sprites_.end()) {
+            std::cout << "not found sprite: " << id << "!!!!!" << std::endl;
+            return id2sprites_.at("");
         }
         // std::cout << "sprite_get: " << name << std::endl;
-        return name2sprites_.at(name);
+        return id2sprites_.at(id);
     }
 
-    bool has(const std::string& name) const {
-        return name2sprites_.find(name) != name2sprites_.end();
+    bool has(wheel::ID id) const {
+        return id2sprites_.find(id) != id2sprites_.end();
     }
 
-    void del(const std::string& name);
+    void del(wheel::ID id);
 
     const Sprite& get(SDL_FColor color) {
-        auto key = std::to_string(color.r) + "_" + std::to_string(color.g) + "_" + std::to_string(color.b) + "_" + std::to_string(color.a);
-        if (!has(key)) {
-            set(key, Sprite{
+        wheel::ID id = std::format("{}_{}_{}_{}", color.r, color.g, color.b, color.a);
+        if (!has(id)) {
+            set(id, Sprite{
                 sdl::SDL::create_texture(1.f, 1.f, color),
                 {0.f, 0.f, 1.f, 1.f}
             });
         }
-        return get(key);
+        return get(id);
     }
 
 private:
     SpriteManager();
     SpriteManager(const SpriteManager&) = delete;
 
-    std::unordered_map<std::string, Sprite> name2sprites_;
+    std::unordered_map<wheel::ID, Sprite> id2sprites_;
 };
 
 }  // namespace core

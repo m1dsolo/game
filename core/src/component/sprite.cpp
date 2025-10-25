@@ -3,8 +3,8 @@
 
 namespace core {
 
-SpriteComponent::SpriteComponent(const std::string& name)
-    : sprite(&SpriteManager::instance().get(name)) {}
+SpriteComponent::SpriteComponent(wheel::ID id)
+    : sprite(&SpriteManager::instance().get(id)) {}
 
 SpriteComponent::SpriteComponent(SDL_FColor color)
     : sprite(&SpriteManager::instance().get(color)) {}

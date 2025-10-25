@@ -15,7 +15,7 @@ void DeathSystem::operator()(wheel::ECS& ecs) {
     for (auto [entity, event] : ecs.get_entity_and_components<DeathEvent>()) {
         if (ecs.has_component<AnimationFSMComponent>(entity)) {
             auto& animation_fsm = ecs.get_component<AnimationFSMComponent>(entity);
-            animation_fsm.next_condition2values["is_dead"] = true;
+            animation_fsm.next_condition_id2values["is_dead"] = true;
 
             // TODO: optimize
             ecs.remove_components<TrackComponent, SpeedComponent, RigidbodyTag>(entity);
@@ -34,7 +34,7 @@ void DeathSystem::operator()(wheel::ECS& ecs) {
 
     // TODO: optimize(use tag?)
     for (auto [entity, animation_fsm] : ecs.get_entity_and_components<AnimationFSMComponent>()) {
-        if (animation_fsm.current_state == "end") {
+        if (animation_fsm.current_state_id == "end") {
             ecs.add_entity_event(entity, RemoveEntityEvent{});
         }
     }

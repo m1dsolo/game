@@ -2,18 +2,17 @@
 
 #include <core/animation_fsm.hpp>
 
-#include <string>
 #include <unordered_map>
 
 namespace core {
 
 struct AnimationFSMComponent {
-    AnimationFSMComponent(const std::string& key = "");
+    AnimationFSMComponent(wheel::ID id);
 
     const AnimationFSM* fsm;
-    std::string current_state = "start";
-    std::unordered_map<std::string, bool> next_condition2values;
-    std::unordered_map<std::string, bool> current_condition2values;
+    wheel::ID current_state_id = "start";
+    std::unordered_map<wheel::ID, bool> next_condition_id2values;
+    std::unordered_map<wheel::ID, bool> current_condition_id2values;
 };
 
 }  // namespace core

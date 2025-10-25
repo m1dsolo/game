@@ -2,6 +2,8 @@
 
 #include <sdl/sdl.hpp>
 
+#include <wheel/id.hpp>
+
 namespace core {
 
 struct Sprite {
@@ -22,7 +24,7 @@ struct Sprite {
 };
 
 struct SpriteComponent {
-    SpriteComponent(const std::string& name = "");
+    SpriteComponent(wheel::ID id = "");
     SpriteComponent(SDL_FColor color);
 
     const Sprite* sprite;

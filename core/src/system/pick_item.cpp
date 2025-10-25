@@ -33,7 +33,7 @@ void PickItemSystem::operator()(wheel::ECS& ecs) {
         // pick up items
         if (ecs.has_component<PickupItemTag>(entity) && ecs.has_component<ItemComponent>(target)) {
             const auto& item = ecs.get_component<ItemComponent>(target);
-            if (item.name == "coin") {
+            if (item.id == "coin") {
                 if (ecs.has_component<LevelComponent>(entity)) {
                     ecs.emplace_event<ExpEvent>(entity, 1);
                 }

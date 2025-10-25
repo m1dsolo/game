@@ -15,10 +15,11 @@ AnimationManager::AnimationManager() {
     set({{}, {SpriteManager::instance().get(sdl::SDL::Color::White)}});
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator("assets/animation")) {
-        if (entry.is_regular_file() && entry.path().extension() == ".json") {
-            std::ifstream file(entry.path());
+        auto path = entry.path();
+        if (entry.is_regular_file() && path.extension() == ".json") {
+            std::ifstream file(path);
             if (file.is_open()) {
-                std::cout << "[begin load animation...]" << entry.path() << std::endl;
+                std::cout << "[begin load animation...]" << path << std::endl;
 
                 const auto [
                     name,
@@ -69,9 +70,8 @@ AnimationManager::AnimationManager() {
     }
 }
 
-void AnimationManager::set(const Animation& clip) {
-    std::cout << "animation_set: " << clip.id.key << std::endl;
-    clip_map_[clip.id] = clip;
+void AnimationManager::set(const Animation& animation) {
+    clip_map_[animation.id] = animation;
 }
 
 const Animation& AnimationManager::get(const Animation::ID& id) {

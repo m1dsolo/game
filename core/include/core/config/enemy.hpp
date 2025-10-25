@@ -1,7 +1,5 @@
 #pragma once
 
-#include <core/component/loot.hpp>
-
 #include <string>
 #include <vector>
 
@@ -13,12 +11,23 @@ struct AttackConfig {
     int interval = 1000000;
 };
 
+struct LootItemConfig {
+    std::string name;
+    std::pair<int, int> count;
+    int weight = 1;
+};
+
+struct LootGroupConfig {
+    std::vector<LootItemConfig> items;
+    float chance = 1.f;
+};
+
 struct EnemyConfig {
     std::string name;
     int hp = 100;
     float speed = 100.f;
     AttackConfig attack;
-    std::vector<LootGroup> loots;
+    std::vector<LootGroupConfig> loots;
 };
 
 }  // namespace core

@@ -12,7 +12,7 @@ namespace core {
 void HandleButtonEventSystem::operator()(wheel::ECS& ecs) {
     for (auto [button, sprite, _] : ecs.get_components<ButtonComponent, SpriteComponent, ButtonHoveredEvent>()) {
         sprite.sprite = &SpriteManager::instance().get(button.hovered_color);
-        AudioManager::instance().play("hover_button.wav");
+        AudioManager::instance().play("hover_button");
     }
     for (auto [button, sprite, _] : ecs.get_components<ButtonComponent, SpriteComponent, ButtonPressedEvent>()) {
         sprite.sprite = &SpriteManager::instance().get(button.pressed_color);

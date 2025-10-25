@@ -1,11 +1,11 @@
 #pragma once
 
-#include <string>
+#include <wheel/id.hpp>
 
 namespace core {
 
 struct ItemComponent {
-    std::string name;
+    wheel::ID id;
     int count = 1;
 };
 

@@ -156,7 +156,7 @@ void InventoryLayer::on_update() {
             int i = idx % 10, j = idx / 10;
             if (ecs.has_entity(entity)) {
                 const auto& item = ecs.get_component<ItemComponent>(entity);
-                const auto& sprite = SpriteManager::instance().get(item.name);
+                const auto& sprite = SpriteManager::instance().get(item.id);
                 sdl::SDL::render_texture(sprite.texture, &sprite.rect, &slot_rects_[i][j]);
             }
         }
@@ -173,7 +173,7 @@ void InventoryLayer::on_update() {
             int i = idx % 10, j = idx / 10;
             if (ecs.has_entity(entity)) {
                 const auto& item = ecs.get_component<ItemComponent>(entity);
-                const auto& rarity = ItemManager::instance().get(item.name).rarity;
+                const auto& rarity = ItemManager::instance().get(item.id).rarity;
                 const auto& sprite = SpriteManager::instance().get(rfl::enum_to_string(rarity));
                 sdl::SDL::render_texture(sprite.texture, &sprite.rect, &slot_rects_[i][j]);
             }
@@ -181,28 +181,28 @@ void InventoryLayer::on_update() {
     }
 
     // render items count sprite to inventory_items_count texture
-    {
-        auto texture = SpriteManager::instance().get("inventory_items_count").texture;
-        sdl::SDL::RenderTargetGuard guard(texture);
-        sdl::SDL::RenderColorGuard color_guard(sdl::SDL::Color::Transparent);
-        sdl::SDL::render_clear();
-        for (auto [idx, entity] : std::views::enumerate(items)) {
-            int i = idx % 10, j = idx / 10;
-            if (ecs.has_entity(entity)) {
-                const auto& item = ecs.get_component<ItemComponent>(entity);
-                if (item.count > 1) {
-                    const auto& sprite = SpriteManager::instance().get(std::to_string(item.count));
-                    SDL_FRect dst = {
-                        slot_rects_[i][j].x + slot_rects_[i][j].w - sprite.rect.w,
-                        slot_rects_[i][j].y + slot_rects_[i][j].h - sprite.rect.h,
-                        sprite.rect.w,
-                        sprite.rect.h
-                    };
-                    sdl::SDL::render_texture(sprite.texture, &sprite.rect, &dst);
-                }
-            }
-        }
-    }
+    // {
+    //     auto texture = SpriteManager::instance().get("inventory_items_count"_id).texture;
+    //     sdl::SDL::RenderTargetGuard guard(texture);
+    //     sdl::SDL::RenderColorGuard color_guard(sdl::SDL::Color::Transparent);
+    //     sdl::SDL::render_clear();
+    //     for (auto [idx, entity] : std::views::enumerate(items)) {
+    //         int i = idx % 10, j = idx / 10;
+    //         if (ecs.has_entity(entity)) {
+    //             const auto& item = ecs.get_component<ItemComponent>(entity);
+    //             if (item.count > 1) {
+    //                 const auto& sprite = SpriteManager::instance().get(std::to_string(item.count));
+    //                 SDL_FRect dst = {
+    //                     slot_rects_[i][j].x + slot_rects_[i][j].w - sprite.rect.w,
+    //                     slot_rects_[i][j].y + slot_rects_[i][j].h - sprite.rect.h,
+    //                     sprite.rect.w,
+    //                     sprite.rect.h
+    //                 };
+    //                 sdl::SDL::render_texture(sprite.texture, &sprite.rect, &dst);
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 bool InventoryLayer::on_event(const SDL_Event& event) {

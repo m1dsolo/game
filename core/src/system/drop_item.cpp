@@ -27,16 +27,17 @@ void DropItemSystem::operator()(wheel::ECS& ecs) {
                     pick -= item.weight;
                     if (pick <= 0) {
                         int count = wheel::Random::instance().uniform(item.count.first, item.count.second);
+                        wheel::ID id = item.name;
                         EntityManager::instance().add_entity(
                             NameComponent{item.name},
                             TransformComponent{
                                 transform.global.position,
                                 {16.f, 16.f}
                             },
-                            SpriteComponent{item.name},
+                            SpriteComponent{id},
                             ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
                             RenderComponent{1},
-                            ItemComponent{item.name, count},
+                            ItemComponent{id, count},
                             RenderTag{}
                         );
                         break;

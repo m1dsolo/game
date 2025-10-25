@@ -138,10 +138,10 @@ void GameLayer::on_attach() {
             .damage = 7,
             .interval = 200000,
             .projectile_speed = 500.f,
-            .projectile_sprite_name = "bullet",
-            .range_attack_sound_name = "m4a1/shoot.wav"
+            .projectile_sprite_id = "bullet",
+            .range_attack_sound_id = "m4a1/shoot"
         },
-        ReloadComponent{30, 2000000, "m4a1/reload.wav"},
+        ReloadComponent{30, 2000000, "m4a1/reload"},
         MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
         RenderComponent{1},
@@ -182,10 +182,10 @@ void GameLayer::on_attach() {
             .damage = 10,
             .interval = 500000,
             .projectile_speed = 500.f,
-            .projectile_sprite_name = "bullet",
-            .range_attack_sound_name = "usp/shoot.wav"
+            .projectile_sprite_id = "bullet",
+            .range_attack_sound_id = "usp/shoot"
         },
-        ReloadComponent{12, 1000000, "usp/reload.wav"},
+        ReloadComponent{12, 1000000, "usp/reload"},
         MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
         RenderComponent{1},

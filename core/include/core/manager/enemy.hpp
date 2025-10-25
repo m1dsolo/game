@@ -4,6 +4,7 @@
 
 #include <wheel/singleton.hpp>
 #include <wheel/geometry.hpp>
+#include <wheel/id.hpp>
 #include <ecs/entity.hpp>
 
 #include <string>
@@ -24,7 +25,7 @@ private:
     EnemyManager();
     EnemyManager(const EnemyManager&) = delete;
 
-    std::unordered_map<std::string, EnemyConfig> enemy_configs_;
+    std::unordered_map<wheel::ID, EnemyConfig> enemy_configs_;
 };
 
 }  // namespace core

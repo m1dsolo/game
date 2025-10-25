@@ -70,7 +70,7 @@ void shoot_(wheel::ECS& ecs) {
                 continue;
             }
             if (--reload.current_ammo == 0) {
-                AudioManager::instance().play(reload.sound_name);
+                AudioManager::instance().play(reload.sound_id);
                 timer.add(reload.reload_time, [trigger, &ecs]() {
                     if (ecs.has_component<ReloadComponent>(trigger)) {
                         auto& reload = ecs.get_component<ReloadComponent>(trigger);
@@ -96,7 +96,7 @@ void shoot_(wheel::ECS& ecs) {
                 ColliderLayer::Enemy | ColliderLayer::Obstacle
             },
             DirectionComponent{(target_pos - trigger_pos).normalize()},
-            SpriteComponent{range_attack.projectile_sprite_name},
+            SpriteComponent{range_attack.projectile_sprite_id},
             SpeedComponent{range_attack.projectile_speed},
             RenderComponent{2},
             // TrackComponent{closest.first},
@@ -105,7 +105,7 @@ void shoot_(wheel::ECS& ecs) {
             RenderTag{}
         );
 
-        AudioManager::instance().play(range_attack.range_attack_sound_name);
+        AudioManager::instance().play(range_attack.range_attack_sound_id);
     }
 }
 

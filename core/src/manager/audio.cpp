@@ -37,35 +37,28 @@ AudioManager::AudioManager() : sound_tracks_(SOUND_TRACK_NUM, nullptr) {
 
     sound_props_ = SDL_CreateProperties();
 
-    for (const auto& entry : fs::recursive_directory_iterator("assets/music")) {
-        if (entry.is_regular_file()) {
-            auto path = entry.path();
-            if (path.extension() == ".wav" || path.extension() == ".ogg" || path.extension() == ".mp3") {
-                auto audio = MIX_LoadAudio(mixer_, path.string().c_str(), true);
-                std::string key;
-                if (fs::is_symlink(path)) {
-                    key = fs::relative(path, fs::read_symlink("assets/music")).string();
-                } else {
-                    key = fs::relative(path, "assets/music").string();
+    for (const auto& dir : {"music", "sound"}) {
+        auto root_path = fs::path("assets") / dir;
+        for (const auto& entry : fs::recursive_directory_iterator(root_path)) {
+            if (entry.is_regular_file()) {
+                auto path = entry.path();
+                if (path.extension() == ".wav" || path.extension() == ".ogg" || path.extension() == ".mp3") {
+                    auto audio = MIX_LoadAudio(mixer_, path.c_str(), true);
+                    std::filesystem::path p;
+                    if (fs::is_symlink(path)) {
+                        p = fs::relative(path, fs::read_symlink(root_path));
+                    } else {
+                        p = fs::relative(path, root_path);
+                    }
+                    std::string key = p.parent_path() / p.stem();
+                    std::cout << "[begin load sound...]" << key << std::endl;
+
+                    if (dir == std::string("music")) {
+                        music_path2audio_[key] = audio;
+                    } else {
+                        sound_path2audio_[key] = audio;
+                    }
                 }
-                std::cout << "[begin load music...]" << key << std::endl;
-                music_path2audio_[std::move(key)] = audio;
-            }
-        }
-    }
-    for (const auto& entry : fs::recursive_directory_iterator("assets/sound")) {
-        if (entry.is_regular_file()) {
-            auto path = entry.path();
-            if (path.extension() == ".wav" || path.extension() == ".ogg" || path.extension() == ".mp3") {
-                auto audio = MIX_LoadAudio(mixer_, path.string().c_str(), true);
-                std::string key;
-                if (fs::is_symlink(path)) {
-                    key = fs::relative(path, fs::read_symlink("assets/sound")).string();
-                } else {
-                    key = fs::relative(path, "assets/sound").string();
-                }
-                std::cout << "[begin load sound...]" << key << std::endl;
-                sound_path2audio_[std::move(key)] = audio;
             }
         }
     }
@@ -86,12 +79,12 @@ AudioManager::~AudioManager() {
     // MIX_DestroyMixer(mixer_);
 }
 
-void AudioManager::play(const std::string& path) {
-    if (auto iter = music_path2audio_.find(path); iter != music_path2audio_.end()) {
+void AudioManager::play(wheel::ID id) {
+    if (auto iter = music_path2audio_.find(id); iter != music_path2audio_.end()) {
         MIX_SetTrackAudio(music_track_, iter->second);
         MIX_PlayTrack(music_track_, music_props_);
     }
-    if (auto sound_iter = sound_path2audio_.find(path); sound_iter != sound_path2audio_.end()) {
+    if (auto sound_iter = sound_path2audio_.find(id); sound_iter != sound_path2audio_.end()) {
         if (auto iter = valid_sound_track_idxs_.begin(); iter != valid_sound_track_idxs_.end()) {
             auto idx = *iter;
             valid_sound_track_idxs_.erase(idx);
@@ -101,20 +94,20 @@ void AudioManager::play(const std::string& path) {
     }
 }
 
-void AudioManager::stop(const std::string& name) {
-    if (music_path2audio_.count(name)) {
+void AudioManager::stop(wheel::ID id) {
+    if (music_path2audio_.count(id)) {
         MIX_StopTrack(music_track_, 0.);
     }
 }
 
-void AudioManager::pause(const std::string& name) {
-    if (music_path2audio_.count(name)) {
+void AudioManager::pause(wheel::ID id) {
+    if (music_path2audio_.count(id)) {
         MIX_PauseTrack(music_track_);
     }
 }
 
-void AudioManager::resume(const std::string& name) {
-    if (music_path2audio_.count(name)) {
+void AudioManager::resume(wheel::ID id) {
+    if (music_path2audio_.count(id)) {
         MIX_ResumeTrack(music_track_);
     }
 }

@@ -3,7 +3,7 @@
 
 namespace core {
 
-AnimationFSMComponent::AnimationFSMComponent(const std::string& key)
-    : fsm(&AnimationFSMManager::instance().get(key)) {}
+AnimationFSMComponent::AnimationFSMComponent(wheel::ID id)
+    : fsm(&AnimationFSMManager::instance().get(id)) {}
 
 }  // namespace core

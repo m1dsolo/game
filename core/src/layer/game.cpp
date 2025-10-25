@@ -21,6 +21,8 @@
 
 #include <sdl/sdl.hpp>
 
+#include <format>
+
 namespace core {
 
 void init_hp_bar_();
@@ -96,7 +98,7 @@ void init_hp_bar_() {
         sdl::SDL::RenderTargetGuard guard{texture};
         auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
         sdl::SDL::render_filled_rect(&dst, sdl::SDL::Color::Green);
-        SpriteManager::instance().set("hp_bar" + std::to_string(i), {
+        SpriteManager::instance().set(std::format("hp_bar{}", i), {
             texture,
             {0.f, 0.f, 48.f, 12.f}
         });

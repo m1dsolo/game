@@ -35,10 +35,10 @@ SpriteManager::SpriteManager() {
     }
 }
 
-void SpriteManager::del(const std::string& name) {
-    if (auto iter = name2sprites_.find(name); iter != name2sprites_.end()) {
+void SpriteManager::del(wheel::ID id) {
+    if (auto iter = id2sprites_.find(id); iter != id2sprites_.end()) {
         sdl::SDL::destroy(iter->second.texture);
-        name2sprites_.erase(iter);
+        id2sprites_.erase(iter);
     }
 }
 
