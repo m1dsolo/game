@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/save_handler/save_handler.hpp>
 #include <core/global.hpp>
 #include <core/reflector/vector2d.hpp>
 #include <core/reflector/sprite_component.hpp>
@@ -56,20 +57,10 @@
 
 namespace core {
 
-class ISaveHandler {
-public:
-    virtual ~ISaveHandler() = default;
-
-    virtual void save() = 0;
-
-    virtual void load() = 0;
-};
-
 template <typename... ExtraComponentTypes>
-class SaveHandler : public ISaveHandler {
+class EntitySaveHandler : public SaveHandler {
 public:
     void save() override;
-
     void load() override;
 
 private:
@@ -103,10 +94,10 @@ private:
 };
 
 template <typename... ExtraComponentTypes>
-void SaveHandler<ExtraComponentTypes...>::save() {
+void EntitySaveHandler<ExtraComponentTypes...>::save() {
     std::ofstream file("entities.json");
-    rfl::Generic::Array array;
     if (file.is_open()) {
+        rfl::Generic::Array array;
         for (auto entity : ecs.get_entities<SaveTag>()) {
             array.emplace_back(rfl::to_generic(serialize_entity_(entity)));
         }
@@ -116,22 +107,12 @@ void SaveHandler<ExtraComponentTypes...>::save() {
 }
 
 template <typename... ExtraComponentTypes>
-void SaveHandler<ExtraComponentTypes...>::load() {
-    std::ifstream file("entities.json");
-    std::string content;
-    if (file.is_open()) {
-        file.seekg(0, std::ios::end);
-        size_t file_size = file.tellg();
-        content.resize(file_size);
-        file.seekg(0, std::ios::beg);
-        file.read(&content[0], file_size);
-        file.close();
-    }
-
+void EntitySaveHandler<ExtraComponentTypes...>::load() {
     EntityManager::instance().remove_entity(ecs.get_entity<CameraTag>());
 
     std::unordered_map<wheel::Entity, wheel::Entity> entity_map;
-    auto array = rfl::json::read<rfl::Generic::Array>(content).value();
+    auto json_content = Utils::read_file("entities.json");
+    auto array = rfl::json::read<rfl::Generic::Array>(json_content).value();
     for (const auto& generic : array) {
         auto obj = generic.to_object().value();
         auto old_entity = rfl::from_generic<wheel::Entity>(obj.get("entity").value()).value();
@@ -206,7 +187,7 @@ void SaveHandler<ExtraComponentTypes...>::load() {
 }
 
 template <typename... ExtraComponentTypes>
-rfl::Generic::Object SaveHandler<ExtraComponentTypes...>::serialize_entity_(wheel::Entity entity) {
+rfl::Generic::Object EntitySaveHandler<ExtraComponentTypes...>::serialize_entity_(wheel::Entity entity) {
     rfl::Generic::Object obj;
     obj["entity"] = entity;
     serialize_components_<
@@ -250,7 +231,7 @@ rfl::Generic::Object SaveHandler<ExtraComponentTypes...>::serialize_entity_(whee
 }
 
 template <typename... ExtraComponentTypes>
-wheel::Entity SaveHandler<ExtraComponentTypes...>::deserialize_entity_(const rfl::Generic::Object& obj) {
+wheel::Entity EntitySaveHandler<ExtraComponentTypes...>::deserialize_entity_(const rfl::Generic::Object& obj) {
     auto entity = ecs.add_entity();
     deserialize_components_<
         NameComponent,

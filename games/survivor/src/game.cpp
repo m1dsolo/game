@@ -1,6 +1,7 @@
 #include <survivor/game.hpp>
 #include <survivor/layer/game.hpp>
 #include <survivor/tag/hud.hpp>
+#include <survivor/resource/achievement.hpp>
 #include <survivor/system/achievement.hpp>
 #include <survivor/system/update_hud.hpp>
 
@@ -52,6 +53,9 @@ SurvivorGame::SurvivorGame() {
     LayerManager::instance().register_layer<GameLayer>();
     SaveManager::instance().register_components<
         HudTag
+    >();
+    SaveManager::instance().register_resources<
+        AchievementResource
     >();
 }
 

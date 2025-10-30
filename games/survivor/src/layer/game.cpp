@@ -1,6 +1,7 @@
 #include <survivor/layer/game.hpp>
 #include <survivor/manager/wave.hpp>
 #include <survivor/tag/hud.hpp>
+#include <survivor/resource/achievement.hpp>
 
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
@@ -52,6 +53,7 @@ void GameLayer::on_attach() {
     }
 
     WaveManager::instance().start_generate_waves();
+    ecs.add_resource(AchievementResource{});
 }
 
 void GameLayer::on_detach() {

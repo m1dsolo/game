@@ -3,17 +3,27 @@
 namespace core {
 
 void SaveManager::save() {
-    if (!save_handler_) {
+    if (!entity_save_handler_) {
         register_components();
     }
-    save_handler_->save();
+    entity_save_handler_->save();
+
+    if (!resource_save_handler_) {
+        register_resources();
+    }
+    resource_save_handler_->save();
 }
 
 void SaveManager::load() {
-    if (!save_handler_) {
+    if (!entity_save_handler_) {
         register_components();
     }
-    save_handler_->load();
+    entity_save_handler_->load();
+
+    if (!resource_save_handler_) {
+        register_resources();
+    }
+    resource_save_handler_->load();
 }
 
 }  // namespace core

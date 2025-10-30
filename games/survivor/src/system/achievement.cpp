@@ -1,5 +1,5 @@
 #include <survivor/system/achievement.hpp>
-#include <survivor/manager/achievement.hpp>
+#include <survivor/resource/achievement.hpp>
 
 #include <core/tag/input.hpp>
 #include <core/entity_event/death.hpp>
@@ -12,9 +12,10 @@ namespace survivor {
 
 void AchievementSystem::operator()(wheel::ECS& ecs) {
     auto player_entity = ecs.get_entity<InputTag>();
+    auto& achievement = ecs.get_resource<AchievementResource>();
     for (auto [event] : ecs.get_components<DeathEvent>()) {
         if (event.source == player_entity) {
-            AchievementManager::instance().add_kill();
+            achievement.kill_num++;
         }
     }
 }
