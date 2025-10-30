@@ -1,6 +1,6 @@
 {
     "name": "bunny",
-    "path": "sprite_sheet/bunny.png",
+    "path": "bunny.png",
     "duration": 0.25,
     "loop": true,
     "size": [

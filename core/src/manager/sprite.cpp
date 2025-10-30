@@ -34,7 +34,7 @@ SpriteManager::SpriteManager() {
             if (file.is_open()) {
                 std::cout << "[begin load sprite...]" << entry.path() << std::endl;
                 const auto [path, size, sprites] = rfl::json::read<SpritesConfig>(file).value();
-                auto texture = TextureManager::instance().get(path);
+                auto texture = TextureManager::instance().get(std::filesystem::path("sprite_sheet") / path);
                 for (const auto& [name, pos] : sprites) {
                     set(name, {texture, {
                         static_cast<float>(pos.first),

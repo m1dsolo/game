@@ -1,6 +1,6 @@
 {
     "name": "fox",
-    "path": "sprite_sheet/fox.png",
+    "path": "fox.png",
     "duration": 0.25,
     "loop": true,
     "size": [

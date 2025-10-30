@@ -1,6 +1,6 @@
 {
     "name": "thief",
-    "path": "sprite_sheet/thief.png",
+    "path": "thief.png",
     "duration": 0.25,
     "size": [
         32,

@@ -32,7 +32,7 @@ AnimationManager::AnimationManager() {
                     default_step,
                     default_count
                 ] = rfl::json::read<AnimationsConfig>(file).value();
-                auto texture = TextureManager::instance().get(path);
+                auto texture = TextureManager::instance().get(std::filesystem::path("sprite_sheet") / path);
 
                 for (const auto& [
                     state,
