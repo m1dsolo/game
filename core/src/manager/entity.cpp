@@ -1,5 +1,4 @@
 #include <core/manager/entity.hpp>
-#include <core/manager/texture.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/collider.hpp>
 #include <core/manager/render.hpp>
@@ -14,23 +13,30 @@
 #include <core/component/text.hpp>
 #include <core/component/render.hpp>
 #include <core/component/item.hpp>
+#include <core/component/hp.hpp>
 #include <core/tag/root.hpp>
 #include <core/tag/camera.hpp>
+#include <core/tag/hp_bar.hpp>
+#include <core/tag/save.hpp>
+
+#include <wheel/log.hpp>
 
 namespace core {
 
 EntityManager::EntityManager() {
-    ecs.add_entity(
+    auto root = ecs.add_entity(
         NameComponent{"root"},
         TransformComponent{},
         ChildrenComponent{},
         RootTag{}
     );
+    assert(root == 0);
 
     add_entity(
         NameComponent{"camera"},
-        TransformComponent{{0.f, 0.f}, {1920.f, 1080.f}},
-        CameraTag{}
+        TransformComponent{{{0.f, 0.f}, {1920.f, 1080.f}}},
+        CameraTag{},
+        SaveTag{}
     );
 }
 
@@ -38,8 +44,12 @@ void EntityManager::remove_entity(wheel::Entity entity) {
     if (!ecs.has_entity(entity)) {
         return;
     }
+
+    wheel::Log::debug("Remove entity {}:{}", ecs.get_component<NameComponent>(entity).name, entity);
+
     if (ecs.has_component<ChildrenComponent>(entity)) {
-        for (auto child : ecs.get_component<ChildrenComponent>(entity).entities) {
+        auto children = ecs.get_component<ChildrenComponent>(entity).entities;
+        for (auto child : children) {
             remove_entity(child);
         }
     }
@@ -75,7 +85,7 @@ void EntityManager::postprocess_entity_(wheel::Entity entity) {
 
     if (ecs.has_component<RenderComponent>(entity)) {
         auto& sprite = ecs.get_component<SpriteComponent>(entity);
-        if (sprite.sprite->texture == TextureManager::instance().get("")) {
+        if (sprite.sprite == &SpriteManager::instance().get("")) {
             if (ecs.has_component<AnimationComponent>(entity)) {
                 const auto& animation = *ecs.get_component<AnimationComponent>(entity).animation;
                 sprite.sprite = &animation.sprites[0];
@@ -112,11 +122,24 @@ void EntityManager::postprocess_entity_(wheel::Entity entity) {
     if (ecs.has_component<ButtonComponent>(entity)) {
         auto& button = ecs.get_component<ButtonComponent>(entity);
         auto& sprite = ecs.get_component<SpriteComponent>(entity);
-        sprite.sprite = &SpriteManager::instance().get(button.normal_color);
+        sprite.sprite = &SpriteManager::instance().get(button.normal_color_id);
     }
 
     if (ecs.has_component<TextComponent>(entity)) {
         update_text_(entity, ecs.get_component<TextComponent>(entity).text);
+    }
+
+    if (ecs.has_component<HPComponent>(entity)) {
+        add_entity(
+            entity,
+            NameComponent{"hp_bar"},
+            TransformComponent{{{0.f, -24.f}}},
+            SpriteComponent{"hp_bar48"},
+            RenderComponent{7},
+            HPBarTag{},
+            RenderTag{},
+            SaveTag{}
+        );
     }
 
     if (add_entity_callback_) {
@@ -132,7 +155,6 @@ void EntityManager::update_text_(wheel::Entity entity, const std::string& text) 
     auto texture = sdl::SDL::create_texture(text, t.font_size, t.color);
     auto [w, h] = sdl::SDL::get_texture_size(texture);
     transform.local.size = transform.global.size = {w, h};
-    transform.type = Coordinate::Type::Screen;
     sprite.sprite = &SpriteManager::instance().set(text, {texture});
     t.text = std::move(text);
 }

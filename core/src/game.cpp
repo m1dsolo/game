@@ -1,7 +1,7 @@
 #include <core/game.hpp>
 #include <core/global.hpp>
-#include <core/manager/entity.hpp>
 #include <core/manager/layer.hpp>
+#include <core/manager/sprite.hpp>
 #include <core/layer/global.hpp>
 #include <core/layer/main_menu.hpp>
 #include <core/system/handle_sdl_event.hpp>
@@ -24,6 +24,7 @@
 #include <core/resource/trigger.hpp>
 #include <core/resource/time.hpp>
 #include <core/resource/input.hpp>
+#include <core/resource/inventory.hpp>
 
 #include <wheel/log.hpp>
 #include <sdl/sdl.hpp>
@@ -62,9 +63,12 @@ Game::Game() {
     ecs.add_resource(TriggerResource{});
     ecs.add_resource(TimeResource{});
     ecs.add_resource(InputResource{});
+    ecs.add_resource(InventoryResource{});
 }
 
 void Game::run() {
+    SpriteManager::instance();
+
     ecs.add_systems<
         HandleSDLEventSystem,
         HandleButtonEventSystem,
@@ -76,10 +80,8 @@ void Game::run() {
         RemoveEntitySystem
     >();
 
-    LayerManager::instance().push<
-        GlobalLayer,
-        MainMenuLayer
-    >();
+    LayerManager::instance().push("GlobalLayer");
+    LayerManager::instance().push("MainMenuLayer");
 
     auto& context = ecs.get_resource<ContextResource>();
 

@@ -5,7 +5,7 @@
 namespace core {
 
 struct AnimationComponent {
-    AnimationComponent(const Animation::ID& id = {});
+    AnimationComponent(wheel::ID name_id, wheel::ID state_id = "idle");
 
     const Animation* animation;
     float time = 0.f;

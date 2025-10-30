@@ -8,7 +8,7 @@ namespace core {
 
 class PauseMenuLayer : public Layer {
 public:
-    PauseMenuLayer() : Layer("PauseMenuLayer") {}
+    PauseMenuLayer() {}
 
     void on_attach() override;
     void on_detach() override;
@@ -19,6 +19,9 @@ public:
 
 private:
     inline static wheel::Entity resume_button_entity_;
+    inline static wheel::Entity save_button_entity_;
+    inline static wheel::Entity load_button_entity_;
+    inline static wheel::Entity menu_button_entity_;
     inline static wheel::Entity exit_button_entity_;
     inline static wheel::Entity layout_entity_;
 };

@@ -6,7 +6,7 @@ namespace core {
 
 class GlobalLayer : public Layer {
 public:
-    GlobalLayer() : Layer("GlobalLayer") {}
+    GlobalLayer() {}
 
     bool on_event(const SDL_Event& event) override;
 };

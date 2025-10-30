@@ -14,7 +14,6 @@ void RenderSystem::operator()(wheel::ECS& ecs) {
     for (auto [entity, transform, sprite]
             : RenderManager::instance().get_entity_and_components_ascending<TransformComponent, SpriteComponent>()) {
         // TODO: not render out of screen?
-
         if (sprite.get_hit_effect_cnt > 0) {
             sdl::SDL::set_blend_mode(sprite.sprite->texture, SDL_BLENDMODE_ADD);
         }

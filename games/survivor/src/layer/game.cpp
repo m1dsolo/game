@@ -5,7 +5,6 @@
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/layer.hpp>
-#include <core/manager/sprite.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/collider.hpp>
@@ -17,7 +16,6 @@
 #include <core/component/render.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/level.hpp>
-#include <core/component/fraction.hpp>
 #include <core/component/item.hpp>
 #include <core/component/inventory.hpp>
 #include <core/component/master.hpp>
@@ -32,20 +30,48 @@
 #include <core/tag/input.hpp>
 #include <core/tag/pickup_item.hpp>
 #include <core/tag/absorb_item.hpp>
+#include <core/tag/save.hpp>
+#include <core/tag/game_layer.hpp>
 #include <core/resource/context.hpp>
+#include <core/resource/inventory.hpp>
 
 using namespace core;
 
 namespace survivor {
 
+void new_game();
+
 void GameLayer::on_attach() {
+    core::GameLayer::on_attach();
+
+    if (new_game_requested) {
+        new_game();
+        auto camera = ecs.get_entity<CameraTag>();
+        auto player = ecs.get_entity<InputTag>();
+        Hierarchy::attach_entity_to_parent(camera, player);
+    }
+
+    WaveManager::instance().start_generate_waves();
+}
+
+void GameLayer::on_detach() {
+    WaveManager::instance().stop_generate_waves();
+
+    auto camera = ecs.get_entity<CameraTag>();
+    Hierarchy::attach_entity_to_parent(camera, Hierarchy::root());
+
+    core::GameLayer::on_detach();
+}
+
+void new_game() {
     const auto& context = ecs.get_resource<ContextResource>();
+    const auto& slot_nums = ecs.get_resource<InventoryResource>().slot_nums;
 
     auto& entity_manager = EntityManager::instance();
 
     auto bunny = entity_manager.add_entity(
         NameComponent{"bunny"},
-        TransformComponent{},
+        TransformComponent{{{0.f, 0.f}, {64.f, 64.f}}},
         DirectionComponent{},
         SpeedComponent{200.f},
         ColliderComponent{
@@ -57,32 +83,35 @@ void GameLayer::on_attach() {
         AnimationComponent{{"bunny"}},
         AnimationFSMComponent{"basic"},
         RenderComponent{1},
-        HPComponent{100},
+        HPComponent{100, 100},
         LevelComponent{},
-        FractionComponent{0},
+        InventoryComponent{slot_nums[0] * slot_nums[1]},
         RigidbodyTag{},
         RenderTag{},
         InputTag{},
-        PickupItemTag{}
+        PickupItemTag{},
+        SaveTag{},
+        GameLayerTag{}
     );
 
-    auto inventory = ecs.get_entity<InventoryComponent>();
     auto& items = ecs.get_component<InventoryComponent>().items;
     items[0] = entity_manager.add_entity(
-        inventory,
         NameComponent{"m4a1"},
         TransformComponent{},
         SpriteComponent{"m4a1"},
-        RenderComponent{5},
-        ItemComponent{"m4a1", 1}
+        RenderComponent{4},
+        ItemComponent{"m4a1", 1},
+        SaveTag{},
+        GameLayerTag{}
     );
     items[1] = entity_manager.add_entity(
-        inventory,
         NameComponent{"usp"},
         TransformComponent{},
         SpriteComponent{"usp"},
-        RenderComponent{5},
-        ItemComponent{"usp", 3}
+        RenderComponent{4},
+        ItemComponent{"usp", 3},
+        SaveTag{},
+        GameLayerTag{}
     );
 
     entity_manager.add_entity(
@@ -95,40 +124,33 @@ void GameLayer::on_attach() {
             ColliderLayer::Item
         },
         AbsorbItemTag{},
-        MasterComponent{bunny}
+        MasterComponent{bunny},
+        SaveTag{},
+        GameLayerTag{}
     );
 
-    auto camera = ecs.get_entity<CameraTag>();
-    Hierarchy::attach_entity_to_parent(camera, bunny);
-
-    SpriteManager::instance().set("pink_filled_circle", Sprite{
-        sdl::SDL::create_filled_circle_texture(150.f, sdl::SDL::Color::Pink),
-        {0.f, 0.f, 300.f, 300.f}
-    });
     auto damage_aura = entity_manager.add_entity(
         bunny,
         NameComponent{"damage_aura"},
-        TransformComponent{},
-        SpriteComponent{"pink_filled_circle"},
-        RenderComponent{1},
+        TransformComponent{{{0.f, 0.f}, {300.f, 300.f}}},
+        SpriteComponent{"damage_aura"},
+        RenderComponent{2},
         ColliderComponent{
             wheel::Circle<float>{150.f},
             ColliderLayer::Trigger,
             ColliderLayer::Enemy
         },
-        AuraDamageComponent{8, 500000.f},
+        AuraDamageComponent{8, 500000},
         MasterComponent{bunny},
-        RenderTag{}
+        RenderTag{},
+        SaveTag{},
+        GameLayerTag{}
     );
 
-    SpriteManager::instance().set("auto_shoot", Sprite{
-        sdl::SDL::create_circle_texture(250.f, sdl::SDL::Color::Red),
-        {0.f, 0.f, 500.f, 500.f}
-    });
     auto auto_shoot = entity_manager.add_entity(
         bunny,
         NameComponent("auto_shoot"),
-        TransformComponent{},
+        TransformComponent{{{0.f, 0.f}, {500.f, 500.f}}},
         ColliderComponent{
             wheel::Circle<float>{250.f},
             ColliderLayer::Trigger,
@@ -141,16 +163,18 @@ void GameLayer::on_attach() {
             .projectile_sprite_id = "bullet",
             .range_attack_sound_id = "m4a1/shoot"
         },
-        ReloadComponent{30, 2000000, "m4a1/reload"},
+        ReloadComponent{30, 30, 2000000, "m4a1/reload"},
         MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
-        RenderComponent{1},
-        RenderTag{}
+        RenderComponent{3},
+        RenderTag{},
+        SaveTag{},
+        GameLayerTag{}
     );
 
     auto fox = entity_manager.add_entity(
         NameComponent{"fox"},
-        TransformComponent{{50.f, 0.f}},
+        TransformComponent{{{50.f, 0.f}, {64.f, 64.f}}},
         DirectionComponent{},
         SpeedComponent{150.f},
         ColliderComponent{
@@ -161,18 +185,19 @@ void GameLayer::on_attach() {
         SpriteComponent{},
         AnimationComponent{{"fox"}},
         AnimationFSMComponent{"basic"},
-        RenderComponent{1},
-        HPComponent{100},
+        RenderComponent{5},
+        HPComponent{100, 100},
         LevelComponent{},
-        FractionComponent{0},
         TrackComponent{bunny, 50.f},
         RigidbodyTag{},
-        RenderTag{}
+        RenderTag{},
+        SaveTag{},
+        GameLayerTag{}
     );
     auto fox_auto_shoot = entity_manager.add_entity(
         fox,
         NameComponent("fox_auto_shoot"),
-        TransformComponent{{0.f, 0.f}, {300.f, 300.f}},
+        TransformComponent{{{0.f, 0.f}, {300.f, 300.f}}},
         ColliderComponent{
             wheel::Circle<float>{150.f},
             ColliderLayer::Trigger,
@@ -185,42 +210,29 @@ void GameLayer::on_attach() {
             .projectile_sprite_id = "bullet",
             .range_attack_sound_id = "usp/shoot"
         },
-        ReloadComponent{12, 1000000, "usp/reload"},
+        ReloadComponent{12, 12, 1000000, "usp/reload"},
         MasterComponent{bunny},
         SpriteComponent{"auto_shoot"},
-        RenderComponent{1},
-        RenderTag{}
+        RenderComponent{3},
+        RenderTag{},
+        SaveTag{},
+        GameLayerTag{}
     );
 
-    // auto house = entity_manager.add_entity(
-    //     NameComponent{"house"},
-    //     TransformComponent{{100.f, 0.f}, {48.f, 48.f}},
-    //     SpriteComponent{"house"},
-    //     ColliderComponent{{48.f, 48.f}, false},
-    //     RenderComponent{0}
-    // );
-
     entity_manager.add_entity(
-        TextComponent{"Hud", 32, sdl::SDL::Color::Orange},
-        TransformComponent{
-            {0.5f * context.virtual_window_width, 0.1f * context.virtual_window_height},
-            {0.f, 0.f},
-            {1.f, 1.f},
+        NameComponent{"hud"},
+        TextComponent{"", 32, sdl::SDL::Color::Orange},
+        TransformComponent{{{0.5f * context.virtual_window_width, 0.1f * context.virtual_window_height}},
+            {},
             Coordinate::Type::Screen
         },
         SpriteComponent{},
-        RenderComponent{4},
+        RenderComponent{100},
         RenderTag{},
-        HudTag{}
+        HudTag{},
+        SaveTag{},
+        GameLayerTag{}
     );
-
-    core::GameLayer::on_attach();
-
-    WaveManager::instance().generate_waves();
-}
-
-// TODO
-void GameLayer::on_detach() {
 }
 
 }  // namespace survivor

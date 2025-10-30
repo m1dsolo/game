@@ -5,8 +5,9 @@ namespace core {
 
 void HandleSDLEventSystem::operator()(wheel::ECS& ecs) {
     SDL_Event event;
+    auto& layer_manager = LayerManager::instance();
     while (SDL_PollEvent(&event)) {
-        LayerManager::instance().handle_event(event);
+        layer_manager.handle_event(event);
     }
 }
 

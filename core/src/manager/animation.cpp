@@ -12,7 +12,7 @@
 namespace core {
 
 AnimationManager::AnimationManager() {
-    set({{}, {SpriteManager::instance().get(sdl::SDL::Color::White)}});
+    set({{}, {SpriteManager::instance().get("")}});
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator("assets/animation")) {
         auto path = entry.path();
@@ -79,7 +79,7 @@ const Animation& AnimationManager::get(const Animation::ID& id) {
     if (clip_map_.find(id) != clip_map_.end()) {
         return clip_map_.at(id);
     }
-    set({id, {SpriteManager::instance().get(sdl::SDL::Color::White)}});
+    set({id, {SpriteManager::instance().get("")}});
     return clip_map_.at(id);
 }
 

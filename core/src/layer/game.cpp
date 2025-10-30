@@ -1,8 +1,9 @@
 #include <core/layer/game.hpp>
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
+#include <core/manager/system.hpp>
 #include <core/manager/sprite.hpp>
-#include <core/manager/layer.hpp>
+#include <core/manager/save.hpp>
 #include <core/layer/inventory.hpp>
 #include <core/layer/pause_menu.hpp>
 #include <core/component/name.hpp>
@@ -12,31 +13,45 @@
 #include <core/component/render.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/item.hpp>
-#include <core/tag/hp_bar.hpp>
+#include <core/tag/root.hpp>
+#include <core/tag/camera.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/obstacle.hpp>
 #include <core/tag/render.hpp>
+#include <core/tag/map.hpp>
+#include <core/tag/game_layer.hpp>
 #include <core/resource/context.hpp>
 #include <core/resource/input.hpp>
+#include <core/event/layer.hpp>
+#include <core/entity_event/remove_entity.hpp>
 
 #include <sdl/sdl.hpp>
 
-#include <format>
-
 namespace core {
 
-void init_hp_bar_();
-void init_text_sprite_();
 void init_map_();
 
 void GameLayer::on_attach() {
-    init_hp_bar_();
-    init_text_sprite_();
+    if (!new_game_requested) {
+        SaveManager::instance().load();
+    }
     init_map_();
 }
 
-// TODO
 void GameLayer::on_detach() {
+    auto entities = ecs.get_entities<GameLayerTag>() | std::ranges::to<std::vector>();
+    auto& entity_manager = EntityManager::instance();
+    for (auto entity : entities) {
+        entity_manager.remove_entity(entity);
+    }
+}
+
+void GameLayer::on_show() {
+    SystemManager::instance().resume_game_systems();
+}
+
+void GameLayer::on_hide() {
+    SystemManager::instance().pause_game_systems();
 }
 
 bool GameLayer::on_event(const SDL_Event& event) {
@@ -49,11 +64,11 @@ bool GameLayer::on_event(const SDL_Event& event) {
                 case SDLK_A: input.is_move_left = true; return true;
                 case SDLK_D: input.is_move_right = true; return true;
                 case SDLK_I: {
-                    LayerManager::instance().push<InventoryLayer>();
+                    ecs.emplace_event<AddLayerEvent>("InventoryLayer");
                     return true;
                 }
                 case SDLK_ESCAPE: {
-                    LayerManager::instance().push<PauseMenuLayer>();
+                    ecs.emplace_event<AddLayerEvent>("PauseMenuLayer");
                     return true;
                 }
             }
@@ -91,55 +106,6 @@ bool GameLayer::on_event(const SDL_Event& event) {
     return false;
 }
 
-void init_hp_bar_() {
-    // init hp bar sprites
-    for (int i = 1; i <= 47; i++) {
-        auto texture = sdl::SDL::create_texture(48, 12, sdl::SDL::Color::Red);
-        sdl::SDL::RenderTargetGuard guard{texture};
-        auto dst = SDL_FRect{0.f, 0.f, static_cast<float>(i), 12.f};
-        sdl::SDL::render_filled_rect(&dst, sdl::SDL::Color::Green);
-        SpriteManager::instance().set(std::format("hp_bar{}", i), {
-            texture,
-            {0.f, 0.f, 48.f, 12.f}
-        });
-    }
-    // hidden hp bar when hp is empty or full
-    SpriteManager::instance().set("hp_bar0", {
-        nullptr,
-        {0.f, 0.f, 48.f, 12.f}
-    });
-    SpriteManager::instance().set("hp_bar48", {
-        nullptr,
-        {0.f, 0.f, 48.f, 12.f}
-    });
-
-    EntityManager::instance().set_add_entity_callback([](wheel::Entity entity) {
-        if (ecs.has_component<HPComponent>(entity)) {
-            EntityManager::instance().add_entity(
-                entity,
-                NameComponent{"hp_bar"},
-                TransformComponent{{0.f, -36.f}, {48.f, 12.f}},
-                SpriteComponent{"hp_bar48"},
-                RenderComponent{2},
-                HPBarTag{},
-                RenderTag{}
-            );
-        }
-    });
-}
-
-void init_text_sprite_() {
-    for (int i = 1; i <= 99; i++) {
-        auto texture = sdl::SDL::create_texture(std::to_string(i), 16.f, sdl::SDL::Color::Black);
-        auto [w, h] = sdl::SDL::get_texture_size(texture);
-        sdl::SDL::RenderTargetGuard guard{texture};
-        SpriteManager::instance().set(std::to_string(i), {
-            texture,
-            {0.f, 0.f, w, h}
-        });
-    }
-}
-
 void init_map_() {
     auto& entity_manager = EntityManager::instance();
 
@@ -147,63 +113,69 @@ void init_map_() {
     const auto& context = ecs.get_resource<ContextResource>();
     float map_width = context.map_width;
     float map_height = context.map_height;
-    SpriteManager::instance().set("map", Sprite{
-        sdl::SDL::create_texture(map_width, map_height, SDL_FColor{204.f / 255.f, 1.f, 153.f / 255.f, 1.f}),
-        {0.f, 0.f, map_width, map_height}
-    });
     auto map = entity_manager.add_entity(
         NameComponent{"map"},
-        TransformComponent{{0.f, 0.f}, {map_width, map_height}},
+        TransformComponent{{{0.f, 0.f}, {map_width, map_height}}},
         SpriteComponent{"map"},
         RenderComponent{0},
-        RenderTag{}
+        RenderTag{},
+        MapTag{},
+        GameLayerTag{}
     );
 
     // init boundaries
     const float thickness = 40.f;
     auto left_boundary = entity_manager.add_entity(
         NameComponent{"left_boundary"},
-        TransformComponent{{-map_width / 2 - thickness / 2, 0.f}, {thickness, map_height + thickness * 2}},
+        TransformComponent{{{-map_width / 2 - thickness / 2, 0.f}, {thickness, map_height + thickness * 2}}},
         ColliderComponent{
             wheel::Rect<float>{{0.f, 0.f}, {thickness, map_height + thickness * 2}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        ObstacleTag{}
+        ObstacleTag{},
+        MapTag{},
+        GameLayerTag{}
     );
     auto right_boundary = entity_manager.add_entity(
         NameComponent{"right_boundary"},
-        TransformComponent{{map_width / 2 + thickness / 2, 0.f}, {thickness, map_height + thickness * 2}},
+        TransformComponent{{{map_width / 2 + thickness / 2, 0.f}, {thickness, map_height + thickness * 2}}},
         ColliderComponent{
             wheel::Rect<float>{{0.f, 0.f}, {thickness, map_height + thickness * 2}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        ObstacleTag{}
+        ObstacleTag{},
+        MapTag{},
+        GameLayerTag{}
     );
     auto top_boundary = entity_manager.add_entity(
         NameComponent{"top_boundary"},
-        TransformComponent{{0.f, -map_height / 2 - thickness / 2}, {map_width + thickness * 2, thickness}},
+        TransformComponent{{{0.f, -map_height / 2 - thickness / 2}, {map_width + thickness * 2, thickness}}},
         ColliderComponent{
             wheel::Rect<float>{{0.f, 0.f}, {map_width + thickness * 2, thickness}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        ObstacleTag{}
+        ObstacleTag{},
+        MapTag{},
+        GameLayerTag{}
     );
     auto bottom_boundary = entity_manager.add_entity(
         NameComponent{"bottom_boundary"},
-        TransformComponent{{0.f, map_height / 2 + thickness / 2}, {map_width + thickness * 2, thickness}},
+        TransformComponent{{{0.f, map_height / 2 + thickness / 2}, {map_width + thickness * 2, thickness}}},
         ColliderComponent{
             wheel::Rect<float>{wheel::Rect<float>{{0.f, 0.f}, {map_width + thickness * 2, thickness}}},
             ColliderLayer::Obstacle,
             ColliderLayer::Player | ColliderLayer::Enemy
         },
         RigidbodyTag{},
-        ObstacleTag{}
+        ObstacleTag{},
+        MapTag{},
+        GameLayerTag{}
     );
 }
 

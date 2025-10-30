@@ -2,6 +2,7 @@
 #include <core/global.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/sprite.hpp>
+#include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/direction.hpp>
 #include <core/component/speed.hpp>
@@ -9,6 +10,7 @@
 #include <core/component/render.hpp>
 #include <core/component/hp.hpp>
 #include <core/tag/render.hpp>
+#include <core/tag/game_layer.hpp>
 #include <core/event/hp_change.hpp>
 #include <core/entity_event/remove_entity.hpp>
 
@@ -33,15 +35,14 @@ void GenerateHPFloatTextSystem::operator()(wheel::ECS& ecs) {
             auto position = target_transform.global.position;
             auto size = target_transform.global.size;
             auto text_entity = EntityManager::instance().add_entity(
-                TransformComponent{
-                    position - wheel::Vector2D<float>{0.f, size[1] / 2.f + 10.f},
-                    {w, h}
-                },
+                NameComponent{"hp_float_text"},
+                TransformComponent{{position - wheel::Vector2D<float>{0.f, size[1] / 2.f + 10.f}, {w, h}}},
                 DirectionComponent{{wheel::Random::instance().uniform<float>(-0.5f, 0.5f), -1.f}},
                 SpeedComponent{wheel::Random::instance().uniform<float>(10.f, 20.f)},
                 SpriteComponent{id},
-                RenderComponent{1},
-                RenderTag{}
+                RenderComponent{8},
+                RenderTag{},
+                GameLayerTag{}
             );
             timer.add(1000000, [text_entity, &ecs]() {
                 if (ecs.has_entity(text_entity)) {

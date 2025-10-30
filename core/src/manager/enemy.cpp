@@ -13,12 +13,13 @@
 #include <core/component/track.hpp>
 #include <core/component/hp.hpp>
 #include <core/component/attack.hpp>
-#include <core/component/fraction.hpp>
 #include <core/component/loot.hpp>
 #include <core/component/master.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/rigidbody.hpp>
 #include <core/tag/render.hpp>
+#include <core/tag/save.hpp>
+#include <core/tag/game_layer.hpp>
 
 #include <wheel/random.hpp>
 
@@ -52,7 +53,7 @@ wheel::Entity EnemyManager::generate(
 
     auto entity = entity_manager.add_entity(
         NameComponent{name},
-        TransformComponent{position},
+        TransformComponent{{{position}, {64.f, 64.f}}},
         SpriteComponent{},
         DirectionComponent{},
         SpeedComponent{config.speed},
@@ -63,13 +64,14 @@ wheel::Entity EnemyManager::generate(
         },
         AnimationComponent{{name}},
         AnimationFSMComponent{"basic"},
-        RenderComponent{1},
+        RenderComponent{5},
         TrackComponent{ecs.get_entity<InputTag>()},
-        HPComponent{config.hp},
-        FractionComponent{1},
+        HPComponent{config.hp, config.hp},
         LootComponent{config.loots},
         RigidbodyTag{},
-        RenderTag{}
+        RenderTag{},
+        SaveTag{},
+        GameLayerTag{}
     );
     auto [damage, range, interval] = config.attack;
     auto attack = entity_manager.add_entity(
@@ -82,7 +84,9 @@ wheel::Entity EnemyManager::generate(
             ColliderLayer::Player
         },
         AttackComponent{damage, interval},
-        MasterComponent{entity}
+        MasterComponent{entity},
+        SaveTag{},
+        GameLayerTag{}
     );
 
     return entity;

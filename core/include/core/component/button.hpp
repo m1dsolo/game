@@ -1,13 +1,15 @@
 #pragma once
 
-#include <sdl/sdl.hpp>
+#include <wheel/id.hpp>
 
 namespace core {
 
 struct ButtonComponent {
-    SDL_FColor normal_color{ 230.f / 255.f, 230.f / 255.f, 230.f / 255.f, 1.f };
-    SDL_FColor hovered_color{ 150.f / 255.f, 190.f / 255.f, 250.f / 255.f, 1.f };
-    SDL_FColor pressed_color{ 200.f / 255.f, 160.f / 255.f, 250.f / 255.f, 1.f };
+    wheel::ID normal_color_id = "button_normal";
+    wheel::ID hovered_color_id = "button_hovered";
+    wheel::ID pressed_color_id = "button_pressed";
+
+    bool is_hovered = false;
 };
 
 }  // namespace core

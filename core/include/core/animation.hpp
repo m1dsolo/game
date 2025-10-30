@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/component/sprite.hpp>
+#include <core/manager/sprite.hpp>
 
 #include <wheel/id.hpp>
 

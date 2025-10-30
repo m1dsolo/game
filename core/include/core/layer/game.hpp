@@ -6,11 +6,15 @@ namespace core {
 
 class GameLayer : public Layer {
 public:
-    GameLayer() : Layer("GameLayer") {}
+    GameLayer() {}
 
     void on_attach() override;
     void on_detach() override;
+    void on_show() override;
+    void on_hide() override;
     bool on_event(const SDL_Event& event) override;
+
+    inline static bool new_game_requested = false;
 };
 
 }  // namespace core

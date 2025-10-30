@@ -3,7 +3,7 @@
 
 namespace core {
 
-AnimationComponent::AnimationComponent(const Animation::ID& id)
-    : animation(&AnimationManager::instance().get(id)) {}
+AnimationComponent::AnimationComponent(wheel::ID name_id, wheel::ID state_id)
+    : animation(&AnimationManager::instance().get({name_id, state_id})) {}
 
 }  // namespace core

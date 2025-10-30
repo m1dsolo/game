@@ -18,6 +18,15 @@ LayerManager::LayerManager() {
     >();
 }
 
+void LayerManager::push(const std::string& layer_name) {
+    if (!layers_.empty()) {
+        layers_.back()->on_hide();
+    }
+    layers_.emplace_back(layer_creators_.at(layer_name)());
+    layers_.back()->on_attach();
+    layers_.back()->on_show();
+}
+
 void LayerManager::pop() {
     if (layers_.empty()) {
         return;
@@ -28,7 +37,6 @@ void LayerManager::pop() {
     if (!layers_.empty()) {
         layers_.back()->on_show();
     }
-    update_systems_();
 }
 
 void LayerManager::update() {
@@ -42,14 +50,6 @@ void LayerManager::handle_event(const SDL_Event& event) {
         if ((*iter)->on_event(event)) {
             break;
         }
-    }
-}
-
-void LayerManager::update_systems_() {
-    if (!layers_.empty() && layers_.back()->name() == "GameLayer") {
-        SystemManager::instance().resume_game_systems();
-    } else {
-        SystemManager::instance().pause_game_systems();
     }
 }
 

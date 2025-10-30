@@ -1,5 +1,6 @@
 #include <survivor/game.hpp>
 #include <survivor/layer/game.hpp>
+#include <survivor/tag/hud.hpp>
 #include <survivor/system/achievement.hpp>
 #include <survivor/system/update_hud.hpp>
 
@@ -7,6 +8,7 @@
 #include <core/manager/system.hpp>
 #include <core/manager/audio.hpp>
 #include <core/manager/layer.hpp>
+#include <core/manager/save.hpp>
 #include <core/system/timer.hpp>
 #include <core/system/track.hpp>
 #include <core/system/move.hpp>
@@ -48,6 +50,9 @@ SurvivorGame::SurvivorGame() {
 
     AudioManager::instance().play("bgm");
     LayerManager::instance().register_layer<GameLayer>();
+    SaveManager::instance().register_components<
+        HudTag
+    >();
 }
 
 }  // namespace survivor

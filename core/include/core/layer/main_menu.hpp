@@ -8,7 +8,7 @@ namespace core {
 
 class MainMenuLayer : public Layer {
 public:
-    MainMenuLayer() : Layer("MainMenuLayer") {}
+    MainMenuLayer() {}
 
     void on_attach() override;
     void on_detach() override;
@@ -18,7 +18,8 @@ public:
     bool on_event(const SDL_Event& event) override;
 
 private:
-    inline static wheel::Entity start_button_entity_;
+    inline static wheel::Entity new_button_entity_;
+    inline static wheel::Entity load_button_entity_;
     inline static wheel::Entity exit_button_entity_;
     inline static wheel::Entity layout_entity_;
 };

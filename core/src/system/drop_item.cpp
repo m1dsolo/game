@@ -8,6 +8,7 @@
 #include <core/component/loot.hpp>
 #include <core/component/item.hpp>
 #include <core/tag/render.hpp>
+#include <core/tag/game_layer.hpp>
 #include <core/entity_event/death.hpp>
 
 #include <wheel/random.hpp>
@@ -30,15 +31,13 @@ void DropItemSystem::operator()(wheel::ECS& ecs) {
                         wheel::ID id = item.name;
                         EntityManager::instance().add_entity(
                             NameComponent{item.name},
-                            TransformComponent{
-                                transform.global.position,
-                                {16.f, 16.f}
-                            },
+                            TransformComponent{{transform.global.position, {16.f, 16.f}}},
                             SpriteComponent{id},
                             ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
-                            RenderComponent{1},
+                            RenderComponent{4},
                             ItemComponent{id, count},
-                            RenderTag{}
+                            RenderTag{},
+                            GameLayerTag{}
                         );
                         break;
                     }

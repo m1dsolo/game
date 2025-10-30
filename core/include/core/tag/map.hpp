@@ -2,6 +2,6 @@
 
 namespace core {
 
-struct RemoveLayerEvent {};
+struct MapTag {};
 
 }  // namespace core

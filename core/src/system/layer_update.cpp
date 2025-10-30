@@ -1,6 +1,6 @@
 #include <core/system/layer_update.hpp>
 #include <core/manager/layer.hpp>
-#include <core/entity_event/remove_layer.hpp>
+#include <core/event/layer.hpp>
 
 #include <ecs/ecs.hpp>
 
@@ -11,6 +11,10 @@ void LayerUpdateSystem::operator()(wheel::ECS& ecs) {
 
     for (auto _ : ecs.get_events<RemoveLayerEvent>()) {
         LayerManager::instance().pop();
+    }
+
+    for (auto event : ecs.get_events<AddLayerEvent>()) {
+        LayerManager::instance().push(event.layer_name);
     }
 }
 

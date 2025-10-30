@@ -4,9 +4,6 @@
 namespace core {
 
 SpriteComponent::SpriteComponent(wheel::ID id)
-    : sprite(&SpriteManager::instance().get(id)) {}
-
-SpriteComponent::SpriteComponent(SDL_FColor color)
-    : sprite(&SpriteManager::instance().get(color)) {}
+    : id(id), sprite(&SpriteManager::instance().get(id)) {}
 
 }  // namespace core

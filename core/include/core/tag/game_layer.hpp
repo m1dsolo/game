@@ -2,8 +2,6 @@
 
 namespace core {
 
-struct FractionComponent {
-    int fraction = -1;
-};
+struct GameLayerTag {};
 
 }  // namespace core

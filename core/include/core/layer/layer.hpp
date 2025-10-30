@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 union SDL_Event;
 
 namespace core {
@@ -18,13 +16,8 @@ public:
     virtual void on_update() {}
     virtual bool on_event(const SDL_Event& event) { return false; }
 
-    const std::string& name() const { return name_; }
-
 protected:
-    Layer(const std::string& name) : name_(name) {}
-
-private:
-    std::string name_;
+    Layer() {}
 };
 
 }  // namespace core

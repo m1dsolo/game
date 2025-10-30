@@ -16,11 +16,11 @@
 #include <core/component/range_attack.hpp>
 #include <core/component/reload.hpp>
 #include <core/component/hp.hpp>
-#include <core/component/fraction.hpp>
 #include <core/component/master.hpp>
 #include <core/component/master.hpp>
 #include <core/tag/obstacle.hpp>
 #include <core/tag/render.hpp>
+#include <core/tag/game_layer.hpp>
 #include <core/resource/trigger.hpp>
 #include <core/resource/time.hpp>
 #include <core/event/hp_change.hpp>
@@ -82,14 +82,13 @@ void shoot_(wheel::ECS& ecs) {
         }
 
         auto master = ecs.get_component<MasterComponent>(trigger).entity;
-        auto fraction = ecs.get_component<FractionComponent>(master).fraction;
         const auto& target_pos = ecs.get_component<TransformComponent>(target).global.position;
         const auto& trigger_pos = ecs.get_component<TransformComponent>(trigger).global.position;
 
         EntityManager::instance().add_entity(
             NameComponent{"bullet"},
             ProjectileComponent{range_attack.damage},
-            TransformComponent{trigger_pos, {16.f, 16.f}},
+            TransformComponent{{trigger_pos, {16.f, 16.f}}},
             ColliderComponent{
                 wheel::Circle<float>{0.f, 0.f, 8.f},
                 ColliderLayer::Projectile,
@@ -98,11 +97,11 @@ void shoot_(wheel::ECS& ecs) {
             DirectionComponent{(target_pos - trigger_pos).normalize()},
             SpriteComponent{range_attack.projectile_sprite_id},
             SpeedComponent{range_attack.projectile_speed},
-            RenderComponent{2},
+            RenderComponent{6},
             // TrackComponent{closest.first},
-            FractionComponent{fraction},
             MasterComponent{master},
-            RenderTag{}
+            RenderTag{},
+            GameLayerTag{}
         );
 
         AudioManager::instance().play(range_attack.range_attack_sound_id);

@@ -2,6 +2,7 @@
 
 #include <ecs/entity.hpp>
 #include <wheel/singleton.hpp>
+#include <wheel/timer.hpp>
 
 #include <string>
 #include <vector>
@@ -12,14 +13,16 @@ class WaveManager : public wheel::Singleton<WaveManager> {
     friend wheel::Singleton<WaveManager>;
 
 public:
-    void generate_waves() const;
-    wheel::Entity generate(const std::string& name) const;
+    void start_generate_waves();
+    void stop_generate_waves();
+
+    wheel::Entity generate(const std::string& name, const std::vector<wheel::Entity>& boundaries) const;
 
 private:
-    WaveManager();
+    WaveManager() = default;
     WaveManager(const WaveManager&) = delete;
 
-    std::vector<wheel::Entity> boundaries_;
+    wheel::timer_id_t timer_id_ = 0;
 };
 
 }  // namespace survivor

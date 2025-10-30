@@ -1,85 +1,45 @@
 #include <core/layer/main_menu.hpp>
 #include <core/global.hpp>
-#include <core/manager/entity.hpp>
-#include <core/manager/sprite.hpp>
-#include <core/manager/layer.hpp>
 #include <core/layer/game.hpp>
 #include <core/util/ui.hpp>
-#include <core/component/name.hpp>
-#include <core/component/transform.hpp>
-#include <core/component/text.hpp>
-#include <core/component/button.hpp>
-#include <core/component/sprite.hpp>
-#include <core/component/render.hpp>
 #include <core/component/layout.hpp>
+#include <core/component/children.hpp>
+#include <core/tag/root.hpp>
+#include <core/tag/camera.hpp>
 #include <core/tag/render.hpp>
-#include <core/tag/layer.hpp>
+#include <core/tag/main_menu_layer.hpp>
 #include <core/resource/context.hpp>
+#include <core/event/layer.hpp>
 #include <core/entity_event/button.hpp>
 #include <core/entity_event/remove_entity.hpp>
-#include <core/entity_event/button.hpp>
 
 namespace core {
 
 void MainMenuLayer::on_attach() {
-    const auto& context = ecs.get_resource<ContextResource>();
-    auto& entity_manager = EntityManager::instance();
+    layout_entity_ = UI::add_vertical_button_layout(
+        "main_menu",
+        {"new", "load", "exit"},
+        200.f,
+        100.f,
+        20.f
+    );
+    auto& widgets = ecs.get_component<LayoutComponent>(layout_entity_).widgets;
 
-    layout_entity_ = entity_manager.add_entity(
-        NameComponent{"main_menu_layout"},
-        TransformComponent{
-            {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f},
-            {240.f, 260.f},
-            {1.f, 1.f},
-            Coordinate::Type::Screen
-        },
-        LayoutComponent{},
-        SpriteComponent{sdl::SDL::Color::Gray},
-        RenderComponent{2},
-        MainMenuLayerTag{}
-    );
+    new_button_entity_ = widgets[0][0];
+    load_button_entity_ = widgets[1][0];
+    exit_button_entity_ = widgets[2][0];
 
-    start_button_entity_ = entity_manager.add_entity(
-        layout_entity_,
-        NameComponent{"start_button"},
-        ButtonComponent{},
-        TransformComponent{{0.f, -60.f}, {200.f, 100.f}},
-        SpriteComponent{},
-        RenderComponent{3},
-        MainMenuLayerTag{}
-    );
-    auto start_text = entity_manager.add_entity(
-        start_button_entity_,
-        NameComponent{"start_text"},
-        TextComponent{"start", 32, sdl::SDL::Color::Black},
-        TransformComponent{},
-        SpriteComponent{},
-        RenderComponent{4},
-        MainMenuLayerTag{}
-    );
-
-    exit_button_entity_ = entity_manager.add_entity(
-        layout_entity_,
-        NameComponent{"exit_button"},
-        ButtonComponent{},
-        TransformComponent{{0.f, 60.f}, {200.f, 100.f}},
-        SpriteComponent{},
-        RenderComponent{3},
-        MainMenuLayerTag{}
-    );
-    auto exit_text = entity_manager.add_entity(
-        exit_button_entity_,
-        NameComponent{"exit_text"},
-        TextComponent{"exit", 32, sdl::SDL::Color::Black},
-        TransformComponent{},
-        SpriteComponent{},
-        RenderComponent{4},
-        MainMenuLayerTag{}
-    );
-
-    auto& layout = ecs.get_component<LayoutComponent>(layout_entity_);
-    layout.widgets = {{start_button_entity_}, {exit_button_entity_}};
-    ecs.add_entity_event(start_button_entity_, ButtonHoveredEvent{});
+    ecs.add_component(layout_entity_, MainMenuLayerTag{});
+    for (auto& entities : widgets) {
+        for (auto entity : entities) {
+            ecs.add_component(entity, MainMenuLayerTag{});
+            if (ecs.has_component<ChildrenComponent>(entity)) {
+                for (auto child : ecs.get_component<ChildrenComponent>(entity).entities) {
+                    ecs.add_component(child, MainMenuLayerTag{});
+                }
+            }
+        }
+    }
 }
 
 void MainMenuLayer::on_detach() {
@@ -92,6 +52,12 @@ void MainMenuLayer::on_show() {
     for (auto entity : ecs.get_entities<MainMenuLayerTag>()) {
         ecs.add_component(entity, RenderTag{});
     }
+
+    auto& layout = ecs.get_component<LayoutComponent>(layout_entity_);
+    auto selected_entity = layout.widgets[layout.selected.first][layout.selected.second];
+    ecs.add_entity_event(selected_entity, ButtonUnhoveredEvent{});
+    layout.selected = {0, 0};
+    ecs.add_entity_event(layout.widgets[0][0], ButtonHoveredEvent{});
 }
 
 void MainMenuLayer::on_hide() {
@@ -101,8 +67,14 @@ void MainMenuLayer::on_hide() {
 }
 
 void MainMenuLayer::on_update() {
-    if (ecs.has_components<ButtonPressedEvent>(start_button_entity_)) {
-        LayerManager::instance().push<GameLayer>();
+    if (ecs.has_components<ButtonPressedEvent>(new_button_entity_)) {
+        GameLayer::new_game_requested = true;
+        ecs.emplace_event<AddLayerEvent>("GameLayer");
+    }
+
+    if (ecs.has_components<ButtonPressedEvent>(load_button_entity_)) {
+        GameLayer::new_game_requested = false;
+        ecs.emplace_event<AddLayerEvent>("GameLayer");
     }
 
     if (ecs.has_component<ButtonPressedEvent>(exit_button_entity_)) {

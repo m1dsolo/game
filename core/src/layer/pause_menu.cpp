@@ -1,84 +1,48 @@
 #include <core/layer/pause_menu.hpp>
+#include <core/layer/game.hpp>
 #include <core/global.hpp>
-#include <core/manager/entity.hpp>
-#include <core/manager/sprite.hpp>
+#include <core/manager/save.hpp>
+#include <core/manager/layer.hpp>
 #include <core/util/ui.hpp>
-#include <core/component/name.hpp>
-#include <core/component/transform.hpp>
-#include <core/component/text.hpp>
-#include <core/component/button.hpp>
-#include <core/component/sprite.hpp>
-#include <core/component/render.hpp>
 #include <core/component/layout.hpp>
 #include <core/tag/render.hpp>
-#include <core/tag/layer.hpp>
+#include <core/tag/pause_menu_layer.hpp>
+#include <core/tag/root.hpp>
 #include <core/resource/context.hpp>
+#include <core/event/layer.hpp>
 #include <core/entity_event/button.hpp>
 #include <core/entity_event/remove_entity.hpp>
-#include <core/entity_event/remove_layer.hpp>
 #include <core/entity_event/button.hpp>
 
 namespace core {
 
 void PauseMenuLayer::on_attach() {
-    const auto& context = ecs.get_resource<ContextResource>();
-    auto& entity_manager = EntityManager::instance();
+    layout_entity_ = UI::add_vertical_button_layout(
+        "pause_menu",
+        {"resume", "save", "load", "menu", "exit"},
+        200.f,
+        100.f,
+        20.f
+    );
+    auto& widgets = ecs.get_component<LayoutComponent>(layout_entity_).widgets;
 
-    layout_entity_ = entity_manager.add_entity(
-        NameComponent{"pause_menu_layout"},
-        TransformComponent{
-            {context.virtual_window_width / 2.f, context.virtual_window_height / 2.f},
-            {240.f, 260.f},
-            {1.f, 1.f},
-            Coordinate::Type::Screen
-        },
-        LayoutComponent{},
-        SpriteComponent{sdl::SDL::Color::Gray},
-        RenderComponent{2},
-        PauseMenuLayerTag{}
-    );
+    resume_button_entity_ = widgets[0][0];
+    save_button_entity_ = widgets[1][0];
+    load_button_entity_ = widgets[2][0];
+    menu_button_entity_ = widgets[3][0];
+    exit_button_entity_ = widgets[4][0];
 
-    resume_button_entity_ = entity_manager.add_entity(
-        layout_entity_,
-        NameComponent{"resume_button"},
-        ButtonComponent{},
-        TransformComponent{{0.f, -60.f}, {200.f, 100.f}},
-        SpriteComponent{},
-        RenderComponent{3},
-        PauseMenuLayerTag{}
-    );
-    auto resume_text = entity_manager.add_entity(
-        resume_button_entity_,
-        NameComponent{"resume_text"},
-        TextComponent{"resume", 32, sdl::SDL::Color::Black},
-        TransformComponent{},
-        SpriteComponent{},
-        RenderComponent{4},
-        PauseMenuLayerTag{}
-    );
-
-    exit_button_entity_ = entity_manager.add_entity(
-        layout_entity_,
-        NameComponent{"exit_button"},
-        ButtonComponent{},
-        TransformComponent{{0.f, 60.f}, {200.f, 100.f}},
-        SpriteComponent{},
-        RenderComponent{3},
-        PauseMenuLayerTag{}
-    );
-    auto exit_text = entity_manager.add_entity(
-        exit_button_entity_,
-        NameComponent{"exit_text"},
-        TextComponent{"exit", 32, sdl::SDL::Color::Black},
-        TransformComponent{},
-        SpriteComponent{},
-        RenderComponent{4},
-        PauseMenuLayerTag{}
-    );
-
-    auto& layout = ecs.get_component<LayoutComponent>(layout_entity_);
-    layout.widgets = {{resume_button_entity_}, {exit_button_entity_}};
-    ecs.add_entity_event(resume_button_entity_, ButtonHoveredEvent{});
+    ecs.add_component(layout_entity_, PauseMenuLayerTag{});
+    for (auto& entities : widgets) {
+        for (auto entity : entities) {
+            ecs.add_component(entity, PauseMenuLayerTag{});
+            if (ecs.has_component<ChildrenComponent>(entity)) {
+                for (auto child : ecs.get_component<ChildrenComponent>(entity).entities) {
+                    ecs.add_component(child, PauseMenuLayerTag{});
+                }
+            }
+        }
+    }
 }
 
 void PauseMenuLayer::on_detach() {
@@ -91,16 +55,34 @@ void PauseMenuLayer::on_show() {
     for (auto entity : ecs.get_entities<PauseMenuLayerTag>()) {
         ecs.add_component(entity, RenderTag{});
     }
+    ecs.add_entity_event(resume_button_entity_, ButtonHoveredEvent{});
 }
 
 void PauseMenuLayer::on_hide() {
     for (auto entity : ecs.get_entities<PauseMenuLayerTag>()) {
         ecs.remove_component<RenderTag>(entity);
     }
+    ecs.add_entity_event(resume_button_entity_, ButtonUnhoveredEvent{});
 }
 
 void PauseMenuLayer::on_update() {
     if (ecs.has_component<ButtonPressedEvent>(resume_button_entity_)) {
+        ecs.emplace_event<RemoveLayerEvent>();
+    }
+
+    if (ecs.has_component<ButtonPressedEvent>(save_button_entity_)) {
+        SaveManager::instance().save();
+    }
+
+    if (ecs.has_component<ButtonPressedEvent>(load_button_entity_)) {
+        ecs.emplace_event<RemoveLayerEvent>();
+        ecs.emplace_event<RemoveLayerEvent>();
+        GameLayer::new_game_requested = false;
+        ecs.emplace_event<AddLayerEvent>("GameLayer");
+    }
+
+    if (ecs.has_component<ButtonPressedEvent>(menu_button_entity_)) {
+        ecs.emplace_event<RemoveLayerEvent>();
         ecs.emplace_event<RemoveLayerEvent>();
     }
 
