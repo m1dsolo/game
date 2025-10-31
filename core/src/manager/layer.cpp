@@ -22,7 +22,7 @@ void LayerManager::push(const std::string& layer_name) {
     if (!layers_.empty()) {
         layers_.back()->on_hide();
     }
-    layers_.emplace_back(layer_creators_.at(layer_name)());
+    layers_.emplace_back(layer_map_.at(layer_name).get());
     layers_.back()->on_attach();
     layers_.back()->on_show();
 }

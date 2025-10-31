@@ -18,10 +18,10 @@ public:
     bool on_event(const SDL_Event& event) override;
 
 private:
-    inline static wheel::Entity new_button_entity_;
-    inline static wheel::Entity load_button_entity_;
-    inline static wheel::Entity exit_button_entity_;
-    inline static wheel::Entity layout_entity_;
+    wheel::Entity new_button_entity_;
+    wheel::Entity load_button_entity_;
+    wheel::Entity exit_button_entity_;
+    wheel::Entity layout_entity_;
 };
 
 }  // namespace core

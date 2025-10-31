@@ -7,7 +7,6 @@
 #include <wheel/singleton.hpp>
 #include <wheel/id.hpp>
 
-#include <functional>
 #include <unordered_map>
 #include <memory>
 #include <vector>
@@ -27,11 +26,9 @@ public:
 
     template <typename T> requires std::derived_from<T, Layer>
     void register_layer() {
-        auto layer = T();
-        layer.on_register();
-        layer_creators_[Utils::get_type_name<T>()] = [](){ 
-            return std::make_unique<T>(); 
-        };
+        auto layer = std::make_unique<T>();
+        layer->on_register();
+        layer_map_[Utils::get_type_name<T>()] = std::move(layer);
     }
 
     void push(const std::string& layer_name);
@@ -44,8 +41,8 @@ private:
     LayerManager();
     LayerManager(const LayerManager&) = delete;
 
-    std::unordered_map<std::string, std::function<std::unique_ptr<Layer>()>> layer_creators_;
-    std::vector<std::unique_ptr<Layer>> layers_;
+    std::unordered_map<std::string, std::unique_ptr<Layer>> layer_map_;
+    std::vector<Layer*> layers_;
 };
 
 }  // namespace core
