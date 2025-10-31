@@ -32,6 +32,7 @@ private:
     void init_aura_sprites_();
     void init_auto_shoot_sprites_();
     void init_inventory_sprites_();
+    void init_item_info_sprites_();
 
     std::unordered_map<wheel::ID, Sprite> id2sprites_;
 };

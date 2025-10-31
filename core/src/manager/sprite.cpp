@@ -2,6 +2,7 @@
 #include <core/global.hpp>
 #include <core/config/sprite.hpp>
 #include <core/manager/texture.hpp>
+#include <core/manager/item.hpp>
 #include <core/resource/context.hpp>
 #include <core/resource/inventory.hpp>
 
@@ -14,7 +15,8 @@
 namespace core {
 
 SpriteManager::SpriteManager() {
-    set("", {sdl::SDL::create_texture(48, 48, sdl::SDL::Color::Purple)});
+    // set("", {sdl::SDL::create_texture(48, 48, sdl::SDL::Color::Purple)});
+    set("", {nullptr});
     set("main_menu_layout", {sdl::SDL::create_texture(1, 1, sdl::SDL::Color::Gray)});
     set("pause_menu_layout", {sdl::SDL::create_texture(1, 1, sdl::SDL::Color::Gray)});
     set("button_normal", {sdl::SDL::create_texture(1, 1, { 230.f / 255.f, 230.f / 255.f, 230.f / 255.f, 1.f })});
@@ -27,6 +29,7 @@ SpriteManager::SpriteManager() {
     init_aura_sprites_();
     init_auto_shoot_sprites_();
     init_inventory_sprites_();
+    init_item_info_sprites_();
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator("assets/sprite")) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
@@ -205,6 +208,22 @@ void SpriteManager::init_inventory_sprites_() {
         SDL_FRect dst = {0.f, 0.f, slot_sizes[0], slot_sizes[1]};
         sdl::SDL::render_rect(&dst, sdl::SDL::Color::Green, 5.f);
         set("selected_slot_border", Sprite{texture});
+    }
+}
+
+void SpriteManager::init_item_info_sprites_() {
+    static const std::unordered_map<Rarity, SDL_FColor> rarity2color_ {
+        {Rarity::common, sdl::SDL::Color::White},
+        {Rarity::uncommon, sdl::SDL::Color::Green},
+        {Rarity::rare, sdl::SDL::Color::Blue},
+        {Rarity::epic, sdl::SDL::Color::Purple},
+        {Rarity::legendary, sdl::SDL::Color::Orange}
+    };
+
+    for (const auto& [name, rarity] : ItemManager::instance().item_configs()) {
+        auto texture = sdl::SDL::create_texture(200, 300, sdl::SDL::Color::Gray, SDL_TEXTUREACCESS_TARGET);
+        sdl::SDL::render_text(texture, 10.f, 10.f, name, 24.f, rarity2color_.at(rarity));
+        set("item_info_" + name, {texture});
     }
 }
 

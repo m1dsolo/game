@@ -1,5 +1,6 @@
 #include <core/layer/inventory.hpp>
 #include <core/global.hpp>
+#include <core/layer/item_info.hpp>
 #include <core/manager/entity.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/item.hpp>
@@ -75,7 +76,7 @@ void InventoryLayer::on_register() {
 
     // create selected slot border entity
     {
-        selected_slot_frame_ = entity_manager.add_entity(
+        selected_slot_border_ = entity_manager.add_entity(
             inventory_background,
             NameComponent{"selected_slot_border"},
             TransformComponent{.anchor = {-0.5f, -0.5f}},
@@ -83,19 +84,20 @@ void InventoryLayer::on_register() {
             RenderComponent{14},
             InventoryLayerTag{}
         );
+        ItemInfoLayer::selected_slot_border = selected_slot_border_;
     }
 }
 
-void InventoryLayer::on_show() {
+void InventoryLayer::on_attach() {
+    selected_idx_[0] = selected_idx_[1] = 0;
     for (auto entity : ecs.get_entities<InventoryLayerTag>()) {
         ecs.add_component(entity, RenderTag{});
     }
-    selected_idx_[0] = selected_idx_[1] = 0;
 }
 
-void InventoryLayer::on_hide() {
+void InventoryLayer::on_detach() {
     for (auto entity : ecs.get_entities<InventoryLayerTag>()) {
-        ecs.remove_components<RenderTag>(entity);
+        ecs.remove_component<RenderTag>(entity);
     }
 }
 
@@ -164,7 +166,7 @@ void InventoryLayer::on_update() {
 
     // update selected slot border position
     {
-        auto& transform = ecs.get_component<TransformComponent>(selected_slot_frame_);
+        auto& transform = ecs.get_component<TransformComponent>(selected_slot_border_);
         auto [i, j] = selected_idx_;
         auto [x, y, w, h] = slot_rects[i][j];
         transform.local.position = {x + w / 2.f, y + h / 2.f};
@@ -172,7 +174,6 @@ void InventoryLayer::on_update() {
 }
 
 bool InventoryLayer::on_event(const SDL_Event& event) {
-    auto [n, m]  = ecs.get_resource<InventoryResource>().slot_nums;
     switch (event.type) {
         case SDL_EVENT_KEY_DOWN: {
             switch (event.key.key) {
@@ -182,29 +183,45 @@ bool InventoryLayer::on_event(const SDL_Event& event) {
                     return true;
                 }
                 case SDLK_W: {
-                    selected_idx_[1] = (selected_idx_[1] - 1 + m) % m;
-                    AudioManager::instance().play("hover_button");
+                    select_slot_(0, -1);
                     return true;
                 }
                 case SDLK_S: {
-                    selected_idx_[1] = (selected_idx_[1] + 1) % m;
-                    AudioManager::instance().play("hover_button");
+                    select_slot_(0, 1);
                     return true;
                 }
                 case SDLK_A: {
-                    selected_idx_[0] = (selected_idx_[0] - 1 + n) % n;
-                    AudioManager::instance().play("hover_button");
+                    select_slot_(-1, 0);
                     return true;
                 }
                 case SDLK_D: {
-                    selected_idx_[0] = (selected_idx_[0] + 1) % n;
-                    AudioManager::instance().play("hover_button");
+                    select_slot_(1, 0);
+                    return true;
+                }
+                case SDLK_RETURN: {
+                    auto [m, n]  = ecs.get_resource<InventoryResource>().slot_nums;
+                    const auto& items = ecs.get_component<InventoryComponent>().items;
+                    auto item_entity = items[selected_idx_[1] * m + selected_idx_[0]];
+                    if (item_entity != wheel::NullEntity) {
+                        ItemInfoLayer::item_entity = item_entity;
+                        AudioManager::instance().play("hover_button");
+                        ecs.emplace_event<AddLayerEvent>("ItemInfoLayer");
+                    }
                     return true;
                 }
             }
         }
     }
     return false;
+}
+
+void InventoryLayer::select_slot_(int delta_x, int delta_y) {
+    auto [m, n]  = ecs.get_resource<InventoryResource>().slot_nums;
+    selected_idx_[0] = (selected_idx_[0] + delta_x + m) % m;
+    selected_idx_[1] = (selected_idx_[1] + delta_y + n) % n;
+    const auto& items = ecs.get_component<InventoryComponent>().items;
+    ItemInfoLayer::item_entity = items[selected_idx_[1] * m + selected_idx_[0]];
+    AudioManager::instance().play("hover_button");
 }
 
 }  // namespace core

@@ -5,6 +5,7 @@
 #include <core/layer/pause_menu.hpp>
 #include <core/layer/game.hpp>
 #include <core/layer/inventory.hpp>
+#include <core/layer/item_info.hpp>
 
 namespace core {
 
@@ -14,7 +15,8 @@ LayerManager::LayerManager() {
         MainMenuLayer,
         PauseMenuLayer,
         GameLayer,
-        InventoryLayer
+        InventoryLayer,
+        ItemInfoLayer
     >();
 }
 
