@@ -3,6 +3,7 @@
 #include <core/manager/entity.hpp>
 #include <core/manager/sprite.hpp>
 #include <core/manager/item.hpp>
+#include <core/manager/audio.hpp>
 #include <core/component/name.hpp>
 #include <core/component/transform.hpp>
 #include <core/component/sprite.hpp>
@@ -71,12 +72,25 @@ void InventoryLayer::on_register() {
             InventoryLayerTag{}
         );
     }
+
+    // create selected slot border entity
+    {
+        selected_slot_frame_ = entity_manager.add_entity(
+            inventory_background,
+            NameComponent{"selected_slot_border"},
+            TransformComponent{.anchor = {-0.5f, -0.5f}},
+            SpriteComponent{"selected_slot_border"},
+            RenderComponent{14},
+            InventoryLayerTag{}
+        );
+    }
 }
 
 void InventoryLayer::on_show() {
     for (auto entity : ecs.get_entities<InventoryLayerTag>()) {
         ecs.add_component(entity, RenderTag{});
     }
+    selected_idx_[0] = selected_idx_[1] = 0;
 }
 
 void InventoryLayer::on_hide() {
@@ -88,16 +102,6 @@ void InventoryLayer::on_hide() {
 void InventoryLayer::on_update() {
     const auto& slot_rects = ecs.get_resource<InventoryResource>().slot_rects;
     auto& items = ecs.get_component<InventoryComponent>().items;
-
-    // update slot item position
-    for (auto [idx, entity] : std::views::enumerate(items)) {
-        int i = idx % 10, j = idx / 10;
-        if (ecs.has_entity(entity)) {
-            auto& transform = ecs.get_component<TransformComponent>(entity);
-            auto [x, y, w, h] = slot_rects[i][j];
-            transform.local.position = {x + w / 2.f, y + h / 2.f};
-        }
-    }
 
     // render item sprite to inventory_items_layer texture
     {
@@ -157,15 +161,44 @@ void InventoryLayer::on_update() {
             }
         }
     }
+
+    // update selected slot border position
+    {
+        auto& transform = ecs.get_component<TransformComponent>(selected_slot_frame_);
+        auto [i, j] = selected_idx_;
+        auto [x, y, w, h] = slot_rects[i][j];
+        transform.local.position = {x + w / 2.f, y + h / 2.f};
+    }
 }
 
 bool InventoryLayer::on_event(const SDL_Event& event) {
+    auto [n, m]  = ecs.get_resource<InventoryResource>().slot_nums;
     switch (event.type) {
         case SDL_EVENT_KEY_DOWN: {
             switch (event.key.key) {
                 case SDLK_I:
                 case SDLK_ESCAPE: {
                     ecs.emplace_event<RemoveLayerEvent>();
+                    return true;
+                }
+                case SDLK_W: {
+                    selected_idx_[1] = (selected_idx_[1] - 1 + m) % m;
+                    AudioManager::instance().play("hover_button");
+                    return true;
+                }
+                case SDLK_S: {
+                    selected_idx_[1] = (selected_idx_[1] + 1) % m;
+                    AudioManager::instance().play("hover_button");
+                    return true;
+                }
+                case SDLK_A: {
+                    selected_idx_[0] = (selected_idx_[0] - 1 + n) % n;
+                    AudioManager::instance().play("hover_button");
+                    return true;
+                }
+                case SDLK_D: {
+                    selected_idx_[0] = (selected_idx_[0] + 1) % n;
+                    AudioManager::instance().play("hover_button");
                     return true;
                 }
             }

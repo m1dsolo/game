@@ -110,7 +110,7 @@ void EntityManager::postprocess_entity_(wheel::Entity entity) {
 
         auto parent = ecs.get_component<ParentComponent>(entity).entity;
         const auto& parent_transform = ecs.get_component<TransformComponent>(parent);
-        transform.global.position = transform.local.position + parent_transform.global.position;
+        transform.global.position = transform.local.position + parent_transform.global.position + parent_transform.global.size * transform.anchor;
         transform.global.size = transform.local.size * parent_transform.global.scale;
         transform.global.scale = transform.local.scale * parent_transform.global.scale;
         transform.global.angle = transform.local.angle + parent_transform.global.angle;

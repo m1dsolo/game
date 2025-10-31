@@ -193,6 +193,19 @@ void SpriteManager::init_inventory_sprites_() {
         );
         set("inventory_items_count_layer", Sprite{texture});
     }
+
+    // create inventory selected slot border sprite
+    {
+        auto texture = sdl::SDL::create_texture(
+            slot_sizes[0], slot_sizes[1],
+            sdl::SDL::Color::Transparent,
+            SDL_TEXTUREACCESS_TARGET
+        );
+        sdl::SDL::RenderTargetGuard guard(texture);
+        SDL_FRect dst = {0.f, 0.f, slot_sizes[0], slot_sizes[1]};
+        sdl::SDL::render_rect(&dst, sdl::SDL::Color::Green, 5.f);
+        set("selected_slot_border", Sprite{texture});
+    }
 }
 
 }  // namespace core

@@ -28,7 +28,7 @@ void update_transform_(wheel::ECS& ecs, wheel::Entity entity, const TransformCom
     }
     auto& transform = ecs.get_component<TransformComponent>(entity);
 
-    transform.global.position = transform.local.position + parent_transform.global.position;
+    transform.global.position = transform.local.position + parent_transform.global.position + parent_transform.global.size * transform.anchor;
     transform.global.size = transform.local.size * parent_transform.global.scale;
     transform.global.scale = transform.local.scale * parent_transform.global.scale;
     transform.global.angle = transform.local.angle + parent_transform.global.angle;

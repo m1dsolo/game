@@ -27,6 +27,7 @@ struct TransformComponent {
     Transform local;
     Transform global;
     Coordinate::Type type = Coordinate::Type::World;
+    wheel::Vector2D<float> anchor{0.f, 0.f};
 };
 
 }  // namespace core
