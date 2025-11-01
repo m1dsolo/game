@@ -1,10 +1,36 @@
 [
     {
         "name": "usp",
-        "rarity": "common"
+        "rarity": "common",
+        "type": "weapon",
+        "description": [
+            "A standard handgun."
+        ],
+        "components": {
+            "range_attack": {
+                "damage": 10,
+                "interval": 500000,
+                "projectile_speed": 500,
+                "projectile_sprite_id": "bullet",
+                "range_attack_sound_id": "usp/shoot"
+            }
+        }
     },
     {
         "name": "m4a1",
-        "rarity": "uncommon"
+        "rarity": "uncommon",
+        "type": "weapon",
+        "description": [
+            "A standard assault rifle."
+        ],
+        "components": {
+            "range_attack": {
+                "damage": 7,
+                "interval": 200000,
+                "projectile_speed": 500,
+                "projectile_sprite_id": "bullet",
+                "range_attack_sound_id": "m4a1/shoot"
+            }
+        }
     }
 ]

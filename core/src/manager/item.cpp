@@ -1,16 +1,17 @@
 #include <core/manager/item.hpp>
+#include <core/reflector/string_to_id.hpp>
 
 #include <rfl/json.hpp>
 
 namespace core {
 
 ItemManager::ItemManager() {
-    set({"", Rarity::common});
+    set({""});
 
     std::ifstream file("assets/config/item.json");
     if (file.is_open()) {
         std::cout << "[begin load item...]" << std::endl;
-        auto result = rfl::json::read<std::vector<ItemConfig>>(file);
+        auto result = rfl::json::read<std::vector<ItemConfig>, rfl::DefaultIfMissing>(file);
         if (result.has_value()) {
             for (const auto& item_config : result.value()) {
                 set(item_config);

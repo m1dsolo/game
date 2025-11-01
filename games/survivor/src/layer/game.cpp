@@ -35,6 +35,7 @@
 #include <core/tag/game_layer.hpp>
 #include <core/resource/context.hpp>
 #include <core/resource/inventory.hpp>
+#include <core/sdl_user_event/update_slot.hpp>
 
 using namespace core;
 
@@ -87,7 +88,7 @@ void new_game() {
         RenderComponent{1},
         HPComponent{100, 100},
         LevelComponent{},
-        InventoryComponent{slot_nums[0] * slot_nums[1]},
+        InventoryComponent{},
         RigidbodyTag{},
         RenderTag{},
         InputTag{},
@@ -96,25 +97,9 @@ void new_game() {
         GameLayerTag{}
     );
 
-    auto& items = ecs.get_component<InventoryComponent>().items;
-    items[0] = entity_manager.add_entity(
-        NameComponent{"m4a1"},
-        TransformComponent{},
-        SpriteComponent{"m4a1"},
-        RenderComponent{4},
-        ItemComponent{"m4a1", 1},
-        SaveTag{},
-        GameLayerTag{}
-    );
-    items[1] = entity_manager.add_entity(
-        NameComponent{"usp"},
-        TransformComponent{},
-        SpriteComponent{"usp"},
-        RenderComponent{4},
-        ItemComponent{"usp", 3},
-        SaveTag{},
-        GameLayerTag{}
-    );
+    auto& inventory = ecs.get_component<InventoryComponent>();
+    inventory.slots.resize(slot_nums[0] * slot_nums[1]);
+    inventory.slots[0] = {"usp", 2};
 
     entity_manager.add_entity(
         bunny,

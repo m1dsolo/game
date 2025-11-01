@@ -12,16 +12,18 @@ class ItemInfoLayer : public Layer {
 public:
     ItemInfoLayer() {}
 
+    void on_register() override;
     void on_attach() override;
     void on_detach() override;
-    void on_update() override;
     bool on_event(const SDL_Event& event) override;
 
-    inline static wheel::Entity item_entity;
+    inline static wheel::ID item_id;
     inline static wheel::Entity selected_slot_border;
 
 private:
     wheel::Entity item_info_entity_ = wheel::NullEntity;
+
+    void update_item_info_();
 };
 
 }  // namespace core

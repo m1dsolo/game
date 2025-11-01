@@ -4,6 +4,7 @@
 #include <core/util/hierarchy.hpp>
 
 #include <wheel/singleton.hpp>
+#include <wheel/geometry.hpp>
 
 #include <functional>
 

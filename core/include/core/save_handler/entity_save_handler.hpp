@@ -6,7 +6,6 @@
 #include <core/reflector/sprite_component.hpp>
 #include <core/reflector/animation_component.hpp>
 #include <core/reflector/animation_fsm_component.hpp>
-#include <core/reflector/inventory_component.hpp>
 #include <core/reflector/rect.hpp>
 #include <core/reflector/circle.hpp>
 #include <core/reflector/id.hpp>
@@ -148,19 +147,6 @@ void EntitySaveHandler<ExtraComponentTypes...>::load() {
                 master.entity = it->second;
             } else {
                 wheel::Log::warning("[load] Master entity {} not found for entity {}", master.entity, new_entity);
-            }
-        }
-        if (ecs.has_component<InventoryComponent>(new_entity)) {
-            auto& inventory = ecs.get_component<InventoryComponent>(new_entity);
-            for (auto& item_entity : inventory.items) {
-                if (item_entity == wheel::NullEntity) {
-                    continue;
-                }
-                if (auto it = entity_map.find(item_entity); it != entity_map.end()) {
-                    item_entity = it->second;
-                } else {
-                    wheel::Log::warning("[load] Inventory item entity {} not found for entity {}", item_entity, new_entity);
-                }
             }
         }
         if (ecs.has_component<ProjectileComponent>(new_entity)) {

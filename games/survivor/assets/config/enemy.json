@@ -21,6 +21,27 @@
                     }
                 ],
                 "chance": 1
+            },
+            {
+                "items": [
+                    {
+                        "name": "usp",
+                        "count": [
+                            1,
+                            1
+                        ],
+                        "weight": 3
+                    },
+                    {
+                        "name": "m4a1",
+                        "count": [
+                            1,
+                            1
+                        ],
+                        "weight": 1
+                    }
+                ],
+                "chance": 0.5
             }
         ]
     }

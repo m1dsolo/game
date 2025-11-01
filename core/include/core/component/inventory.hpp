@@ -2,15 +2,17 @@
 
 #include <vector>
 
-#include <ecs/entity.hpp>
+#include <wheel/id.hpp>
 
 namespace core {
 
+struct Slot {
+    wheel::ID item_id = "";
+    int num = 0;
+};
+
 struct InventoryComponent {
-    InventoryComponent(int size) {
-        items.resize(size, wheel::NullEntity);
-    }
-    std::vector<wheel::Entity> items;
+    std::vector<Slot> slots;
 };
 
 }  // namespace core

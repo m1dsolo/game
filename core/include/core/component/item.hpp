@@ -6,7 +6,7 @@ namespace core {
 
 struct ItemComponent {
     wheel::ID id;
-    int count = 1;
+    int num = 1;
 };
 
 }  // namespace core

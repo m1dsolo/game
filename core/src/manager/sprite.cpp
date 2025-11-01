@@ -4,7 +4,6 @@
 #include <core/manager/texture.hpp>
 #include <core/manager/item.hpp>
 #include <core/resource/context.hpp>
-#include <core/resource/inventory.hpp>
 
 #include <sdl/sdl.hpp>
 #include <rfl/json.hpp>
@@ -28,7 +27,6 @@ SpriteManager::SpriteManager() {
     init_slot_item_num_sprites_();
     init_aura_sprites_();
     init_auto_shoot_sprites_();
-    init_inventory_sprites_();
     init_item_info_sprites_();
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator("assets/sprite")) {
@@ -108,9 +106,8 @@ void SpriteManager::init_hp_bar_sprites_() {
 
 void SpriteManager::init_slot_item_num_sprites_() {
     for (int i = 1; i <= 99; i++) {
-        auto texture = sdl::SDL::create_texture(std::to_string(i), 16.f, sdl::SDL::Color::Black);
+        auto texture = sdl::SDL::create_texture(std::to_string(i), 16.f, sdl::SDL::Color::Cyan);
         auto [w, h] = sdl::SDL::get_texture_size(texture);
-        sdl::SDL::RenderTargetGuard guard{texture};
         set(std::to_string(i), {
             texture,
             {0.f, 0.f, w, h}
@@ -132,98 +129,39 @@ void SpriteManager::init_auto_shoot_sprites_() {
     });
 }
 
-void SpriteManager::init_inventory_sprites_() {
-    auto& resource = ecs.get_resource<InventoryResource>();
-    const auto& slot_nums = resource.slot_nums;
-    auto& slot_rects = resource.slot_rects;
-    slot_rects.resize(slot_nums[0], std::vector<SDL_FRect>(slot_nums[1]));
-
-    static constexpr float slot_sizes[2] = { 64.f, 64.f };
-    static constexpr float slot_spacing_sizes[2] = { 5.f, 5.f };
-    static constexpr float inventory_sizes[2] = {
-        slot_nums[0] * (slot_sizes[0] + slot_spacing_sizes[0]) + slot_spacing_sizes[0],
-        slot_nums[1] * (slot_sizes[1] + slot_spacing_sizes[1]) + slot_spacing_sizes[1]
-    };
-
-    // create inventory background layer sprite
-    {
-        auto texture = sdl::SDL::create_texture(
-            inventory_sizes[0], inventory_sizes[1],
-            sdl::SDL::Color::White,
-            SDL_TEXTUREACCESS_TARGET
-        );
-        sdl::SDL::RenderTargetGuard guard(texture);
-        for (int i = 0; i < slot_nums[0]; ++i) {
-            for (int j = 0; j < slot_nums[1]; ++j) {
-                slot_rects[i][j] = {
-                    i * (slot_sizes[0] + slot_spacing_sizes[0]) + slot_spacing_sizes[0],
-                    j * (slot_sizes[1] + slot_spacing_sizes[1]) + slot_spacing_sizes[1],
-                    slot_sizes[0],
-                    slot_sizes[1]
-                };
-                sdl::SDL::render_rect(&slot_rects[i][j], sdl::SDL::Color::Black);
-            }
-        }
-        set("inventory_background_layer", Sprite{texture});
-    }
-
-    // create inventory items layer sprite
-    {
-        auto texture = sdl::SDL::create_texture(
-            inventory_sizes[0], inventory_sizes[1],
-            sdl::SDL::Color::Transparent,
-            SDL_TEXTUREACCESS_TARGET
-        );
-        set("inventory_items_layer", Sprite{texture});
-    }
-
-    // create inventory rarities layer sprite
-    {
-        auto texture = sdl::SDL::create_texture(
-            inventory_sizes[0], inventory_sizes[1],
-            sdl::SDL::Color::Transparent,
-            SDL_TEXTUREACCESS_TARGET
-        );
-        set("inventory_rarities_layer", Sprite{texture});
-    }
-
-    // create inventory items count layer sprite
-    {
-        auto texture = sdl::SDL::create_texture(
-            inventory_sizes[0], inventory_sizes[1],
-            sdl::SDL::Color::Transparent,
-            SDL_TEXTUREACCESS_TARGET
-        );
-        set("inventory_items_count_layer", Sprite{texture});
-    }
-
-    // create inventory selected slot border sprite
-    {
-        auto texture = sdl::SDL::create_texture(
-            slot_sizes[0], slot_sizes[1],
-            sdl::SDL::Color::Transparent,
-            SDL_TEXTUREACCESS_TARGET
-        );
-        sdl::SDL::RenderTargetGuard guard(texture);
-        SDL_FRect dst = {0.f, 0.f, slot_sizes[0], slot_sizes[1]};
-        sdl::SDL::render_rect(&dst, sdl::SDL::Color::Green, 5.f);
-        set("selected_slot_border", Sprite{texture});
-    }
-}
-
 void SpriteManager::init_item_info_sprites_() {
-    static const std::unordered_map<Rarity, SDL_FColor> rarity2color_ {
-        {Rarity::common, sdl::SDL::Color::White},
-        {Rarity::uncommon, sdl::SDL::Color::Green},
-        {Rarity::rare, sdl::SDL::Color::Blue},
-        {Rarity::epic, sdl::SDL::Color::Purple},
-        {Rarity::legendary, sdl::SDL::Color::Orange}
+    static const std::unordered_map<Item::Rarity, SDL_FColor> rarity2color_ {
+        {Item::Rarity::common, sdl::SDL::Color::White},
+        {Item::Rarity::uncommon, sdl::SDL::Color::Green},
+        {Item::Rarity::rare, sdl::SDL::Color::Blue},
+        {Item::Rarity::epic, sdl::SDL::Color::Purple},
+        {Item::Rarity::legendary, sdl::SDL::Color::Orange}
     };
 
-    for (const auto& [name, rarity] : ItemManager::instance().item_configs()) {
-        auto texture = sdl::SDL::create_texture(200, 300, sdl::SDL::Color::Gray, SDL_TEXTUREACCESS_TARGET);
-        sdl::SDL::render_text(texture, 10.f, 10.f, name, 24.f, rarity2color_.at(rarity));
-        set("item_info_" + name, {texture});
+    std::cout << "item_info: " << wheel::ID("item_info") << std::endl;
+    for (const auto& [name, rarity, type, description, components] : ItemManager::instance().item_configs()) {
+        if (name == "") {
+            continue;
+        }
+
+        auto texture = sdl::SDL::create_texture(300, 512, sdl::SDL::Color::Gray, SDL_TEXTUREACCESS_TARGET);
+        sdl::SDL::RenderTargetGuard guard(texture);
+        SDL_FRect dst = {0.f, 0.f, 300.f, 512.f};
+        sdl::SDL::render_rect(&dst, sdl::SDL::Color::Black, 8.f);
+        float y = 16.f;
+        sdl::SDL::render_text(texture, 16.f, y, name, 24.f, rarity2color_.at(rarity));
+        sdl::SDL::render_text(texture, 16.f, y += 24.f, rfl::enum_to_string(type), 16.f, sdl::SDL::Color::Pink);
+        for (const auto& line : description) {
+            sdl::SDL::render_text(texture, 16.f, y += 24.f, line, 16.f, sdl::SDL::Color::White);
+        }
+
+        if (components.range_attack.has_value()) {
+            const auto& range_attack = components.range_attack.value();
+            sdl::SDL::render_text(texture, 32.f, y += 24.f, std::format("Damage: {}", range_attack.damage), 16.f, sdl::SDL::Color::Red);
+            sdl::SDL::render_text(texture, 32.f, y += 24.f, std::format("Attack speed: {:.2f}s", range_attack.interval / 1000000.f), 16.f, sdl::SDL::Color::White);
+        }
+
+        set(wheel::ID("item_info") ^ wheel::ID(name), {texture});
     }
 }
 

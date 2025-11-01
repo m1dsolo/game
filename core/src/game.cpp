@@ -40,7 +40,7 @@ Game::Game() {
     wheel::Log::assert_(sdl::SDL::init(
         SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_GAMEPAD,
         "game", context.virtual_window_width, context.virtual_window_height,
-        SDL_WINDOW_BORDERLESS | SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_BORDERLESS | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
     ), SDL_GetError);
     wheel::Log::assert_(sdl::SDL::init_audio(), SDL_GetError);
     wheel::Log::assert_(sdl::SDL::init_ttf("assets/font/SauceCodeProNerdFont-Regular.ttf", 16), SDL_GetError);
@@ -49,6 +49,7 @@ Game::Game() {
     // sdl::SDL::set_window_position(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     sdl::SDL::set_window_maximized();
     sdl::SDL::set_render_vsync(1);
+    TTF_SetFontHinting(sdl::SDL::font(), TTF_HINTING_LIGHT_SUBPIXEL);
 
     std::ifstream file("assets/config/game.json");
     if (file.is_open()) {
