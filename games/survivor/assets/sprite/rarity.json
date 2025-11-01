@@ -4,6 +4,7 @@
         32,
         32
     ],
+    "pixel": false,
     "sprites": [
         {
             "name": "common",

@@ -15,6 +15,7 @@ struct SpritesConfig {
     std::string path;
     std::pair<int, int> size;
     std::vector<SpriteConfig> sprites;
+    std::optional<bool> pixel;
 };
 
 }  // namespace core

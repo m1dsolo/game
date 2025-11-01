@@ -45,6 +45,10 @@ void InventoryLayer::on_register() {
             SDL_TEXTUREACCESS_TARGET
         );
         sdl::SDL::RenderTargetGuard guard(texture);
+
+        auto dst = SDL_FRect{0.f, 0.f, inventory_sizes[1], inventory_sizes[0]};
+        sdl::SDL::render_rect(&dst, sdl::SDL::Color::Gray, 3);
+
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < m; ++j) {
                 slot_rects_[i][j] = {

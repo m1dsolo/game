@@ -34,8 +34,11 @@ SpriteManager::SpriteManager() {
             std::ifstream file(entry.path());
             if (file.is_open()) {
                 std::cout << "[begin load sprite...]" << entry.path() << std::endl;
-                const auto [path, size, sprites] = rfl::json::read<SpritesConfig>(file).value();
+                const auto [path, size, sprites, pixel] = rfl::json::read<SpritesConfig>(file).value();
                 auto texture = TextureManager::instance().get(std::filesystem::path("sprite_sheet") / path);
+                if (!pixel.value_or(true)) {
+                    sdl::SDL::set_texture_scalemode(texture, SDL_SCALEMODE_LINEAR);
+                }
                 for (const auto& [name, pos] : sprites) {
                     set(name, {texture, {
                         static_cast<float>(pos.first),
