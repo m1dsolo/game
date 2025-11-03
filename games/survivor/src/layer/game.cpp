@@ -34,7 +34,6 @@
 #include <core/tag/save.hpp>
 #include <core/tag/game_layer.hpp>
 #include <core/resource/context.hpp>
-#include <core/resource/inventory.hpp>
 #include <core/sdl_user_event/update_slot.hpp>
 
 using namespace core;
@@ -68,7 +67,6 @@ void GameLayer::on_detach() {
 
 void new_game() {
     const auto& context = ecs.get_resource<ContextResource>();
-    const auto& slot_nums = ecs.get_resource<InventoryResource>().slot_nums;
 
     auto& entity_manager = EntityManager::instance();
 
@@ -98,8 +96,9 @@ void new_game() {
     );
 
     auto& inventory = ecs.get_component<InventoryComponent>();
-    inventory.slots.resize(slot_nums[0] * slot_nums[1]);
-    inventory.slots[0] = {"usp", 2};
+    inventory.hotbar.resize(10);
+    inventory.backpack.resize((5 - 1) * 10);
+    inventory.backpack[0] = {"usp", 2};
 
     entity_manager.add_entity(
         bunny,
@@ -129,31 +128,6 @@ void new_game() {
         },
         AuraDamageComponent{8, 500000},
         MasterComponent{bunny},
-        RenderTag{},
-        SaveTag{},
-        GameLayerTag{}
-    );
-
-    auto auto_shoot = entity_manager.add_entity(
-        bunny,
-        NameComponent("auto_shoot"),
-        TransformComponent{{{0.f, 0.f}, {500.f, 500.f}}},
-        ColliderComponent{
-            wheel::Circle<float>{250.f},
-            ColliderLayer::Trigger,
-            ColliderLayer::Enemy
-        },
-        RangeAttackComponent{
-            .damage = 7,
-            .interval = 200000,
-            .projectile_speed = 500.f,
-            .projectile_sprite_id = "bullet",
-            .range_attack_sound_id = "m4a1/shoot"
-        },
-        ReloadComponent{30, 30, 2000000, "m4a1/reload"},
-        MasterComponent{bunny},
-        SpriteComponent{"auto_shoot"},
-        RenderComponent{3},
         RenderTag{},
         SaveTag{},
         GameLayerTag{}

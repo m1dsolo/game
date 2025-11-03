@@ -3,6 +3,7 @@
         "name": "usp",
         "rarity": "common",
         "type": "weapon",
+        "weight": 1,
         "description": [
             "A standard handgun."
         ],
@@ -13,6 +14,12 @@
                 "projectile_speed": 500,
                 "projectile_sprite_id": "bullet",
                 "range_attack_sound_id": "usp/shoot"
+            },
+            "range": 500,
+            "reload": {
+                "max_ammo": 12,
+                "reload_time": 1000000,
+                "sound_id": "usp/reload"
             }
         }
     },
@@ -20,6 +27,7 @@
         "name": "m4a1",
         "rarity": "uncommon",
         "type": "weapon",
+        "weight": 2,
         "description": [
             "A standard assault rifle."
         ],
@@ -30,6 +38,12 @@
                 "projectile_speed": 500,
                 "projectile_sprite_id": "bullet",
                 "range_attack_sound_id": "m4a1/shoot"
+            },
+            "range": 500,
+            "reload": {
+                "max_ammo": 30,
+                "reload_time": 2000000,
+                "sound_id": "m4a1/reload"
             }
         }
     }

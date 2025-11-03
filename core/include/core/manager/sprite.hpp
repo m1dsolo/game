@@ -30,7 +30,7 @@ private:
     void init_hp_bar_sprites_();
     void init_slot_item_num_sprites_();
     void init_aura_sprites_();
-    void init_auto_shoot_sprites_();
+    void init_range_attack_sprites_();
     void init_item_info_sprites_();
 
     std::unordered_map<wheel::ID, Sprite> id2sprites_;

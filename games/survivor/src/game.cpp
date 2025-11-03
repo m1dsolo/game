@@ -24,6 +24,7 @@
 #include <core/system/drop_item.hpp>
 #include <core/system/pick_item.hpp>
 #include <core/system/level.hpp>
+#include <core/resource/hotbar.hpp>
 
 using namespace core;
 
@@ -55,7 +56,8 @@ SurvivorGame::SurvivorGame() {
         HudTag
     >();
     SaveManager::instance().register_resources<
-        AchievementResource
+        HotbarResource
+        // AchievementResource
     >();
 }
 

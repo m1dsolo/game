@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/component/range_attack.hpp>
+#include <core/component/reload.hpp>
 
 #include <string>
 #include <vector>
@@ -23,6 +24,8 @@ struct Item {
 
     struct Components {
         std::optional<RangeAttackComponent> range_attack;
+        std::optional<ReloadComponent> reload;
+        std::optional<float> range;
     };
 };
 
@@ -30,6 +33,7 @@ struct ItemConfig {
     std::string name;
     Item::Rarity rarity;
     Item::Type type;
+    int weight;
     std::vector<std::string> description;
     Item::Components components;
 };

@@ -6,6 +6,7 @@
 #include <core/layer/main_menu.hpp>
 #include <core/system/handle_sdl_event.hpp>
 #include <core/system/handle_button_event.hpp>
+#include <core/system/equip.hpp>
 #include <core/system/layer_update.hpp>
 #include <core/system/transform.hpp>
 #include <core/system/animation.hpp>
@@ -24,7 +25,7 @@
 #include <core/resource/trigger.hpp>
 #include <core/resource/time.hpp>
 #include <core/resource/input.hpp>
-#include <core/resource/inventory.hpp>
+#include <core/resource/hotbar.hpp>
 
 #include <wheel/log.hpp>
 #include <sdl/sdl.hpp>
@@ -64,7 +65,7 @@ Game::Game() {
     ecs.add_resource(TriggerResource{});
     ecs.add_resource(TimeResource{});
     ecs.add_resource(InputResource{});
-    ecs.add_resource(InventoryResource{});
+    ecs.add_resource(HotbarResource{});
 }
 
 void Game::run() {
@@ -73,6 +74,7 @@ void Game::run() {
     ecs.add_systems<
         HandleSDLEventSystem,
         HandleButtonEventSystem,
+        EquipSystem,
         LayerUpdateSystem,
         TransformSystem,
         AnimationSystem,

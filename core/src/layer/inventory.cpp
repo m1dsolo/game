@@ -11,6 +11,7 @@
 #include <core/component/render.hpp>
 #include <core/component/item.hpp>
 #include <core/component/inventory.hpp>
+#include <core/component/text.hpp>
 #include <core/tag/input.hpp>
 #include <core/tag/render.hpp>
 #include <core/tag/inventory_layer.hpp>
@@ -30,36 +31,25 @@ void InventoryLayer::on_register() {
     const auto& context = ecs.get_resource<ContextResource>();
     auto [n, m] = slot_nums_;
 
+    slot_rects_.resize(n, std::vector<SDL_FRect>(m));
+
     const float inventory_sizes[2] = {
-        n * (slot_sizes_[0] + slot_spacing_sizes_[0]) + slot_spacing_sizes_[0],
+        n * (slot_sizes_[0] + slot_spacing_sizes_[0]) + slot_spacing_sizes_[0] * 2 + hotbar_backpack_spacing_,
         m * (slot_sizes_[1] + slot_spacing_sizes_[1]) + slot_spacing_sizes_[1]
     };
-    slot_rects_.resize(n, std::vector<SDL_FRect>(m));
 
     // create inventory items layer entity
     wheel::Entity inventory_background;
     {
         auto texture = sdl::SDL::create_texture(
             inventory_sizes[1], inventory_sizes[0],
-            sdl::SDL::Color::White,
+            sdl::SDL::Color::Transparent,
             SDL_TEXTUREACCESS_TARGET
         );
         sdl::SDL::RenderTargetGuard guard(texture);
+        render_slots_(0.f, 0, 1, m);
+        render_slots_(slot_sizes_[0] + slot_spacing_sizes_[0] * 2 + hotbar_backpack_spacing_, 1, n - 1, m);
 
-        auto dst = SDL_FRect{0.f, 0.f, inventory_sizes[1], inventory_sizes[0]};
-        sdl::SDL::render_rect(&dst, sdl::SDL::Color::Gray, 3);
-
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < m; ++j) {
-                slot_rects_[i][j] = {
-                    j * (slot_sizes_[1] + slot_spacing_sizes_[1]) + slot_spacing_sizes_[1],
-                    i * (slot_sizes_[0] + slot_spacing_sizes_[0]) + slot_spacing_sizes_[0],
-                    slot_sizes_[1],
-                    slot_sizes_[0],
-                };
-                sdl::SDL::render_rect(&slot_rects_[i][j], sdl::SDL::Color::Black);
-            }
-        }
         SpriteManager::instance().set("inventory_background_layer", Sprite{texture});
 
         inventory_background = entity_manager.add_entity(
@@ -133,11 +123,12 @@ void InventoryLayer::on_register() {
         sdl::SDL::render_rect(&dst, sdl::SDL::Color::Green, 5.f);
         SpriteManager::instance().set("selected_slot_border", Sprite{texture});
 
+        auto [x, y, w, h] = slot_rects_[1][0];
         selected_slot_border_ = entity_manager.add_entity(
             inventory_background,
             NameComponent{"selected_slot_border"},
             TransformComponent{
-                .local = {.position = {slot_rects_[0][0].x + slot_rects_[0][0].w / 2.f, slot_rects_[0][0].y + slot_rects_[0][0].h / 2.f}},
+                .local = {.position = {x + w / 2.f, y + h / 2.f}, .size = {w, h}},
                 .anchor = {-0.5f, -0.5f}
             },
             SpriteComponent{"selected_slot_border"},
@@ -146,10 +137,28 @@ void InventoryLayer::on_register() {
         );
         ItemInfoLayer::selected_slot_border = selected_slot_border_;
     }
+
+    // create inventory weight entity
+    {
+        weight_text_ = entity_manager.add_entity(
+            inventory_background,
+            NameComponent{"selected_slot_border"},
+            TransformComponent{
+                .local = {.position = {200.f, -24.f}},
+                .anchor = {-0.5f, -0.5f}
+            },
+            TextComponent{"", 24.f, sdl::SDL::Color::Red},
+            SpriteComponent{"selected_slot_border"},
+            RenderComponent{14},
+            InventoryLayerTag{}
+        );
+    }
 }
 
 void InventoryLayer::on_attach() {
-    selected_idx_[0] = selected_idx_[1] = 0;
+    selected_idx_[0] = 1;
+    selected_idx_[1] = 0;
+
     for (auto entity : ecs.get_entities<InventoryLayerTag>()) {
         ecs.add_component(entity, RenderTag{});
     }
@@ -159,6 +168,7 @@ void InventoryLayer::on_attach() {
             update_sprite_(i, j);
         }
     }
+    update_weight_sprite_();
 }
 
 void InventoryLayer::on_detach() {
@@ -192,9 +202,16 @@ bool InventoryLayer::on_event(const SDL_Event& event) {
                     select_slot_(0, 1);
                     return true;
                 }
+                case SDLK_SPACE: {
+                    if (selected_idx_[0] == 0) 
+                        unequip_();
+                    else {
+                        equip_();
+                    }
+                    return true;
+                }
                 case SDLK_RETURN: {
-                    const auto& slots = ecs.get_component<InventoryComponent>().slots;
-                    auto item_id = slots[selected_idx_[0] * slot_nums_[1] + selected_idx_[1]].item_id;
+                    auto item_id = get_slot_(selected_idx_[0], selected_idx_[1]).item_id;
                     if (item_id != "") {
                         ItemInfoLayer::item_id = item_id;
                         AudioManager::instance().play("hover_button");
@@ -228,8 +245,7 @@ void InventoryLayer::select_slot_(int di, int dj) {
     transform.local.position = {x + w / 2.f, y + h / 2.f};
 
     // pass selected item to ItemInfoLayer
-    const auto& slots = ecs.get_component<InventoryComponent>().slots;
-    ItemInfoLayer::item_id = slots[selected_idx_[0] * m + selected_idx_[1]].item_id;
+    ItemInfoLayer::item_id = get_slot_(selected_idx_[0], selected_idx_[1]).item_id;
 
     // push change selected slot event
     SDL_Event event;
@@ -241,7 +257,7 @@ void InventoryLayer::select_slot_(int di, int dj) {
 }
 
 void InventoryLayer::update_sprite_(int i, int j) {
-    auto& slot = ecs.get_component<InventoryComponent>().slots[i * slot_nums_[1] + j];
+    auto& slot = get_slot_(i, j);
 
     {
         auto& sprite = ecs.get_component<SpriteComponent>(slot_item_entities_[i][j]);
@@ -274,6 +290,71 @@ void InventoryLayer::update_sprite_(int i, int j) {
         } else {
             sprite.sprite = &SpriteManager::instance().get("");
         }
+    }
+}
+
+void InventoryLayer::update_weight_sprite_() {
+    const auto& inventory = ecs.get_component<InventoryComponent>();
+    auto text = std::format("weapon: {}/{}, equipment: {}/{}",
+        inventory.weapon_weight,
+        inventory.max_weapon_weight,
+        inventory.equipment_weight,
+        inventory.max_equipment_weight
+    );
+    EntityManager::instance().update_text(weight_text_, std::move(text));
+}
+
+void InventoryLayer::render_slots_(float start_h, int start_i, int n, int m) {
+    const float sizes[2] = {
+        n * (slot_sizes_[0] + slot_spacing_sizes_[0]) + slot_spacing_sizes_[0],
+        m * (slot_sizes_[1] + slot_spacing_sizes_[1]) + slot_spacing_sizes_[1]
+    };
+
+    SDL_FRect dst = {0.f, start_h, sizes[1], sizes[0]};
+    sdl::SDL::render_filled_rect(&dst, sdl::SDL::Color::White);
+    sdl::SDL::render_rect(&dst, sdl::SDL::Color::Black, 3);
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m; ++j) {
+            slot_rects_[i + start_i][j] = {
+                j * (slot_sizes_[1] + slot_spacing_sizes_[1]) + slot_spacing_sizes_[1],
+                i * (slot_sizes_[0] + slot_spacing_sizes_[0]) + slot_spacing_sizes_[0] + start_h,
+                slot_sizes_[1],
+                slot_sizes_[0],
+            };
+            sdl::SDL::render_rect(&slot_rects_[i + start_i][j], sdl::SDL::Color::Black);
+        }
+    }
+}
+
+void InventoryLayer::equip_() {
+    auto idx = ecs.get_component<InventoryComponent>().equip((selected_idx_[0] - 1) * slot_nums_[1] + selected_idx_[1]);
+    if (idx == -1) {
+        // AudioManager::instance().play("error");
+        return;
+    }
+    update_sprite_(selected_idx_[0], selected_idx_[1]);
+    update_sprite_(idx / slot_nums_[1], idx % slot_nums_[1]);
+    update_weight_sprite_();
+}
+
+void InventoryLayer::unequip_() {
+    auto idx = ecs.get_component<InventoryComponent>().unequip(selected_idx_[1]);
+    if (idx == -1) {
+        // AudioManager::instance().play("error");
+        return;
+    }
+    update_sprite_(selected_idx_[0], selected_idx_[1]);
+    update_sprite_(idx / slot_nums_[1] + 1, idx % slot_nums_[1]);
+    update_weight_sprite_();
+}
+
+Slot& InventoryLayer::get_slot_(int i, int j) {
+    auto& inventory = ecs.get_component<InventoryComponent>();
+    if (i == 0) {
+        return inventory.hotbar[j];
+    } else {
+        return inventory.backpack[(i - 1) * slot_nums_[1] + j];
     }
 }
 

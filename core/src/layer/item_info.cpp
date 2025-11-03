@@ -15,15 +15,13 @@
 
 #include <sdl/sdl.hpp>
 
-#include <iostream>
-
 namespace core {
 
 void ItemInfoLayer::on_register() {
     item_info_entity_ = EntityManager::instance().add_entity(
         selected_slot_border,
         NameComponent{"item_info"},
-        TransformComponent{.local = {.size = {300.f, 512.f}}, .anchor = {2.f, 2.f}},
+        TransformComponent{.local = {.size = {300.f, 512.f}}, .anchor = {3.f, 3.f}},
         SpriteComponent{""},
         RenderComponent{15}
     );

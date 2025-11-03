@@ -51,29 +51,8 @@ void PickItemSystem::operator()(wheel::ECS& ecs) {
 }
 
 void pickup_item(wheel::Entity new_item_entity) {
-    auto& inventory = ecs.get_component<InventoryComponent>();
-    auto& slots = inventory.slots;
     const auto& new_item = ecs.get_component<ItemComponent>(new_item_entity);
-
-    // TODO: optimize
-    int idx = -1;
-    for (auto [i, slot] : std::views::enumerate(slots)) {
-        if (slot.item_id == new_item.id) {
-            slot.num += new_item.num;
-            idx = i;
-            break;
-        }
-    }
-    if (idx == -1) {
-        for (auto [i, slot] : std::views::enumerate(slots)) {
-            if (slot.item_id == "") {
-                slot.item_id = new_item.id;
-                slot.num = new_item.num;
-                idx = i;
-                break;
-            }
-        }
-    }
+    auto idx = ecs.get_component<InventoryComponent>().pickup(new_item.id, new_item.num);
 
     if (idx != -1) {
         SDL_Event event;

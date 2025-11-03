@@ -26,7 +26,7 @@ SpriteManager::SpriteManager() {
     init_hp_bar_sprites_();
     init_slot_item_num_sprites_();
     init_aura_sprites_();
-    init_auto_shoot_sprites_();
+    init_range_attack_sprites_();
     init_item_info_sprites_();
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator("assets/sprite")) {
@@ -125,8 +125,8 @@ void SpriteManager::init_aura_sprites_() {
     });
 }
 
-void SpriteManager::init_auto_shoot_sprites_() {
-    set("auto_shoot", Sprite{
+void SpriteManager::init_range_attack_sprites_() {
+    set("range_attack", Sprite{
         sdl::SDL::create_circle_texture(500.f, sdl::SDL::Color::Red, 5.f),
         {0.f, 0.f, 1000.f, 1000.f}
     });
@@ -142,7 +142,7 @@ void SpriteManager::init_item_info_sprites_() {
     };
 
     std::cout << "item_info: " << wheel::ID("item_info") << std::endl;
-    for (const auto& [name, rarity, type, description, components] : ItemManager::instance().item_configs()) {
+    for (const auto& [name, rarity, type, weight, description, components] : ItemManager::instance().item_configs()) {
         if (name == "") {
             continue;
         }
@@ -154,6 +154,7 @@ void SpriteManager::init_item_info_sprites_() {
         float y = 16.f;
         sdl::SDL::render_text(texture, 16.f, y, name, 24.f, rarity2color_.at(rarity));
         sdl::SDL::render_text(texture, 16.f, y += 24.f, rfl::enum_to_string(type), 16.f, sdl::SDL::Color::Pink);
+        sdl::SDL::render_text(texture, 16.f, y += 24.f, std::format("weight: {}", weight), 16.f, sdl::SDL::Color::Black);
         for (const auto& line : description) {
             sdl::SDL::render_text(texture, 16.f, y += 24.f, line, 16.f, sdl::SDL::Color::White);
         }

@@ -7,6 +7,7 @@ namespace core {
 
 struct RangeAttackComponent {
     int damage = 10;
+    int range = 500.f;
     wheel::time_t interval = 1000000;
     float projectile_speed = 300.f;
     wheel::ID projectile_sprite_id;
