@@ -142,7 +142,7 @@ void SpriteManager::init_item_info_sprites_() {
     };
 
     std::cout << "item_info: " << wheel::ID("item_info") << std::endl;
-    for (const auto& [name, rarity, type, weight, description, components] : ItemManager::instance().item_configs()) {
+    for (const auto& [name, sprite, rarity, type, weight, description, components, _] : ItemManager::instance().item_configs()) {
         if (name == "") {
             continue;
         }
@@ -165,7 +165,7 @@ void SpriteManager::init_item_info_sprites_() {
             sdl::SDL::render_text(texture, 32.f, y += 24.f, std::format("Attack speed: {:.2f}s", range_attack.interval / 1000000.f), 16.f, sdl::SDL::Color::White);
         }
 
-        set(wheel::ID("item_info") ^ wheel::ID(name), {texture});
+        set(wheel::ID("item_info") ^ (wheel::ID(name) + static_cast<int>(rarity)), {texture});
     }
 }
 

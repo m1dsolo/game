@@ -15,9 +15,9 @@ class ItemManager : public wheel::Singleton<ItemManager> {
     friend wheel::Singleton<ItemManager>;
 
 public:
+    bool has(wheel::ID id) const;
     const ItemConfig& get(wheel::ID id) const;
     const ItemConfig& set(const ItemConfig& item_config);
-    bool has(wheel::ID id) const;
 
     auto item_configs() const {
         return std::views::values(item_infos_);

@@ -31,11 +31,14 @@ struct Item {
 
 struct ItemConfig {
     std::string name;
+    std::optional<std::string> sprite;
     Item::Rarity rarity;
     Item::Type type;
     int weight;
     std::vector<std::string> description;
     Item::Components components;
+
+    wheel::ID sprite_id;
 };
 
 }  // namespace core

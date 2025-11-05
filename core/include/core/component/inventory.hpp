@@ -23,6 +23,7 @@ struct InventoryComponent {
     int equip(int idx);
     int unequip(int idx);
     int pickup(wheel::ID item_id, int num);
+    int combine(int idx);
 };
 
 }  // namespace core

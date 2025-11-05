@@ -38,7 +38,7 @@ void DropItemSystem::operator()(wheel::ECS& ecs) {
                             ColliderComponent{wheel::Rect<float>{{0.f, 0.f}, {16.f, 16.f}}},
                             SpriteComponent{id},
                             RenderComponent{4},
-                            ItemComponent{id, count},
+                            ItemComponent{id + static_cast<int>(item.rarity), count},
                             RenderTag{},
                             GameLayerTag{}
                         );

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <core/config/item.hpp>
 
 namespace core {
 
@@ -13,6 +14,7 @@ struct AttackConfig {
 
 struct LootItemConfig {
     std::string name;
+    Item::Rarity rarity = Item::Rarity::common;
     std::pair<int, int> count;
     int weight = 1;
 };

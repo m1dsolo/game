@@ -27,11 +27,13 @@ private:
     int selected_idx_[2] = { 0, 0 };
 
     void select_slot_(int di, int dj);
+    void select_slot_by_offset_(int di, int dj);
     void update_sprite_(int i, int j);
     void update_weight_sprite_();
     void render_slots_(float start_h, int start_i, int n, int m);
     void equip_();
     void unequip_();
+    void combine_();
     Slot& get_slot_(int i, int j);
 
     std::vector<std::vector<wheel::Entity>> slot_item_entities_;

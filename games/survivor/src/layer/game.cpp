@@ -98,7 +98,7 @@ void new_game() {
     auto& inventory = ecs.get_component<InventoryComponent>();
     inventory.hotbar.resize(10);
     inventory.backpack.resize((5 - 1) * 10);
-    inventory.backpack[0] = {"usp", 2};
+    inventory.backpack[0] = {"usp", 3};
 
     entity_manager.add_entity(
         bunny,

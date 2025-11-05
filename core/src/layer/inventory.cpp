@@ -156,9 +156,6 @@ void InventoryLayer::on_register() {
 }
 
 void InventoryLayer::on_attach() {
-    selected_idx_[0] = 1;
-    selected_idx_[1] = 0;
-
     for (auto entity : ecs.get_entities<InventoryLayerTag>()) {
         ecs.add_component(entity, RenderTag{});
     }
@@ -169,6 +166,7 @@ void InventoryLayer::on_attach() {
         }
     }
     update_weight_sprite_();
+    select_slot_(1, 0);
 }
 
 void InventoryLayer::on_detach() {
@@ -187,19 +185,19 @@ bool InventoryLayer::on_event(const SDL_Event& event) {
                     return true;
                 }
                 case SDLK_W: {
-                    select_slot_(-1, 0);
+                    select_slot_by_offset_(-1, 0);
                     return true;
                 }
                 case SDLK_S: {
-                    select_slot_(1, 0);
+                    select_slot_by_offset_(1, 0);
                     return true;
                 }
                 case SDLK_A: {
-                    select_slot_(0, -1);
+                    select_slot_by_offset_(0, -1);
                     return true;
                 }
                 case SDLK_D: {
-                    select_slot_(0, 1);
+                    select_slot_by_offset_(0, 1);
                     return true;
                 }
                 case SDLK_SPACE: {
@@ -208,6 +206,10 @@ bool InventoryLayer::on_event(const SDL_Event& event) {
                     else {
                         equip_();
                     }
+                    return true;
+                }
+                case SDLK_C: {
+                    combine_();
                     return true;
                 }
                 case SDLK_RETURN: {
@@ -231,13 +233,10 @@ bool InventoryLayer::on_event(const SDL_Event& event) {
     return false;
 }
 
-void InventoryLayer::select_slot_(int di, int dj) {
-    auto [n, m] = slot_nums_;
-
+void InventoryLayer::select_slot_(int i, int j) {
     // update selected slot index
-    auto& [i, j] = selected_idx_;
-    i = (i + di + n) % n;
-    j = (j + dj + m) % m;
+    selected_idx_[0] = i;
+    selected_idx_[1] = j;
 
     // update selected slot border position
     auto& transform = ecs.get_component<TransformComponent>(selected_slot_border_);
@@ -256,12 +255,22 @@ void InventoryLayer::select_slot_(int di, int dj) {
     AudioManager::instance().play("hover_button");
 }
 
+void InventoryLayer::select_slot_by_offset_(int di, int dj) {
+    auto [n, m] = slot_nums_;
+    auto [i, j] = selected_idx_;
+    return select_slot_((i + di + n) % n, (j + dj + m) % m);
+}
+
 void InventoryLayer::update_sprite_(int i, int j) {
     auto& slot = get_slot_(i, j);
+    if (slot.num == 0) {
+        slot.item_id = "";
+    }
 
     {
         auto& sprite = ecs.get_component<SpriteComponent>(slot_item_entities_[i][j]);
-        sprite.sprite = &SpriteManager::instance().get(slot.item_id);
+        auto sprite_id = ItemManager::instance().get(slot.item_id).sprite_id;
+        sprite.sprite = &SpriteManager::instance().get(sprite_id);
     }
 
     {
@@ -347,6 +356,21 @@ void InventoryLayer::unequip_() {
     update_sprite_(selected_idx_[0], selected_idx_[1]);
     update_sprite_(idx / slot_nums_[1] + 1, idx % slot_nums_[1]);
     update_weight_sprite_();
+}
+
+void InventoryLayer::combine_() {
+    auto selected_idx = selected_idx_[0] * slot_nums_[1] + selected_idx_[1];
+    auto idx = ecs.get_component<InventoryComponent>().combine(selected_idx);
+    std::cout << idx << std::endl;
+    if (idx == -1) {
+        // AudioManager::instance().play("error");
+        return;
+    }
+    update_sprite_(selected_idx_[0], selected_idx_[1]);
+    update_sprite_(idx / slot_nums_[1], idx % slot_nums_[1]);
+    std::cout << selected_idx << " " << idx << std::endl;
+    auto min_idx = std::min(selected_idx, idx);
+    select_slot_(min_idx / slot_nums_[1], min_idx % slot_nums_[1]);
 }
 
 Slot& InventoryLayer::get_slot_(int i, int j) {

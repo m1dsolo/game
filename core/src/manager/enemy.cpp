@@ -35,7 +35,7 @@ EnemyManager::EnemyManager() {
     std::ifstream file("assets/config/enemy.json");
     if (file.is_open()) {
         std::cout << "[begin load enemy...]" << std::endl;
-        auto result = rfl::json::read<std::vector<EnemyConfig>>(file);
+        auto result = rfl::json::read<std::vector<EnemyConfig>, rfl::DefaultIfMissing>(file);
         const auto enemies = result.value();
         for (const auto& enemy_config : enemies) {
             enemy_configs_[enemy_config.name] = enemy_config;

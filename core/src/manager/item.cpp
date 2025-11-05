@@ -23,6 +23,10 @@ ItemManager::ItemManager() {
     }
 }
 
+bool ItemManager::has(wheel::ID id) const {
+    return item_infos_.find(id) != item_infos_.end();
+}
+
 const ItemConfig& ItemManager::get(wheel::ID id) const {
     auto iter = item_infos_.find(id);
     if (iter != item_infos_.end()) {
@@ -32,11 +36,14 @@ const ItemConfig& ItemManager::get(wheel::ID id) const {
 }
 
 const ItemConfig& ItemManager::set(const ItemConfig& item_config) {
-    return item_infos_[item_config.name] = item_config;
-}
-
-bool ItemManager::has(wheel::ID id) const {
-    return item_infos_.find(id) != item_infos_.end();
+    wheel::ID id = wheel::ID(item_config.name) + static_cast<int>(item_config.rarity);
+    auto [it, _] = item_infos_.try_emplace(id, item_config);
+    if (item_config.sprite.has_value()) {
+        it->second.sprite_id = *item_config.sprite;
+    } else {
+        it->second.sprite_id = item_config.name;
+    }
+    return it->second;
 }
 
 }  // namespace core

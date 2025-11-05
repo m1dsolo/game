@@ -24,6 +24,54 @@
         }
     },
     {
+        "name": "usp",
+        "rarity": "uncommon",
+        "type": "weapon",
+        "weight": 1,
+        "description": [
+            "A standard handgun."
+        ],
+        "components": {
+            "range_attack": {
+                "damage": 20,
+                "interval": 500000,
+                "projectile_speed": 500,
+                "projectile_sprite_id": "bullet",
+                "range_attack_sound_id": "usp/shoot"
+            },
+            "range": 500,
+            "reload": {
+                "max_ammo": 12,
+                "reload_time": 1000000,
+                "sound_id": "usp/reload"
+            }
+        }
+    },
+    {
+        "name": "usp",
+        "rarity": "rare",
+        "type": "weapon",
+        "weight": 1,
+        "description": [
+            "A standard handgun."
+        ],
+        "components": {
+            "range_attack": {
+                "damage": 30,
+                "interval": 500000,
+                "projectile_speed": 500,
+                "projectile_sprite_id": "bullet",
+                "range_attack_sound_id": "usp/shoot"
+            },
+            "range": 500,
+            "reload": {
+                "max_ammo": 12,
+                "reload_time": 1000000,
+                "sound_id": "usp/reload"
+            }
+        }
+    },
+    {
         "name": "m4a1",
         "rarity": "uncommon",
         "type": "weapon",
@@ -33,7 +81,31 @@
         ],
         "components": {
             "range_attack": {
-                "damage": 7,
+                "damage": 15,
+                "interval": 200000,
+                "projectile_speed": 500,
+                "projectile_sprite_id": "bullet",
+                "range_attack_sound_id": "m4a1/shoot"
+            },
+            "range": 500,
+            "reload": {
+                "max_ammo": 30,
+                "reload_time": 2000000,
+                "sound_id": "m4a1/reload"
+            }
+        }
+    },
+    {
+        "name": "m4a1",
+        "rarity": "rare",
+        "type": "weapon",
+        "weight": 2,
+        "description": [
+            "A standard assault rifle."
+        ],
+        "components": {
+            "range_attack": {
+                "damage": 25,
                 "interval": 200000,
                 "projectile_speed": 500,
                 "projectile_sprite_id": "bullet",
